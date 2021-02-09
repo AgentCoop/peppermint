@@ -1,15 +1,18 @@
 #!/usr/bin/env bash
 
-mkdir -p build/proto
-
-GITHUB_PKG=github.com/AgentCoop
+GO_IMPORT_PREFIX=github.com/AgentCoop/peppermint/internal/api
 PROTO_ROOT=~/repos/github/peppermint/api/strawman
 PROTO_BUILD=./build/proto
-GEN_OUTPUT=./internal/api
+GEN_OUTPUT=./internal/api/peppermint
+
+mkdir -p $PROTO_BUILD
+mkdir -p $GEN_OUTPUT
 
 rm -rf $PROTO_BUILD/*
+rm -rf $GEN_OUTPUT/*
+
 cp -r $PROTO_ROOT/* $PROTO_BUILD/
-find $PROTO_BUILD -name '*.proto' -exec sed -r -i "s@option go_package = \"(.*)\";@option go_package = \"$GITHUB_PKG/\1\";@g" {} \;
+find $PROTO_BUILD -name '*.proto' -exec sed -r -i "s@option go_package = \"(.*)\";@option go_package = \"$GO_IMPORT_PREFIX/\1\";@g" {} \;
 
 for file in $(find $PROTO_BUILD -name '*.proto' -type f);
 do
