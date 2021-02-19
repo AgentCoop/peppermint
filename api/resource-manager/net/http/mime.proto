@@ -1,0 +1,11 @@
+syntax="proto3";
+
+import "options.proto";
+
+package http.net.pepermint;
+
+option go_package = "peppermint/net/http";
+
+enum MimeType {
+  MIME_TYPE_JPEG = 0 [(.peppermint.mime_type) = "image/jpeg", (.peppermint.mime_file_ext) = ".jpg", (.peppermint.mime_file_ext) = ".jpeg" ];
+}

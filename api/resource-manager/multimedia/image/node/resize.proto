@@ -1,0 +1,14 @@
+syntax="proto3";
+
+import "net/http/mime.proto";
+
+package node;
+
+option go_package = "peppermint/multimedia/image/node";
+
+message Resize {
+  uint32 target_width = 1;
+  uint32 target_height = 2;
+  http.net.pepermint.MimeType target_type = 3;
+}
+

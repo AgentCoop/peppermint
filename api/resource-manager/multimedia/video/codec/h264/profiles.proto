@@ -1,0 +1,4 @@
+syntax="proto3";
+
+package video.multimedia.peppermint;
+option go_package = "peppermint/multimedia/video";

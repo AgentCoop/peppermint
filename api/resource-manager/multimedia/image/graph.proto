@@ -1,0 +1,41 @@
+syntax="proto3";
+
+import "resource-manager/multimedia/image/node/resize.proto";
+
+package image.multimedia.peppermint;
+option go_package = "peppermint/multimedia/image";
+
+message Graph {
+  message Create {
+    message Request {
+      bytes body = 1; // image content
+    }
+    message Response {
+      uint64  root_id = 1;
+    }
+  }
+
+  message LoadImage {
+    message Request {
+      uint64 graph_id = 1;
+    }
+    message Response {}
+  }
+
+  message AddNode {
+    message Request {
+      uint64 parent_id = 1;
+      oneof node {
+        node.Resize resize_node = 2;
+      }
+    }
+    message Response {}
+  }
+
+  message Exec {
+    message Request {
+      uint64 graph_id = 64;
+    }
+    message Response { }
+  }
+}

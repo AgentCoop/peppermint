@@ -1,0 +1,15 @@
+syntax = "proto3";
+
+import "cdn/store.proto";
+
+package cdn.peppermint;
+
+option go_package = "peppermint/cdn";
+
+message Request {
+  string access_token = 1;
+  oneof request {
+    Store.Session.Create.Request sess_create_req = 2;
+    Store.TransferChunk transfer_chunk_req = 3;
+  }
+}

@@ -1,0 +1,27 @@
+syntax = "proto3";
+
+package cdn.peppermint;
+
+option go_package = "peppermint/cdn";
+
+
+message Content {
+  enum Type {
+    IMAGE = 0;
+    AUDIO_TRACK = 1;
+    VIDEO = 2;
+    CLOSED_CAPTIONS = 3;
+    SUBTITLES = 4;
+  }
+  message Create {
+    message Request {
+      Content.Type type = 1;
+      string alias = 2;
+      uint64 org_uuid = 3;
+      bool mirror = 4;
+    }
+    message Response {
+      uint64 content_uuid = 1;
+    }
+  }
+}

@@ -15,7 +15,7 @@ import (
 //}
 
 func TestCreateGraph(T *testing.T) {
-	conn, err := grpc.Dial("unix:///tmp/foo", grpc.WithInsecure(), grpc.WithBlock())
+	conn, err := grpc.Dial("unix:@foo", grpc.WithInsecure())//, grpc.WithBlock())
 	if err != nil {
 		panic(err)
 	}

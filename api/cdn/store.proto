@@ -1,0 +1,23 @@
+syntax = "proto3";
+
+package cdn.peppermint;
+
+option go_package = "peppermint/cdn";
+
+message Store {
+  message Session {
+    message Create {
+      message Request {}
+      message Response {}
+    }
+  }
+  message TransferChunk {
+    message Request {
+      uint64 session_id = 1;
+      string filename = 2;
+      bytes content = 3;
+      uint32 chunk_num = 4;
+    }
+    message Response {}
+  }
+}

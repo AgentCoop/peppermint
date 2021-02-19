@@ -1,0 +1,47 @@
+syntax = "proto3";
+
+// Resource manager
+package rm.peppermint;
+
+option go_package = "peppermint";
+
+message UploadInfo {
+
+}
+
+message FileInfo {
+
+}
+
+message UploadSession {
+  message Create {
+    message Request {
+      UploadInfo upload_info = 1;
+      bool p = 2;
+    }
+    message Response {
+      uint64 sess_id = 1;
+      uint32 chunk_size = 2;
+      uint32 chunk_start = 3;
+    }
+  }
+  message TransferChunk {
+    message Request {
+      bytes content = 1;
+      int32 chunk_num = 2;
+    }
+    message Response {
+      FileInfo file_info = 1;
+    }
+  }
+}
+
+service ResourceManager {
+  rpc CreateUploadSession(UploadSession.Create.Request) returns (UploadSession.Create.Response);
+  rpc TransferChunk(stream UploadSession.TransferChunk.Request) returns (UploadSession.TransferChunk.Response);
+
+  rpc GraphCreate(Graph.Create.Request) returns (Graph.Create.Response);
+  rpc GraphAddNode(Graph.AddNode.Request) returns (Graph.AddNode.Response);
+  rpc GraphLoadBlob(Graph.LoadImage.Request) returns (Graph.LoadImage.Response);
+  rpc GraphExec(Graph.Exec) returns (Graph.AddNode.Response);
+}

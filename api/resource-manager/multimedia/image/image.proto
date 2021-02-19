@@ -1,0 +1,33 @@
+syntax="proto3";
+
+import "options.proto";
+import "multimedia/image/graph.proto";
+import "net/http/mime.proto";
+
+package image.multimedia.peppermint;
+option go_package = "peppermint/multimedia/image";
+
+message ImageInfo {
+  uint32 width = 1;
+  uint32 height = 2;
+  string original_filename = 3;
+}
+
+message Image {
+  ImageInfo info = 1;
+  bytes content = 2;
+}
+
+message FooBar {
+  option (.peppermint.foo) = 55;
+  string field1 = 1;
+}
+
+service ImageService {
+  option (.peppermint.unix_domain_socket) = "unix:image.multimedia.peppermint";
+
+  rpc GraphCreate(Graph.Create.Request) returns (Graph.Create.Response);
+  rpc GraphAddNode(Graph.AddNode.Request) returns (Graph.AddNode.Response);
+  rpc GraphLoadImage(Graph.LoadImage.Request) returns (Graph.LoadImage.Response);
+  rpc GraphExec(Graph.Exec) returns (Graph.AddNode.Response);
+}

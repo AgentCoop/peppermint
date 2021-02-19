@@ -1,0 +1,25 @@
+syntax="proto3";
+
+package geom.multimedia.peppermint;
+
+option go_package = "peppermint/multimedia/geom";
+
+enum UnitType {
+  RELATIVE_PERCENTAGE = 0;
+  PX = 1;
+}
+
+// Image dimension as percentage of the original image width and height
+message Dimension {
+  uint32      width = 1;
+  uint32      height = 2;
+  UnitType    unit_type = 3;
+}
+
+message RectRegion {
+  uint32 left = 1;
+  uint32 top = 2;
+  uint32 bottom = 3;
+  uint32 right = 4;
+  UnitType unit_type = 5;
+}

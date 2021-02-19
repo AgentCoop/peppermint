@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+package cdn.peppermint;
+
+option go_package = "peppermint/cdn";
+
+message Vfs {
+  message Dir {
+    message Create {
+      message Request {
+        string uri_component = 1;
+      }
+      message Response {
+      }
+    }
+  }
+}

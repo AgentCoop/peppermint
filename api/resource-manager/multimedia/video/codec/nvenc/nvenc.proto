@@ -1,0 +1,16 @@
+syntax="proto3";
+
+import "options.proto";
+
+package nvenc.codec.video.peppermint;
+
+option go_package = "nvenc/codec/video/peppermint";
+
+message Empty {  }
+
+service NvEnc {
+  option (.peppermint.unix_domain_socket) = "unix:nvenc.codec.video.peppermint";
+  option (.peppermint.port) = 9000;
+
+  rpc Foo(Empty) returns (stream Empty) {}
+}
