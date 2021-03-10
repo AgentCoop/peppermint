@@ -1,0 +1,23 @@
+syntax = "proto3";
+
+import "service/cdn/store.proto";
+import "service/cdn/vfs.proto";
+
+package cdn.peppermint;
+
+option go_package = "peppermint/cdn";
+
+service Cdn {
+  rpc StoreCreateSession(Store.Session.Create.Request) returns (Store.Session.Create.Response);
+  rpc StoreTransfer(stream Store.TransferChunk.Request) returns (Store.TransferChunk.Response);
+
+//  rpc CreateContent() returns ();
+//
+//  rpc CreateDir(Vfs.Dir.Create.Request) returns (Vfs.Dir.Create.Response);
+//  rpc LsDir() returns ();
+//  rpc RmDir() returns ();
+//
+//  rpc CreateFile() returns ();
+//  rpc RmFile() returns ();
+}
+

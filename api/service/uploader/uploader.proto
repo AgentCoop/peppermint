@@ -1,0 +1,13 @@
+syntax = "proto3";
+
+import "service/uploader/messages.proto";
+
+package uploader.peppermint;
+
+option go_package = "peppermint/uploader";
+
+service Uploader {
+  rpc CreateSession(CreateSession.Request) returns (CreateSession.Response) {}
+  rpc ResumeSession(CreateSession.Request) returns (CreateSession.Response) {}
+  rpc TransferChunks(stream TransferChunks.Request) returns (TransferChunks.Response) {}
+}

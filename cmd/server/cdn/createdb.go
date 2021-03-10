@@ -33,22 +33,24 @@ func createDb() {
 	db, erropen := sql.Open("sqlite3", dbf)
 	if erropen != nil { panic(erropen) }
 
-	createTable(db)
+	createContentTable(db)
 }
 
-func createTable(db *sql.DB) {
-	createStudentTableSQL := `CREATE TABLE student (
-		"idStudent" integer NOT NULL PRIMARY KEY AUTOINCREMENT,		
-		"code" TEXT,
-		"name" TEXT,
-		"program" TEXT		
-	  );` // SQL Statement for Create Table
-
-	log.Println("Create student table...")
-	statement, err := db.Prepare(createStudentTableSQL) // Prepare SQL Statement
+func execSql(db *sql.DB, sql string) {
+	log.Printf("\tExecuting:\n%s", sql)
+	statement, err := db.Prepare(sql)
 	if err != nil {
 		log.Fatal(err.Error())
 	}
 	statement.Exec() // Execute SQL Statements
-	log.Println("student table created")
+}
+
+func createContentTable(db *sql.DB) {
+	sql := `CREATE TABLE content (
+		"idStudent" integer NOT NULL PRIMARY KEY AUTOINCREMENT,		
+		"code" TEXT,
+		"name" TEXT,
+		"program" TEXT		
+	);`
+	execSql(db, sql)
 }

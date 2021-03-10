@@ -1,6 +1,0 @@
-// Identity and Access management
-syntax = "proto3";
-
-service Identity {
-
-}

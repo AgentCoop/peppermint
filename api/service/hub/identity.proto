@@ -1,0 +1,11 @@
+// Identity and Access management
+syntax = "proto3";
+
+package identity.peppermint;
+
+option go_package = "peppermint/identity";
+
+service Identity {
+  rpc Join() returns ();
+  rpc Heartbeat() returns ();
+}

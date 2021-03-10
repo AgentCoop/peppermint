@@ -4,7 +4,6 @@ package cdn.peppermint;
 
 option go_package = "peppermint/cdn";
 
-
 message Content {
   enum Type {
     IMAGE = 0;
@@ -16,9 +15,10 @@ message Content {
   message Create {
     message Request {
       Content.Type type = 1;
-      string alias = 2;
+      string basename = 2;
+      uint64 dir_id = 10;
       uint64 org_uuid = 3;
-      bool mirror = 4;
+      bool disable_mirroring = 4;
     }
     message Response {
       uint64 content_uuid = 1;

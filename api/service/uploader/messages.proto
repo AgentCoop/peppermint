@@ -1,0 +1,20 @@
+syntax = "proto3";
+
+package uploader.peppermint;
+
+option go_package = "peppermint/uploader";
+
+message CreateSession {
+  message Request {}
+  message Response {}
+}
+
+message ResumeSession {
+  message Request {}
+  message Response {}
+}
+
+message TransferChunks {
+  message Request {}
+  message Response {}
+}

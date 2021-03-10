@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 GO_IMPORT_PREFIX=github.com/AgentCoop/peppermint/internal/api
-PROTO_ROOT=~/repos/github/peppermint/api/strawman
+PROTO_ROOT=~/go/src/github.com/AgentCoop/peppermint/api
 PROTO_BUILD=./build/proto
 GEN_OUTPUT=./internal/api/peppermint
 
