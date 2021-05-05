@@ -1,9 +1,10 @@
 #!/usr/bin/env bash
 
+PROJECT_ROOT=~/go/src/github.com/AgentCoop/peppermint
 GO_IMPORT_PREFIX=github.com/AgentCoop/peppermint/internal/api
-PROTO_ROOT=~/go/src/github.com/AgentCoop/peppermint/api
+PROTO_ROOT=$PROJECT_ROOT/api
 PROTO_BUILD=./build/proto
-GEN_OUTPUT=./internal/api/peppermint
+GEN_OUTPUT=$PROJECT_ROOT/internal/api/peppermint
 
 mkdir -p $PROTO_BUILD
 mkdir -p $GEN_OUTPUT

@@ -5,7 +5,7 @@ import "service/rpc.proto";
 
 package hub.peppermint;
 
-option go_package = "peppermint/uploader";
+option go_package = "peppermint/service/hub";
 
 message Request {
   .peppermint.RequestHeader header = 1;

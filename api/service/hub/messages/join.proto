@@ -4,7 +4,7 @@ import "service/types.proto";
 
 package hub.peppermint;
 
-option go_package = "peppermint/hub";
+option go_package = "peppermint/service/hub/messages";
 
 message JoinHello {
   message Request {

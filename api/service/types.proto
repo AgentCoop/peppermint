@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-option go_package = "peppermint";
+option go_package = "peppermint/service";
 
 package peppermint;
 
