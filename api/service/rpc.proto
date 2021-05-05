@@ -1,0 +1,18 @@
+syntax = "proto3";
+
+option go_package = "peppermint";
+
+package peppermint;
+
+enum StatusCode {
+  OK = 0;
+}
+
+message RequestHeader {
+  fixed64 node_id = 1;
+}
+
+message ResponseHeader {
+  StatusCode status_code = 1;
+  string err_text = 2;
+}

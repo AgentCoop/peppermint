@@ -1,13 +1,35 @@
 syntax = "proto3";
 
 import "service/uploader/messages.proto";
+import "service/rpc.proto";
 
 package uploader.peppermint;
 
 option go_package = "peppermint/uploader";
 
-service Uploader {
+message Request {
+  .peppermint.RequestHeader header = 1;
+  oneof body {
+    CreateSession.Request create_sess = 2;
+    DestroySession.Request destroy_sess = 3;
+    CreateRemoteFile.Request create_remote_file = 4;
+    TransferFileChunks.Request transfer_file_chunks = 5;
+  }
+}
+
+message Response {
+  .peppermint.ResponseHeader header = 1;
+  oneof body {
+    CreateSession.Response create_sess = 2;
+    DestroySession.Response destroy_sess = 3;
+    CreateRemoteFile.Response create_remote_file = 4;
+    TransferFileChunks.Response transfer_file_chunks = 5;
+  }
+}
+
+service FileUploader {
   rpc CreateSession(CreateSession.Request) returns (CreateSession.Response) {}
-  rpc ResumeSession(CreateSession.Request) returns (CreateSession.Response) {}
-  rpc TransferChunks(stream TransferChunks.Request) returns (TransferChunks.Response) {}
+  rpc DestroySession(DestroySession.Request) returns (DestroySession.Response) {}
+  rpc CreateRemoteFile(stream CreateRemoteFile.Request) returns (CreateRemoteFile.Response) {}
+  rpc TransferFileChunks(stream TransferFileChunks.Request) returns (TransferFileChunks.Response) {}
 }

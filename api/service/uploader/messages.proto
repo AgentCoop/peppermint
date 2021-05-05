@@ -1,20 +1,72 @@
 syntax = "proto3";
 
+import "service/types.proto";
+
 package uploader.peppermint;
 
 option go_package = "peppermint/uploader";
 
+/**
+  Format of the 64-bit session identifier: yy-m-d
+*/
+
+message MetaInfo {
+  string filename             = 1;
+  uint64 size                 = 2;
+  string lastModified         = 3;
+}
+
+enum SessionState {
+  Opened = 0;
+  Closed = 1;
+}
+
+enum FileFingerprintStrategy {
+  Content = 0;
+  FilenameLastModifiedSize = 1;
+  Sparse_Hashing = 2; // Can be effective for large binary files
+}
+
+enum HashAlgo {
+  MD5 = 0;
+  SHA1 = 1;
+}
+
 message CreateSession {
-  message Request {}
-  message Response {}
+  message Request {
+    HashAlgo hash_algo = 1; // the default is MD5
+    int64 lifetime = 2; // in seconds
+  }
+  message Response {
+    .peppermint.SessionId sess_id = 1;
+  }
 }
 
-message ResumeSession {
-  message Request {}
-  message Response {}
+message DestroySession {
+  message Request {
+  }
+  message Response {
+  }
 }
 
-message TransferChunks {
-  message Request {}
-  message Response {}
+message CreateRemoteFile {
+  message Request {
+    .peppermint.SessionId sess_id = 1;
+    MetaInfo file_info = 2;
+    FileFingerprintStrategy fingerprint_strat = 3;
+  }
+  message Response {
+    uint32 fd = 1;
+  }
+}
+
+message TransferFileChunks {
+  message Request {
+    uint32 fd = 1;
+    bytes chunk = 2;
+    uint32 chunk_num = 3;
+  }
+  message Response {
+    string file_content_md5hash = 1;
+  }
 }
