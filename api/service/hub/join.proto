@@ -4,14 +4,15 @@ import "service/types.proto";
 
 package hub.peppermint;
 
-option go_package = "peppermint/service/hub/messages";
+option go_package = "peppermint/service/hub";
 
 message JoinHello {
   message Request {
+    bytes df_pub_key = 1; // Diffie-Hellman public key
   }
   message Response {
     bytes crypto_nonce = 1;
-    bytes df_pub_key = 2; // Diffie-Hellman public key
+    bytes df_pub_key = 2;
   }
 }
 

@@ -1,27 +1,11 @@
 syntax = "proto3";
 
-import "service/hub/messages/join.proto";
+import "service/hub/join.proto";
 import "service/rpc.proto";
 
 package hub.peppermint;
 
 option go_package = "peppermint/service/hub";
-
-message Request {
-  .peppermint.RequestHeader header = 1;
-  oneof body {
-    JoinHello.Request join_hello = 2;
-    Join.Request join = 3;
-  }
-}
-
-message Response {
-  .peppermint.ResponseHeader header = 1;
-  oneof body {
-    JoinHello.Response join_hello = 2;
-    Join.Response join = 3;
-  }
-}
 
 service Hub {
   rpc JoinHello(JoinHello.Request) returns (JoinHello.Response) { }

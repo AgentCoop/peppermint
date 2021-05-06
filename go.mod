@@ -6,7 +6,7 @@ replace github.com/AgentCoop/go-work => /home/pihpah/go/src/github.com/AgentCoop
 
 require (
 	github.com/AgentCoop/go-work v0.0.1
-	github.com/golang/protobuf v1.5.0
+	github.com/golang/protobuf v1.5.2
 	github.com/jessevdk/go-flags v1.4.0
 	github.com/mattn/go-sqlite3 v1.14.6
 	google.golang.org/grpc v1.35.0

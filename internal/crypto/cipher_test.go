@@ -1,14 +1,12 @@
 package crypto_test
 
 import (
-	"fmt"
 	"github.com/AgentCoop/peppermint/internal/crypto"
 	"github.com/AgentCoop/go-work"
 
 	"encoding/hex"
 	"testing"
 	"bytes"
-	//"fmt"
 )
 
 func cipherTask(j job.Job) (job.Init, job.Run, job.Finalize) {
@@ -21,7 +19,6 @@ func cipherTask(j job.Job) (job.Init, job.Run, job.Finalize) {
 
 		encryptor := crypto.NewSymCipher(key, nil, task)
 		ciphertext := encryptor.Encrypt(data)
-		fmt.Printf("%s %s\n", data, ciphertext)
 
 		decryptor := crypto.NewSymCipher(key, encryptor.GetNonce(), task)
 		plaintext := decryptor.Decrypt(ciphertext)
