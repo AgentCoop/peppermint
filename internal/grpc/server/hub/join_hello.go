@@ -7,5 +7,9 @@ import (
 )
 
 func (s *server) JoinHello(c context.Context, req *hub.JoinHello_Request) (*hub.JoinHello_Response, error) {
-	return nil, nil
+	res := &hub.JoinHello_Response{
+		CryptoNonce: nil,
+		DfPubKey:    nil,
+	}
+	return res, nil
 }

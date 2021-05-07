@@ -17,7 +17,7 @@ func createClient(j job.Job) (job.Init, job.Run, job.Finalize) {
 		client := c.NewClient("localhost:9000", task)
 		client.Connect()
 		client.JoinHello([]byte("hello"))
-		task.Done()
+		task.FinishJob()
 	}
 	return init, run, nil
 }

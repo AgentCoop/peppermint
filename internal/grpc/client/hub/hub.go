@@ -12,7 +12,6 @@ type HubClient interface {
 }
 
 type hubClient struct {
-	hub.
 	c.BaseClient
 	grpcHandle hub.HubClient
 }
@@ -21,6 +20,7 @@ func NewClient(address string, task job.Task) *hubClient {
 	hubClient := &hubClient{}
 	hubClient.Address = address
 	hubClient.Task = task
+	hubClient.Connect()
 	hubClient.grpcHandle = hub.NewHubClient(hubClient.Conn)
 	return hubClient
 }
