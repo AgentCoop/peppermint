@@ -51,5 +51,6 @@ func NewJoinHelloResponse(ctx context.Context) *joinHelloResponse {
 
 func (r *joinHelloResponse) ToGrpcResponse() interface{} {
 	resp := new(msg.JoinHello_Response)
+	resp.DhPubKey = r.hubPubKey
 	return resp
 }
