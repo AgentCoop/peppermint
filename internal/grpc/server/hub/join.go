@@ -6,7 +6,5 @@ import (
 )
 
 func (s *hubGrpcServer) Join(ctx context.Context, req *hub.Join_Request) (*hub.Join_Response, error) {
-	j := s.Session().Job()
-	data := &joinReq
 	return nil, nil
 }
