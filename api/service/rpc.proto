@@ -5,11 +5,7 @@ option go_package = "peppermint/service";
 package peppermint;
 
 enum StatusCode {
-  OK = 0;
-}
-
-message RequestHeader {
-  fixed64 node_id = 1;
+  Success = 0;
 }
 
 message ResponseHeader {

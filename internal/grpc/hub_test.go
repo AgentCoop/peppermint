@@ -1,4 +1,4 @@
-package crypto_test
+package grpc_test
 
 import (
 	"github.com/AgentCoop/go-work"

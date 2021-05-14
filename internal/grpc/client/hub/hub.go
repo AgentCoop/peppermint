@@ -8,7 +8,8 @@ import (
 
 type HubClient interface {
 	c.Client
-	JoinHello(dfPublicKey []byte)
+	JoinHello(dhPubKey []byte) (hubDhPubKey []byte)
+	Join()
 }
 
 type hubClient struct {

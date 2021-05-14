@@ -7,7 +7,15 @@ package hub.peppermint;
 
 option go_package = "peppermint/service/hub";
 
+message Response {
+  .peppermint.ResponseHeader header = 1;
+  oneof body {
+    JoinHello.Response join_hello = 2;
+    Join.Response join = 3;
+  }
+}
+
 service Hub {
-  rpc JoinHello(JoinHello.Request) returns (JoinHello.Response) { }
-  rpc Join(Join.Request) returns (Join.Response) {  }
+  rpc JoinHello(JoinHello.Request) returns (Response) { }
+  rpc Join(Join.Request) returns (Response) {  }
 }
