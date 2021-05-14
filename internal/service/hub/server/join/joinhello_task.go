@@ -9,7 +9,7 @@ import (
 func (ctx *joinCtx) JoinHelloTask(j job.Job) (job.Init, job.Run, job.Finalize) {
 	run := func(task job.Task) {
 		req := <-ctx.JoinHelloReqCh
-		task.Assert(req)
+		task.AssertNotNil(req)
 
 		dataBag := req.(data.DataBag)
 		pubKey := dataBag.NodePubKey()

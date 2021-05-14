@@ -3,8 +3,7 @@ package client
 import (
 	"context"
 	job "github.com/AgentCoop/go-work"
-	//"github.com/AgentCoop/peppermint/internal/api/peppermint/service/hub"
-	"github.com/AgentCoop/peppermint/internal/api/peppermint/service"
+
 	"github.com/AgentCoop/peppermint/internal/grpc/codec"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
@@ -17,7 +16,7 @@ const (
 type Client interface {
 	GetServerAddress() string
 	GetNodeId() []byte
-	GetDefaultHeader() *service.RequestHeader
+	//GetDefaultHeader() *service.RequestHeader
 	Connect()
 }
 

@@ -29,7 +29,8 @@ type Response interface {
 func NewResponseHeader(ctx context.Context) *response {
 	r := new(response)
 	r.ctx = ctx
-	r.md, _ = metadata.FromOutgoingContext(ctx)
+	//r.md, _ = metadata.FromOutgoingContext(context.Background())
+	r.md = metadata.New(nil)
 	return r
 }
 
@@ -39,6 +40,10 @@ func (r *response) AddMetaValue(key string, value string) {
 
 func (r *response) AddBinMetaValue(key string, value []byte) {
 	r.md.Append(key + "-bin", string(value))
+}
+
+func (r *response) ToGrpcResponse() interface{} {
+	panic("ToGrpcResponse method must be implemented")
 }
 
 func (r *response) SendHeader() {

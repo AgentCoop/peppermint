@@ -24,8 +24,8 @@ func createClient(j job.Job) (job.Init, job.Run, job.Finalize) {
 
 func TestJoinHello(t *testing.T) {
 	j := job.NewJob(t)
-	server := h.NewServer()
-	j.AddTask(server.StartServerTask)
+	server := h.NewServer("localhost:9000")
+	j.AddTask(server.StartTask)
 	j.AddTask(createClient)
 	<-j.Run()
 	_, err := j.GetInterruptedBy()

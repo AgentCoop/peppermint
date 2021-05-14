@@ -2,7 +2,7 @@ package join
 
 import (
 	"context"
-	"github.com/AgentCoop/peppermint/internal/api/peppermint/service/hub"
+	msg "github.com/AgentCoop/peppermint/internal/api/peppermint/service/hub"
 	"github.com/AgentCoop/peppermint/internal/grpc/server"
 )
 
@@ -15,7 +15,7 @@ type DataBag interface {
 	NodePubKey() []byte
 }
 
-func NewJoinHello(ctx context.Context, original *hub.JoinHello_Request) *joinHelloRequest {
+func NewJoinHello(ctx context.Context, original *msg.JoinHello_Request) *joinHelloRequest {
 	r := new(joinHelloRequest)
 	r.RequestHeader = server.NewRequestHeader(ctx)
 	r.Populate(original)
@@ -23,7 +23,7 @@ func NewJoinHello(ctx context.Context, original *hub.JoinHello_Request) *joinHel
 }
 
 func (r *joinHelloRequest) Populate(original interface{}) {
-	r.nodePubKey = original.(*hub.JoinHello_Request).GetDhPubKey()
+	r.nodePubKey = original.(*msg.JoinHello_Request).GetDhPubKey()
 }
 
 func (r *joinHelloRequest) Validate() error {
@@ -50,5 +50,6 @@ func NewJoinHelloResponse(ctx context.Context) *joinHelloResponse {
 }
 
 func (r *joinHelloResponse) ToGrpcResponse() interface{} {
-	panic("implement me")
+	resp := new(msg.JoinHello_Response)
+	return resp
 }

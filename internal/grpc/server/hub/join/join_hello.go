@@ -1,9 +1,9 @@
-package hub
+package join
 
 import (
-	"context"
 	job "github.com/AgentCoop/go-work"
-	msg "github.com/AgentCoop/peppermint/internal/api/peppermint/service/hub"
+	"github.com/AgentCoop/peppermint/internal/api/peppermint/service/hub"
+	"context"
 	"github.com/AgentCoop/peppermint/internal/grpc"
 	data "github.com/AgentCoop/peppermint/internal/grpc/data/hub/join"
 	srv "github.com/AgentCoop/peppermint/internal/grpc/server"
@@ -12,7 +12,7 @@ import (
 	"github.com/AgentCoop/peppermint/internal/utils"
 )
 
-func (s *hubServer) JoinHello(ctx context.Context, originalReq *msg.JoinHello_Request) (*msg.JoinHello_Response, error) {
+func (s *server) JoinHello(ctx context.Context, originalReq *hub.JoinHello_Request) (*hub.JoinHello_Response, error) {
 	req := data.NewJoinHello(ctx, originalReq)
 	_ = req.Validate()
 
@@ -29,5 +29,5 @@ func (s *hubServer) JoinHello(ctx context.Context, originalReq *msg.JoinHello_Re
 
 	res.AddMetaValue(grpc.META_FIELD_SESSION_ID, utils.IntToHex(sessId, 16))
 
-	return res.ToGrpcResponse().(*msg.JoinHello_Response), nil
+	return res.ToGrpcResponse().(*hub.JoinHello_Response), nil
 }

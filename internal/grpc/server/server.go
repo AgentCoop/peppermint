@@ -3,64 +3,53 @@ package server
 import (
 	job "github.com/AgentCoop/go-work"
 	_ "github.com/AgentCoop/peppermint/internal/grpc/codec"
-	"net"
-	"context"
 	"google.golang.org/grpc"
-	"google.golang.org/grpc/peer"
+	"net"
 )
 
-type GrpcServer interface {
-	GetTask() job.Task
+type BaseServer interface {
+	Handle() *grpc.Server
 	StartTask(j job.Job) (job.Init, job.Run, job.Finalize)
-	RegisterService()
-	Session() Session
+	RegisterServer()
 }
 
-type BaseServer struct {
-	Address string
+type baseServer struct {
+	address string
 	task job.Task
-	Handle *grpc.Server
+	handle *grpc.Server
 	lis net.Listener
-	session Session
 }
 
-func DefaultGrpcServer() *grpc.Server {
-	var opts = []grpc.ServerOption{
-		grpc.UnaryInterceptor(UnaryServerInterceptor()),
-	}
-	return grpc.NewServer(opts...)
+func (s *baseServer) RegisterServer() {
+	panic("implement me")
 }
 
-func (s *BaseServer) Session() Session {
-	return s.session
+func NewBaseServer(address string, server *grpc.Server) *baseServer {
+	s := new(baseServer)
+	s.address = address
+	s.handle = server
+	return s
 }
 
-func (s *BaseServer) GetTask() job.Task {
+func (s *baseServer) Handle() *grpc.Server {
+	return s.handle
+}
+
+func (s *baseServer) GetTask() job.Task {
 	return s.task
 }
 
-func UnaryServerInterceptor() grpc.UnaryServerInterceptor {
-	return func(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (interface{}, error) {
-		p, _ := peer.FromContext(ctx)
-		wrappedReq := &Request{}
-		wrappedReq.original = req
-		wrappedReq.clientAddr = p.Addr
-		return handler(ctx, wrappedReq)
-	}
-}
-
-func (s *BaseServer) StartTask(j job.Job) (job.Init, job.Run, job.Finalize) {
+func (s *baseServer) StartTask(j job.Job) (job.Init, job.Run, job.Finalize) {
 	init := func(task job.Task) {
 		s.task = task
 
-		lis, err := net.Listen("tcp", s.Address)
+		lis, err := net.Listen("tcp", s.address)
 		task.Assert(err)
 
 		s.lis = lis
-		//hub.RegisterHubServer(s.grpc, s)
 	}
 	run := func (task job.Task) {
-		s.Handle.Serve(s.lis)
+		s.handle.Serve(s.lis)
 		task.Done()
 	}
 	return init, run, nil
