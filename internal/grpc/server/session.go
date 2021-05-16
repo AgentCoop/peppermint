@@ -27,5 +27,5 @@ func FindSessionById(id grpc.SessionId) job.Job {
 }
 
 func StartNewSession(j job.Job) grpc.SessionId {
-	return 0
+	return 2
 }

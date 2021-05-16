@@ -1,6 +1,9 @@
 package server
 
 import (
+	g "github.com/AgentCoop/peppermint/internal/grpc"
+	"github.com/AgentCoop/peppermint/internal/utils"
+
 	"context"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
@@ -12,7 +15,8 @@ type response struct {
 }
 
 type ResponseHeader interface {
-	SendHeader()
+	SendHeaders()
+	SetSessionId(id g.SessionId)
 	AddMetaValue(key string, value string)
 	AddBinMetaValue(key string, value []byte)
 }
@@ -26,10 +30,9 @@ type Response interface {
 	ResponseData
 }
 
-func NewResponseHeader(ctx context.Context) *response {
+func NewResponseHeader() *response {
 	r := new(response)
-	r.ctx = ctx
-	//r.md, _ = metadata.FromOutgoingContext(context.Background())
+	r.ctx = context.Background()
 	r.md = metadata.New(nil)
 	return r
 }
@@ -42,10 +45,14 @@ func (r *response) AddBinMetaValue(key string, value []byte) {
 	r.md.Append(key + "-bin", string(value))
 }
 
+func (r *response) SetSessionId(id g.SessionId) {
+	r.AddMetaValue(g.META_FIELD_SESSION_ID, utils.IntToHex(id, 16))
+}
+
 func (r *response) ToGrpcResponse() interface{} {
 	panic("ToGrpcResponse method must be implemented")
 }
 
-func (r *response) SendHeader() {
+func (r *response) SendHeaders() {
 	grpc.SendHeader(r.ctx, r.md)
 }

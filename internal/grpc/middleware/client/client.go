@@ -54,3 +54,11 @@ func ChainStreamClient(interceptors ...grpc.StreamClientInterceptor) grpc.Stream
 		return chainedStreamer(ctx, desc, cc, method, opts...)
 	}
 }
+
+func WithUnaryClientChain(interceptors ...grpc.UnaryClientInterceptor) grpc.DialOption {
+	return grpc.WithUnaryInterceptor(ChainUnaryClient(interceptors...))
+}
+
+func WithStreamClientChain(interceptors ...grpc.StreamClientInterceptor) grpc.DialOption {
+	return grpc.WithStreamInterceptor(ChainStreamClient(interceptors...))
+}

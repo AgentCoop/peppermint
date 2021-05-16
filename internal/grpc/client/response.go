@@ -12,3 +12,4 @@ type Response interface {
 	ResponseHeader
 	ResponseData
 }
+

@@ -45,7 +45,7 @@ type joinHelloResponse struct {
 
 func NewJoinHelloResponse(hubPubKey []byte) *joinHelloResponse {
 	r := new(joinHelloResponse)
-	r.Response = server.NewResponseHeader(nil)
+	r.Response = server.NewResponseHeader()
 	r.hubPubKey = hubPubKey
 	return r
 }
