@@ -14,10 +14,10 @@ func (ctx *joinCtx) JoinHelloTask(j job.Job) (job.Init, job.Run, job.Finalize) {
 		dataBag := req.(data.DataBag)
 		pubKey := dataBag.NodePubKey()
 
-		nodeKeyExchng := crypto.NewKeyExchange(task)
-		ctx.encKey = nodeKeyExchng.ComputeKey(pubKey)
+		keyExch := crypto.NewKeyExchange(task)
+		ctx.encKey = keyExch.ComputeKey(pubKey)
 
-		res := data.NewJoinHelloResponse(nil)
+		res := data.NewJoinHelloResponse(keyExch.GetPublicKey())
 		ctx.JoinHelloRespCh <- res
 
 		task.Done()

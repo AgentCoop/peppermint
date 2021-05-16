@@ -35,3 +35,7 @@ func (codec) Unmarshal(data []byte, v interface{}) error {
 func (codec) Name() string {
 	return Name
 }
+
+func SetEncKey(key []byte) {
+
+}

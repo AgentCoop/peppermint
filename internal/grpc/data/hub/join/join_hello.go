@@ -43,9 +43,10 @@ type joinHelloResponse struct {
 	hubPubKey []byte
 }
 
-func NewJoinHelloResponse(ctx context.Context) *joinHelloResponse {
+func NewJoinHelloResponse(hubPubKey []byte) *joinHelloResponse {
 	r := new(joinHelloResponse)
-	r.Response = server.NewResponseHeader(ctx)
+	r.Response = server.NewResponseHeader(nil)
+	r.hubPubKey = hubPubKey
 	return r
 }
 

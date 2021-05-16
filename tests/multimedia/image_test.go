@@ -10,7 +10,7 @@ import (
 	//"time"
 )
 
-//func UnixDialer(addr string, time time.Duration) (net.Conn, error) {
+//func UnixDialer(addr string, time time.Duration) (net.conn, error) {
 //	unixAddr, error := net.ResolveUnixAddr("unix", addr)
 //}
 

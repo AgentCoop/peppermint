@@ -2,33 +2,29 @@ package grpc_test
 
 import (
 	"github.com/AgentCoop/go-work"
-	c "github.com/AgentCoop/peppermint/internal/grpc/client/hub"
+	cmd "github.com/AgentCoop/peppermint/internal/service/hub/client/join"
 	h "github.com/AgentCoop/peppermint/internal/grpc/server/hub"
 	"time"
 
 	"testing"
 )
 
-func createClient(j job.Job) (job.Init, job.Run, job.Finalize) {
-	init := func(task job.Task) {
-	}
-	run := func(task job.Task) {
-		time.Sleep(100 * time.Millisecond)
-		client := c.NewClient("localhost:9000", task)
-		client.Connect()
-		client.JoinHello([]byte("hello"))
-		task.FinishJob()
-	}
-	return init, run, nil
-}
+var (
+	serverAddr = "localhost:9911"
+)
 
 func TestJoinHello(t *testing.T) {
-	j := job.NewJob(t)
-	server := h.NewServer("localhost:9000")
-	j.AddTask(server.StartTask)
-	j.AddTask(createClient)
-	<-j.Run()
-	_, err := j.GetInterruptedBy()
+	serverJob := job.NewJob(t)
+	server := h.NewServer(serverAddr)
+	serverJob.AddTask(server.StartTask)
+	//j.AddTask(createClient)
+	serverJob.Run()
+
+	time.Sleep(100 * time.Millisecond)
+	clientJob := cmd.JoinCmd(serverAddr, "secretword")
+	<-clientJob.Run()
+
+	_, err := clientJob.GetInterruptedBy()
 	if err != nil {
 		t.Error(err)
 	}
