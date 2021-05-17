@@ -11,7 +11,7 @@ import (
 )
 
 func (s *hubServer) JoinHello(ctx context.Context, originalReq *msg.JoinHello_Request) (*msg.JoinHello_Response, error) {
-	req := data.NewJoinHello(ctx, originalReq)
+	req := data.NewJoinHello(ctx.(srv.MetaData), originalReq)
 	_ = req.Validate()
 
 	j := job.NewJob(nil)

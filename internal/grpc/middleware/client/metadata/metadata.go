@@ -3,29 +3,28 @@ package metadata
 import (
 	"context"
 	"github.com/AgentCoop/peppermint/internal/grpc/client"
-
-	//	"github.com/AgentCoop/peppermint/internal/grpc/client"
-
-	//"github.com/AgentCoop/peppermint/internal/grpc/client"
 	"google.golang.org/grpc"
 )
 
-type metadata struct {
+type requestResponsePair struct {
 	context.Context
-	client.RequestHeader
+	client.Request
+	client.Response
 }
 
-func UnaryClientInterceptor(client client.BaseClient) grpc.UnaryClientInterceptor {
+func UnaryClientInterceptor(c client.BaseClient) grpc.UnaryClientInterceptor {
 	return func(ctx context.Context, method string, req, reply interface{}, cc *grpc.ClientConn, invoker grpc.UnaryInvoker, opts ...grpc.CallOption) error {
-		//reqHeader := client.NewRequestHeader(ctx)
-		//newCtx := &metadata{
-		//	Context:        ctx,
-		//	RequestHeader: reqHeader,
-		//}
-		//if client.SessionId() != 0 {
-		//
-		//}
-		err := invoker(ctx, method, req, reply, cc, opts...)
+		newCtx := &requestResponsePair{
+			ctx,
+			client.NewRequest(ctx),
+			nil,
+		}
+		newCtx.SendHeader()
+		err := invoker(newCtx, method, req, reply, cc, opts...)
+		c.ParseResponseHeader(newCtx)
+		if c.SessionId() != 0 {
+			newCtx.Request.SetSessionId(c.SessionId())
+		}
 		return err
 	}
 }

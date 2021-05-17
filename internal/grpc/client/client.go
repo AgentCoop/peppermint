@@ -4,6 +4,7 @@ import (
 	"context"
 	job "github.com/AgentCoop/go-work"
 	g "github.com/AgentCoop/peppermint/internal/grpc"
+	"github.com/AgentCoop/peppermint/internal/utils"
 
 	"github.com/AgentCoop/peppermint/internal/grpc/codec"
 	//middleware "github.com/AgentCoop/peppermint/internal/grpc/middleware/client"
@@ -21,6 +22,11 @@ type ResChan chan Response
 type onConnectedHook func(grpc.ClientConnInterface)
 type middlewareHook func() grpc.DialOption
 
+type MetaData interface {
+	context.Context
+	RequestHeader
+	ResponseHeader
+}
 
 type BaseClient interface {
 	ConnectTask(j job.Job) (job.Init, job.Run, job.Finalize)
@@ -29,6 +35,7 @@ type BaseClient interface {
 	WithMiddlewareHook(middlewareHook)
 	SessionId() g.SessionId
 	SetSessionId(id g.SessionId)
+	ParseResponseHeader(context.Context) ResponseHeader
 }
 
 type baseClient struct {
@@ -43,6 +50,18 @@ func NewBaseClient(address string) *baseClient {
 	c := new(baseClient)
 	c.address = address
 	return c
+}
+
+func (c *baseClient) ParseResponseHeader(ctx context.Context) ResponseHeader {
+	md, ok := metadata.FromIncomingContext(ctx)
+	md2, _ := metadata.FromOutgoingContext(ctx)
+	_ = md2
+	if ! ok {
+		//panic("metadata")
+	}
+	sId := utils.GetSessionId(&md)
+	c.SetSessionId(sId)
+	return nil
 }
 
 func (c *baseClient) SessionId() g.SessionId {

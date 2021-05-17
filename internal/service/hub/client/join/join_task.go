@@ -1,6 +1,7 @@
 package join
 
 import (
+	"context"
 	"fmt"
 	job "github.com/AgentCoop/go-work"
 	"github.com/AgentCoop/peppermint/internal/crypto"
@@ -16,7 +17,7 @@ func (ctx *joinCtx) JoinCmdTask(j job.Job) (job.Init, job.Run, job.Finalize) {
 		keyExch := crypto.NewKeyExchange(task)
 		pubKey := keyExch.GetPublicKey()
 
-		req := data.NewJoinHello(pubKey)
+		req := data.NewJoinHello(context.Background(), pubKey)
 		ctx.joinHelloReqCh <- req
 		resp := <-ctx.joinHelloResCh
 
@@ -25,6 +26,10 @@ func (ctx *joinCtx) JoinCmdTask(j job.Job) (job.Init, job.Run, job.Finalize) {
 
 		codec.SetEncKey(ctx.encKey)
 		fmt.Printf("client enc key %x\n", ctx.encKey)
+
+		req2 := data.NewJoin(resp.(context.Context), ctx.secret)
+		ctx.joinReqCh <- req2
+
 		task.Done()
 	}
 	fin := func(task job.Task) {

@@ -6,25 +6,21 @@ import (
 	"google.golang.org/grpc"
 )
 
-type metadata struct {
+type requestResponsePair struct {
 	context.Context
-	server.RequestHeader
-	server.ResponseHeader
+	server.Request
+	server.Response
 }
 
 func UnaryServerInterceptor() grpc.UnaryServerInterceptor {
 	return func(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (interface{}, error) {
-		reqHeader := server.NewRequestHeader(ctx)
-		resHeader := server.NewResponseHeader()
-		newCtx := &metadata{
-			Context:        ctx,
-			RequestHeader: reqHeader,
-			ResponseHeader: resHeader,
+		newCtx := &requestResponsePair{
+			ctx,
+			server.NewRequest(ctx),
+			server.NewResponse(ctx),
 		}
-
 		resp, err := handler(newCtx, req)
-
-		newCtx.ResponseHeader.SendHeaders()
+		newCtx.Response.SendHeader()
 		return resp, err
 	}
 }

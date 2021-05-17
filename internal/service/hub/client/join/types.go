@@ -11,8 +11,8 @@ type joinCtx struct {
 	secret string
 	joinHelloReqCh client.ReqChan
 	joinHelloResCh client.ResChan
-	joinReqCh chan client.Request
-	joinResCh chan client.Response
+	joinReqCh client.ReqChan
+	joinResCh client.ResChan
 }
 
 func NewJoinContext(address string, secret string) *joinCtx {
@@ -21,6 +21,8 @@ func NewJoinContext(address string, secret string) *joinCtx {
 	ctx.secret = secret
 	ctx.joinHelloReqCh = make(client.ReqChan)
 	ctx.joinHelloResCh = make(client.ResChan)
+	ctx.joinReqCh = make(client.ReqChan)
+	ctx.joinResCh = make(client.ResChan)
 	return ctx
 }
 
@@ -30,4 +32,12 @@ func (j *joinCtx) JoinHelloRequest() client.ReqChan {
 
 func (j *joinCtx) JoinHelloResponse() client.ResChan {
 	return j.joinHelloResCh
+}
+
+func (j *joinCtx) JoinRequest() client.ReqChan {
+	return j.joinReqCh
+}
+
+func (j *joinCtx) JoinResponse() client.ResChan {
+	return j.joinResCh
 }

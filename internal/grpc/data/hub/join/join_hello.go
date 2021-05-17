@@ -1,13 +1,12 @@
 package join
 
 import (
-	"context"
 	msg "github.com/AgentCoop/peppermint/internal/api/peppermint/service/hub"
 	"github.com/AgentCoop/peppermint/internal/grpc/server"
 )
 
 type joinHelloRequest struct {
-	server.RequestHeader
+	server.Request
 	nodePubKey []byte
 }
 
@@ -15,9 +14,9 @@ type DataBag interface {
 	NodePubKey() []byte
 }
 
-func NewJoinHello(ctx context.Context, original *msg.JoinHello_Request) *joinHelloRequest {
+func NewJoinHello(md server.MetaData, original *msg.JoinHello_Request) *joinHelloRequest {
 	r := new(joinHelloRequest)
-	r.RequestHeader = server.NewRequestHeader(ctx)
+	r.Request = md
 	r.Populate(original)
 	return r
 }
@@ -39,13 +38,13 @@ func (r *joinHelloRequest) NodePubKey() []byte {
 //
 
 type joinHelloResponse struct {
-	server.Response
+	server.MetaData
 	hubPubKey []byte
 }
 
-func NewJoinHelloResponse(hubPubKey []byte) *joinHelloResponse {
+func NewJoinHelloResponse(md server.MetaData, hubPubKey []byte) *joinHelloResponse {
 	r := new(joinHelloResponse)
-	r.Response = server.NewResponseHeader()
+	r.MetaData = md
 	r.hubPubKey = hubPubKey
 	return r
 }

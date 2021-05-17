@@ -7,5 +7,7 @@ import (
 type JoinContext interface {
 	JoinHelloRequest() client.ReqChan
 	JoinHelloResponse() client.ResChan
+	JoinRequest() client.ReqChan
+	JoinResponse() client.ResChan
 }
 

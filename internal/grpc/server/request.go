@@ -7,7 +7,8 @@ import (
 	"context"
 )
 
-type requestHeader struct {
+type request struct {
+	//context.Context
 	sessId grpc.SessionId
 	nodeId grpc.NodeId
 }
@@ -24,16 +25,15 @@ type RequestData interface {
 
 type Request interface {
 	RequestHeader
-	RequestData
+	//RequestData
 }
 
-func NewRequestHeader(ctx context.Context) *requestHeader {
-	r := new(requestHeader)
+func NewRequest(ctx context.Context) *request {
+	r := new(request)
 	md, ok := metadata.FromIncomingContext(ctx)
 	if !ok {
 		return r
 	}
-
 	var vals []string
 	vals = md.Get(grpc.META_FIELD_NODE_ID)
 	if len(vals) > 1 {
@@ -42,10 +42,10 @@ func NewRequestHeader(ctx context.Context) *requestHeader {
 	return r
 }
 
-func (r *requestHeader) SessionId() grpc.SessionId {
+func (r *request) SessionId() grpc.SessionId {
 	return r.sessId
 }
 
-func (r *requestHeader) NodeId() grpc.NodeId {
+func (r *request) NodeId() grpc.NodeId {
 	return r.nodeId
 }

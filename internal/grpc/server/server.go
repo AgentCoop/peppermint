@@ -1,11 +1,18 @@
 package server
 
 import (
+	"context"
 	job "github.com/AgentCoop/go-work"
 	_ "github.com/AgentCoop/peppermint/internal/grpc/codec"
 	"google.golang.org/grpc"
 	"net"
 )
+
+type MetaData interface {
+	context.Context
+	RequestHeader
+	ResponseHeader
+}
 
 type BaseServer interface {
 	Handle() *grpc.Server

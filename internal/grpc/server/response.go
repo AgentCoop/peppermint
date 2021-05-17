@@ -10,12 +10,13 @@ import (
 )
 
 type response struct {
-	ctx context.Context
+	context.Context
 	md metadata.MD
 }
 
 type ResponseHeader interface {
-	SendHeaders()
+	//context.Context
+	SendHeader()
 	SetSessionId(id g.SessionId)
 	AddMetaValue(key string, value string)
 	AddBinMetaValue(key string, value []byte)
@@ -30,10 +31,10 @@ type Response interface {
 	ResponseData
 }
 
-func NewResponseHeader() *response {
+func NewResponse(ctx context.Context) *response {
 	r := new(response)
-	r.ctx = context.Background()
 	r.md = metadata.New(nil)
+	r.Context = metadata.NewOutgoingContext(ctx, r.md)
 	return r
 }
 
@@ -46,13 +47,14 @@ func (r *response) AddBinMetaValue(key string, value []byte) {
 }
 
 func (r *response) SetSessionId(id g.SessionId) {
-	r.AddMetaValue(g.META_FIELD_SESSION_ID, utils.IntToHex(id, 16))
+	utils.SetSessionId(&r.md, id)
 }
 
 func (r *response) ToGrpcResponse() interface{} {
 	panic("ToGrpcResponse method must be implemented")
 }
 
-func (r *response) SendHeaders() {
-	grpc.SendHeader(r.ctx, r.md)
+func (r *response) SendHeader() {
+	r.Context = metadata.NewOutgoingContext(r.Context, r.md)
+	grpc.SendHeader(r.Context, r.md)
 }
