@@ -7,6 +7,8 @@ import (
 )
 
 type ResponseHeader interface {
+	GetHeader() *metadata.MD
+	GetTrailer() *metadata.MD
 }
 
 type ResponseData interface {
@@ -14,7 +16,7 @@ type ResponseData interface {
 }
 
 type Response interface {
-	//ResponseHeader
+	ResponseHeader
 	ResponseData
 	Process()
 }
@@ -22,16 +24,27 @@ type Response interface {
 type response struct {
 	context.Context
 	client BaseClient
+	header metadata.MD
+	trailer metadata.MD
 }
 
 func NewResponse(c BaseClient, ctx context.Context) Response {
 	r := new(response)
 	r.client = c
 	r.Context = ctx
+	r.header = metadata.New(nil)
+	r.trailer = metadata.New(nil)
 	return r
 }
 
 func (r *response) Process() {
-	md, _ := metadata.FromIncomingContext(r.Context)
-	r.client.SetSessionId(utils.GetSessionId(&md))
+	r.client.SetSessionId(utils.GetSessionId(&r.header))
+}
+
+func (r *response) GetHeader() *metadata.MD {
+	return &r.header
+}
+
+func (r *response) GetTrailer() *metadata.MD {
+	return &r.trailer
 }
