@@ -14,6 +14,9 @@ func AddBinMetaValue(md *metadata.MD, key string, value []byte) {
 }
 
 func SetSessionId(md *metadata.MD, id g.SessionId) {
+	if id == 0 {
+		return
+	}
 	AddMetaValue(md, g.META_FIELD_SESSION_ID, IntToHex(id, 16))
 }
 

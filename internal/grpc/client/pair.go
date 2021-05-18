@@ -24,7 +24,7 @@ type RequestResponsePair interface {
 }
 
 func NewRequestResponsePair(c BaseClient, ctx context.Context) *reqResPair {
-	return &reqResPair{ctx,NewRequest(c), NewResponse(c, ctx)}
+	return &reqResPair{ctx,NewRequest(c), NewResponse(c)}
 }
 
 func (p *reqResPair) GetContext() context.Context {

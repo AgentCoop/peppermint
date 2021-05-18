@@ -28,10 +28,9 @@ type response struct {
 	trailer metadata.MD
 }
 
-func NewResponse(c BaseClient, ctx context.Context) Response {
+func NewResponse(c BaseClient) Response {
 	r := new(response)
 	r.client = c
-	//r.Context = ctx
 	r.header = metadata.New(nil)
 	r.trailer = metadata.New(nil)
 	return r

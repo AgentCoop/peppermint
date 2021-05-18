@@ -22,7 +22,6 @@ type Request interface {
 }
 
 type request struct {
-	//context.Context
 	md metadata.MD
 	client BaseClient
 }
