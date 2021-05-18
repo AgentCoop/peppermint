@@ -7,7 +7,6 @@ import (
 )
 
 type requestResponsePair struct {
-	context.Context
 	client.Request
 	client.Response
 }
@@ -15,12 +14,11 @@ type requestResponsePair struct {
 func UnaryClientInterceptor(c client.BaseClient) grpc.UnaryClientInterceptor {
 	return func(ctx context.Context, method string, req, reply interface{}, cc *grpc.ClientConn, invoker grpc.UnaryInvoker, opts ...grpc.CallOption) error {
 		newCtx := &requestResponsePair{
-			ctx,
-			client.NewRequest(ctx),
+			ctx.(client.Request),
 			nil,
 		}
 		newCtx.SendHeader()
-		err := invoker(newCtx, method, req, reply, cc, opts...)
+		err := invoker(ctx, method, req, reply, cc, opts...)
 		c.ParseResponseHeader(newCtx)
 		if c.SessionId() != 0 {
 			newCtx.Request.SetSessionId(c.SessionId())

@@ -8,7 +8,7 @@ import (
 )
 
 type request struct {
-	//context.Context
+	context.Context
 	sessId grpc.SessionId
 	nodeId grpc.NodeId
 }
@@ -24,12 +24,14 @@ type RequestData interface {
 }
 
 type Request interface {
+	//context.Context
 	RequestHeader
 	//RequestData
 }
 
 func NewRequest(ctx context.Context) *request {
 	r := new(request)
+	r.Context = ctx
 	md, ok := metadata.FromIncomingContext(ctx)
 	if !ok {
 		return r

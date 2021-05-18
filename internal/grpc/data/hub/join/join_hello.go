@@ -14,10 +14,10 @@ type DataBag interface {
 	NodePubKey() []byte
 }
 
-func NewJoinHello(md server.MetaData, original *msg.JoinHello_Request) *joinHelloRequest {
+func NewJoinHello(pair server.RequestResponsePair, original *msg.JoinHello_Request) *joinHelloRequest {
 	r := new(joinHelloRequest)
-	r.Request = md
 	r.Populate(original)
+	r.Request = pair.AssignNewRequest(r)
 	return r
 }
 
@@ -38,14 +38,14 @@ func (r *joinHelloRequest) NodePubKey() []byte {
 //
 
 type joinHelloResponse struct {
-	server.MetaData
+	server.Response
 	hubPubKey []byte
 }
 
-func NewJoinHelloResponse(md server.MetaData, hubPubKey []byte) *joinHelloResponse {
+func NewJoinHelloResponse(pair server.RequestResponsePair, hubPubKey []byte) *joinHelloResponse {
 	r := new(joinHelloResponse)
-	r.MetaData = md
 	r.hubPubKey = hubPubKey
+	r.Response = pair.AssignNewResponse(r)
 	return r
 }
 

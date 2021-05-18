@@ -27,8 +27,8 @@ func (ctx *joinCtx) JoinCmdTask(j job.Job) (job.Init, job.Run, job.Finalize) {
 		codec.SetEncKey(ctx.encKey)
 		fmt.Printf("client enc key %x\n", ctx.encKey)
 
-		req2 := data.NewJoin(resp.(context.Context), ctx.secret)
-		ctx.joinReqCh <- req2
+		//req2 := data.NewJoin(resp.(context.Context), ctx.secret)
+		//ctx.joinReqCh <- req2
 
 		task.Done()
 	}

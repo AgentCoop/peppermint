@@ -11,22 +11,25 @@ import (
 )
 
 func (s *hubServer) JoinHello(ctx context.Context, originalReq *msg.JoinHello_Request) (*msg.JoinHello_Response, error) {
-	req := data.NewJoinHello(ctx.(srv.MetaData), originalReq)
+	pair := ctx.(srv.RequestResponsePair)
+	req := data.NewJoinHello(pair, originalReq)
 	_ = req.Validate()
 
 	j := job.NewJob(nil)
 	sessId := srv.StartNewSession(j)
+	_ = sessId
 
 	joinCtx := join.NewJoinContext()
 	j.AddTask(joinCtx.JoinHelloTask)
 	j.AddTask(joinCtx.JoinTask)
 	j.Run()
 
-	joinCtx.JoinHelloReqCh <- req
-	res := <-joinCtx.JoinHelloRespCh
+	// Dispatch request-response pair to JoinHelloTask started above
+	joinCtx.ReqChan[0] <- pair
+	<-joinCtx.ResChan[0]
 
-	resHeader := res.(srv.ResponseHeader)
-	resHeader.SetSessionId(sessId)
+	res := pair.GetResponse()
+	res.SetSessionId(3)
 
 	return res.ToGrpcResponse().(*msg.JoinHello_Response), nil
 }

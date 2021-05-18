@@ -4,13 +4,13 @@ import (
 	job "github.com/AgentCoop/go-work"
 	"github.com/AgentCoop/peppermint/internal/crypto"
 	data "github.com/AgentCoop/peppermint/internal/grpc/data/hub/join"
-	srv "github.com/AgentCoop/peppermint/internal/grpc/server"
 )
 
 func (ctx *joinCtx) JoinHelloTask(j job.Job) (job.Init, job.Run, job.Finalize) {
 	run := func(task job.Task) {
-		req := <-ctx.JoinHelloReqCh
-		task.AssertNotNil(req)
+		pair := <-ctx.ReqChan[0]
+		task.AssertNotNil(pair)
+		req := pair.GetRequest()
 
 		dataBag := req.(data.DataBag)
 		pubKey := dataBag.NodePubKey()
@@ -18,8 +18,8 @@ func (ctx *joinCtx) JoinHelloTask(j job.Job) (job.Init, job.Run, job.Finalize) {
 		keyExch := crypto.NewKeyExchange(task)
 		ctx.encKey = keyExch.ComputeKey(pubKey)
 
-		res := data.NewJoinHelloResponse(req.(srv.MetaData), keyExch.GetPublicKey())
-		ctx.JoinHelloRespCh <- res
+		data.NewJoinHelloResponse(pair, keyExch.GetPublicKey())
+		ctx.ResChan[0] <- nil
 
 		task.Done()
 	}

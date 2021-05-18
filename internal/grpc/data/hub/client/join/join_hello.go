@@ -13,11 +13,11 @@ type joinHelloRequest struct {
 }
 
 func (r *joinHelloRequest) SetSessionId(id g.SessionId) {
-	panic("implement me")
+	//panic("implement me")
 }
 
 func (r *joinHelloRequest) SendHeader() {
-	panic("implement me")
+	//panic("implement me")
 }
 
 func NewJoinHello(ctx context.Context, pubKey []byte) *joinHelloRequest {

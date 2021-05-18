@@ -30,13 +30,14 @@ type request struct {
 }
 
 func (r *request) ToGrpcRequest() interface{} {
+	//return nil
 	panic("implement me")
 }
 
 func NewRequest(ctx context.Context) *request {
 	r := new(request)
 	r.md = metadata.New(nil)
-	r.Context = metadata.NewOutgoingContext(ctx, r.md)
+	r.Context = ctx
 	return r
 }
 
