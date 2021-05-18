@@ -18,7 +18,7 @@ type RequestData interface {
 }
 
 type Request interface {
-	context.Context
+	//context.Context
 	RequestHeader
 	RequestData
 	ToGrpcRequest() interface{}
@@ -27,6 +27,7 @@ type Request interface {
 type request struct {
 	context.Context
 	md metadata.MD
+	client BaseClient
 }
 
 func (r *request) ToGrpcRequest() interface{} {
@@ -34,10 +35,11 @@ func (r *request) ToGrpcRequest() interface{} {
 	panic("implement me")
 }
 
-func NewRequest(ctx context.Context) *request {
+func NewRequest(client BaseClient, ctx context.Context) *request {
 	r := new(request)
 	r.md = metadata.New(nil)
 	r.Context = ctx
+	r.client = client
 	return r
 }
 

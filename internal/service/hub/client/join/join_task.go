@@ -5,30 +5,34 @@ import (
 	"fmt"
 	job "github.com/AgentCoop/go-work"
 	"github.com/AgentCoop/peppermint/internal/crypto"
+	"github.com/AgentCoop/peppermint/internal/grpc/client"
 	"github.com/AgentCoop/peppermint/internal/grpc/codec"
 	data "github.com/AgentCoop/peppermint/internal/grpc/data/hub/client/join"
 )
 
 func (ctx *joinCtx) JoinCmdTask(j job.Job) (job.Init, job.Run, job.Finalize) {
 	init := func(task job.Task) {
-
 	}
 	run := func(task job.Task) {
+		pair := client.NewRequestResponsePair(ctx.HubClient, context.Background())
+
 		keyExch := crypto.NewKeyExchange(task)
 		pubKey := keyExch.GetPublicKey()
 
-		req := data.NewJoinHello(context.Background(), pubKey)
-		ctx.joinHelloReqCh <- req
-		resp := <-ctx.joinHelloResCh
+		data.NewJoinHello(pair, pubKey)
+		ctx.ReqChan(0) <- pair
+		<-ctx.ResChan(0)
 
+		resp := pair.GetResponse()
 		dataBag := resp.(data.JoinHello_DataBag)
 		ctx.encKey = keyExch.ComputeKey(dataBag.HubPubKey())
 
 		codec.SetEncKey(ctx.encKey)
 		fmt.Printf("client enc key %x\n", ctx.encKey)
 
-		//req2 := data.NewJoin(resp.(context.Context), ctx.secret)
-		//ctx.joinReqCh <- req2
+		pair = client.NewRequestResponsePair(ctx.HubClient, context.Background())
+		data.NewJoin(pair, ctx.secret)
+		ctx.ReqChan(1) <- pair
 
 		task.Done()
 	}

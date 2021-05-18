@@ -1,7 +1,6 @@
 package hub
 
 import (
-	"context"
 	job "github.com/AgentCoop/go-work"
 	"github.com/AgentCoop/peppermint/internal/api/peppermint/service/hub"
 	data "github.com/AgentCoop/peppermint/internal/grpc/data/hub/client/join"
@@ -13,16 +12,15 @@ import (
 
 func (c *hubClient) JoinHelloTask(j job.Job) (job.Init, job.Run, job.Finalize) {
 	run := func(task job.Task) {
-		ctx := context.Background()
-
 		joinCtx := j.GetValue().(jctx.JoinContext)
-		req := <- joinCtx.JoinHelloRequest()
+		pair := <- joinCtx.ReqChan(0)
+		req := pair.GetRequest()
 
-		origResp, err := c.grpcHandle.JoinHello(req, req.ToGrpcRequest().(*hub.JoinHello_Request))
+		origResp, err := c.grpcHandle.JoinHello(pair, req.ToGrpcRequest().(*hub.JoinHello_Request))
 		task.Assert(err)
 
-		resp := data.NewJoinHelloResponse(ctx, origResp)
-		joinCtx.JoinHelloResponse() <- resp
+		data.NewJoinHelloResponse(pair, origResp)
+		joinCtx.ResChan(0) <- struct{}{}
 
 		task.Done()
 	}

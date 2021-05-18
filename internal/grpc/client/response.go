@@ -2,7 +2,6 @@ package client
 
 import (
 	"context"
-	g "github.com/AgentCoop/peppermint/internal/grpc"
 	"github.com/AgentCoop/peppermint/internal/utils"
 	"google.golang.org/grpc/metadata"
 )
@@ -17,19 +16,22 @@ type ResponseData interface {
 type Response interface {
 	//ResponseHeader
 	ResponseData
+	Process()
 }
 
 type response struct {
 	context.Context
-	sId g.SessionId
-	md metadata.MD
+	client BaseClient
 }
 
-func NewResponse(ctx context.Context) Response {
-	md, _ := metadata.FromIncomingContext(ctx)
+func NewResponse(c BaseClient, ctx context.Context) Response {
 	r := new(response)
-	r.md = md
+	r.client = c
 	r.Context = ctx
-	r.sId = utils.GetSessionId(&r.md)
 	return r
+}
+
+func (r *response) Process() {
+	md, _ := metadata.FromIncomingContext(r.Context)
+	r.client.SetSessionId(utils.GetSessionId(&md))
 }

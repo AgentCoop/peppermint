@@ -17,16 +17,11 @@ const (
 	META_NODE_ID = "node_id"
 )
 
-type ReqChan chan Request
-type ResChan chan Response
+type ReqChan chan RequestResponsePair
+type ResChan chan struct{}
+
 type onConnectedHook func(grpc.ClientConnInterface)
 type middlewareHook func() grpc.DialOption
-
-type MetaData interface {
-	context.Context
-	RequestHeader
-	ResponseHeader
-}
 
 type BaseClient interface {
 	ConnectTask(j job.Job) (job.Init, job.Run, job.Finalize)
@@ -35,7 +30,9 @@ type BaseClient interface {
 	WithMiddlewareHook(middlewareHook)
 	SessionId() g.SessionId
 	SetSessionId(id g.SessionId)
-	ParseResponseHeader(context.Context) ResponseHeader
+
+	//CreateRequest() Request
+	//HandleResponse(context.Context)
 }
 
 type baseClient struct {

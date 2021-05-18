@@ -1,11 +1,10 @@
 package hub
 
 import (
-	"context"
 	job "github.com/AgentCoop/go-work"
 	"github.com/AgentCoop/peppermint/internal/api/peppermint/service/hub"
-	jctx "github.com/AgentCoop/peppermint/internal/service/hub/client"
 	data "github.com/AgentCoop/peppermint/internal/grpc/data/hub/client/join"
+	jctx "github.com/AgentCoop/peppermint/internal/service/hub/client"
 )
 
 func (c *hubClient) JoinTask(j job.Job) (job.Init, job.Run, job.Finalize) {
@@ -14,13 +13,14 @@ func (c *hubClient) JoinTask(j job.Job) (job.Init, job.Run, job.Finalize) {
 	}
 	run := func(task job.Task) {
 		joinCtx := j.GetValue().(jctx.JoinContext)
-		req := <- joinCtx.JoinRequest()
+		pair := <- joinCtx.ReqChan(1)
+		req := pair.GetRequest()
 
-		origResp, err := c.grpcHandle.Join(req.(context.Context), req.ToGrpcRequest().(*hub.Join_Request))
+		origResp, err := c.grpcHandle.Join(pair, req.ToGrpcRequest().(*hub.Join_Request))
 		task.Assert(err)
 
-		resp := data.NewJoinResponse(req.(context.Context), origResp)
-		joinCtx.JoinResponse() <- resp
+		data.NewJoinResponse(pair, origResp)
+		joinCtx.ResChan(1) <- struct{}{}
 
 		task.Done()
 	}

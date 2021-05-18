@@ -1,7 +1,6 @@
 package join
 
 import (
-	"context"
 	"github.com/AgentCoop/peppermint/internal/api/peppermint/service/hub"
 	"github.com/AgentCoop/peppermint/internal/grpc/client"
 )
@@ -19,10 +18,10 @@ type joinRequest struct {
 //	panic("implement me")
 //}
 
-func NewJoin(ctx context.Context, secret string) *joinRequest {
+func NewJoin(pair client.RequestResponsePair, secret string) *joinRequest {
 	r := new(joinRequest)
-	r.Request = client.NewRequest(ctx)
 	r.secret = secret
+	r.Request = pair.AssignNewRequest(r)
 	return r
 }
 
@@ -44,10 +43,10 @@ type joinResponse struct {
 	original *hub.Join_Response
 }
 
-func NewJoinResponse(ctx context.Context, original *hub.Join_Response) *joinResponse {
+func NewJoinResponse(pair client.RequestResponsePair, original *hub.Join_Response) *joinResponse {
 	r := new(joinResponse)
 	r.original = original
-	r.Response = client.NewResponse(ctx)
+	r.Response = pair.AssignNewResponse(r)
 	r.Populate()
 	return r
 }
