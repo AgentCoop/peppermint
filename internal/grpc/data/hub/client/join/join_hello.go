@@ -15,9 +15,9 @@ func (r *joinHelloRequest) SetSessionId(id g.SessionId) {
 	panic("implement me")
 }
 
-func (r *joinHelloRequest) SendHeader() {
-	panic("implement me")
-}
+//func (r *joinHelloRequest) SendHeader() {
+//	panic("implement me")
+//}
 
 func NewJoinHello(pair client.RequestResponsePair, pubKey []byte) *joinHelloRequest {
 	r := new(joinHelloRequest)

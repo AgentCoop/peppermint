@@ -31,7 +31,7 @@ type response struct {
 func NewResponse(c BaseClient, ctx context.Context) Response {
 	r := new(response)
 	r.client = c
-	r.Context = ctx
+	//r.Context = ctx
 	r.header = metadata.New(nil)
 	r.trailer = metadata.New(nil)
 	return r

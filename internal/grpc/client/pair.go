@@ -1,6 +1,9 @@
 package client
 
-import "context"
+import (
+	"context"
+	"google.golang.org/grpc/metadata"
+)
 
 type reqResPair struct {
 	context.Context
@@ -12,14 +15,20 @@ type RequestResponsePair interface {
 	context.Context
 	Request
 	Response
+	GetContext() context.Context
 	GetRequest() Request
 	AssignNewRequest(Request) Request
 	GetResponse() Response
 	AssignNewResponse(Response) Response
+	SendHeader()
 }
 
 func NewRequestResponsePair(c BaseClient, ctx context.Context) *reqResPair {
-	return &reqResPair{ctx,NewRequest(c, ctx), NewResponse(c, ctx)}
+	return &reqResPair{ctx,NewRequest(c), NewResponse(c, ctx)}
+}
+
+func (p *reqResPair) GetContext() context.Context {
+	return p.Context
 }
 
 func (p *reqResPair) GetRequest() Request {
@@ -42,4 +51,8 @@ func (p *reqResPair) AssignNewResponse(new Response) Response {
 	base := p.Response
 	p.Response = new
 	return base
+}
+
+func (p *reqResPair) SendHeader() {
+	p.Context = metadata.NewOutgoingContext(p.Context, p.Request.MetaData())
 }

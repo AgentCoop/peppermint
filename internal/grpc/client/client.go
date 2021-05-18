@@ -31,6 +31,8 @@ type BaseClient interface {
 	SessionId() g.SessionId
 	SetSessionId(id g.SessionId)
 
+
+//	GetContext()
 	//CreateRequest() Request
 	//HandleResponse(context.Context)
 }

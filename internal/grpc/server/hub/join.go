@@ -6,11 +6,13 @@ import (
 	"github.com/AgentCoop/peppermint/internal/grpc/server"
 )
 
-func (s *hubServer) Join(ctx context.Context, req *msg.Join_Request) (*msg.Join_Response, error) {
+func (s *hubServer) Join(pair context.Context, msg *msg.Join_Request) (*msg.Join_Response, error) {
 
-	reqHeader := ctx.(server.RequestHeader)
-	sessId := reqHeader.SessionId()
-	_ = sessId
+	req := pair.(server.RequestResponsePair).GetRequest()
+	id := req.SessionId()
+	_ = id
+	//sessId := reqHeader.SessionId()
+	//_ = sessId
 
 	return nil, nil
 }
