@@ -1,4 +1,4 @@
-package hub
+package client
 
 import (
 	job "github.com/AgentCoop/go-work"

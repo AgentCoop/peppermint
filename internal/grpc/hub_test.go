@@ -2,8 +2,8 @@ package grpc_test
 
 import (
 	"github.com/AgentCoop/go-work"
-	cmd "github.com/AgentCoop/peppermint/internal/service/hub/client/join"
-	h "github.com/AgentCoop/peppermint/internal/grpc/server/hub"
+	server2 "github.com/AgentCoop/peppermint/internal/service/hub/grpc/server"
+	cmd "github.com/AgentCoop/peppermint/internal/service/hub/service/client/join"
 	"time"
 
 	"testing"
@@ -15,7 +15,7 @@ var (
 
 func TestJoinHello(t *testing.T) {
 	serverJob := job.NewJob(t)
-	server := h.NewServer(serverAddr)
+	server := server2.NewServer(serverAddr)
 	serverJob.AddTask(server.StartTask)
 	//j.AddTask(createClient)
 	serverJob.Run()

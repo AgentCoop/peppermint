@@ -3,7 +3,7 @@ package join
 import (
 	job "github.com/AgentCoop/go-work"
 	"github.com/AgentCoop/peppermint/internal/crypto"
-	data "github.com/AgentCoop/peppermint/internal/grpc/data/hub/join"
+	data "github.com/AgentCoop/peppermint/internal/service/hub/grpc/data/server/join"
 )
 
 func (ctx *joinCtx) JoinHelloTask(j job.Job) (job.Init, job.Run, job.Finalize) {

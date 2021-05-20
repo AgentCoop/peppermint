@@ -1,13 +1,13 @@
-package hub
+package server
 
 import (
 	"context"
 	job "github.com/AgentCoop/go-work"
 	msg "github.com/AgentCoop/peppermint/internal/api/peppermint/service/hub"
-	data "github.com/AgentCoop/peppermint/internal/grpc/data/hub/join"
+	data "github.com/AgentCoop/peppermint/internal/service/hub/grpc/data/server/join"
 	srv "github.com/AgentCoop/peppermint/internal/grpc/server"
 	//srv "github.com/AgentCoop/peppermint/internal/grpc/server/hub"
-	join "github.com/AgentCoop/peppermint/internal/service/hub/server/join"
+	join "github.com/AgentCoop/peppermint/internal/service/hub/service/server/join"
 )
 
 func (s *hubServer) JoinHello(ctx context.Context, originalReq *msg.JoinHello_Request) (*msg.JoinHello_Response, error) {

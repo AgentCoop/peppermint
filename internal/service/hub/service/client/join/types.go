@@ -2,11 +2,11 @@ package join
 
 import (
 	"github.com/AgentCoop/peppermint/internal/grpc/client"
-	"github.com/AgentCoop/peppermint/internal/grpc/client/hub"
+	client2 "github.com/AgentCoop/peppermint/internal/service/hub/grpc/client"
 )
 
 type joinCtx struct {
-	hub.HubClient
+	client2.HubClient
 	encKey []byte
 	secret string
 	reqChan []client.ReqChan
@@ -15,7 +15,7 @@ type joinCtx struct {
 
 func NewJoinContext(address string, secret string) *joinCtx {
 	ctx := new(joinCtx)
-	ctx.HubClient = hub.NewClient(client.NewBaseClient(address))
+	ctx.HubClient = client2.NewClient(client.NewBaseClient(address))
 	ctx.secret = secret
 	// Init channels
 	ctx.reqChan = []client.ReqChan{

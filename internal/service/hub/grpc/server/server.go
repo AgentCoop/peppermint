@@ -1,4 +1,4 @@
-package hub
+package server
 
 import (
 	"github.com/AgentCoop/peppermint/internal/api/peppermint/service/hub"

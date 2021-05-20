@@ -1,10 +1,10 @@
-package hub
+package client
 
 import (
 	job "github.com/AgentCoop/go-work"
 	"github.com/AgentCoop/peppermint/internal/api/peppermint/service/hub"
-	data "github.com/AgentCoop/peppermint/internal/grpc/data/hub/client/join"
-	jctx "github.com/AgentCoop/peppermint/internal/service/hub/client"
+	data "github.com/AgentCoop/peppermint/internal/service/hub/grpc/data/client/join"
+	jctx "github.com/AgentCoop/peppermint/internal/service/hub/service/client"
 	//"github.com/AgentCoop/peppermint/internal/service/hub/client/join"
 
 	//"github.com/AgentCoop/peppermint/internal/api/peppermint/service"

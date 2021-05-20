@@ -1,8 +1,8 @@
-package hub
+package server
 
 import (
-	msg "github.com/AgentCoop/peppermint/internal/api/peppermint/service/hub"
 	"context"
+	msg "github.com/AgentCoop/peppermint/internal/api/peppermint/service/hub"
 	"github.com/AgentCoop/peppermint/internal/grpc/server"
 )
 
