@@ -16,6 +16,7 @@ type request struct {
 type RequestHeader interface {
 	SessionId() grpc.SessionId
 	NodeId() grpc.NodeId
+	RequiredServices() []string // Optional. If presented, hub must forward request to a host with the required services available
 }
 
 type RequestData interface {
@@ -50,4 +51,8 @@ func (r *request) SessionId() grpc.SessionId {
 
 func (r *request) NodeId() grpc.NodeId {
 	return r.nodeId
+}
+
+func (r *request) RequiredServices() []string {
+	return nil
 }

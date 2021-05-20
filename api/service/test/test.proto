@@ -1,0 +1,11 @@
+syntax = "proto3";
+
+import "service/test/ping.proto";
+
+package test.peppermint;
+
+option go_package = "peppermint/service/test";
+
+service Test {
+  rpc Ping(Ping.Request) returns (Ping.Response) { }
+}
