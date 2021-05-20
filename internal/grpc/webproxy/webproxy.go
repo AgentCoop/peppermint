@@ -50,30 +50,8 @@ func (w *webproxy) StartTask(j job.Job) (job.Init, job.Run, job.Finalize) {
 		task.Assert(err)
 
 		tlsCfg := tls.Config{
-			//Rand:                        nil,
-			//Time:                        nil,
 			Certificates:                []tls.Certificate{cer},
-			//GetCertificate:              nil,
-			//GetClientCertificate:        nil,
-			//GetConfigForClient:          nil,
-			//VerifyPeerCertificate:       nil,
-			//VerifyConnection:            nil,
-			//RootCAs:                     nil,
-			//NextProtos:                  nil,
 			ServerName:                  "peppermint.io",
-			//ClientAuth:                  0,
-			//ClientCAs:                   nil,
-			//InsecureSkipVerify:          false,
-			//CipherSuites:                nil,
-			//PreferServerCipherSuites:    false,
-			//SessionTicketsDisabled:      false,
-			//ClientSessionCache:          nil,
-			//MinVersion:                  0,
-			//MaxVersion:                  0,
-			//CurvePreferences:            nil,
-			//DynamicRecordSizingDisabled: false,
-			//Renegotiation:               0,
-			//KeyLogWriter:                nil,
 		}
 		
 		w.tlsHttpServer = &http.Server{
