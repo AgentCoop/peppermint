@@ -1,8 +1,6 @@
 package crypto
 
 import (
-	job "github.com/AgentCoop/go-work"
-
 	"crypto/aes"
 	"crypto/cipher"
 	"crypto/rand"
@@ -10,28 +8,33 @@ import (
 )
 
 type symCipher struct {
-	task job.Task
 	block cipher.Block
 	gcm cipher.AEAD
 	nonce []byte
 }
 
-func NewSymCipher(key []byte, nonce []byte, task job.Task) symCipher {
+type SymCipher interface {
+	GetNonce() []byte
+	Encrypt([]byte) []byte
+	Decrypt([]byte) []byte
+}
+
+func NewSymCipher(key []byte, nonce []byte) symCipher {
 	block, err := aes.NewCipher(key)
-	task.Assert(err)
+	if err != nil { panic(err) }
 
 	// gcm or Galois/Counter Mode, is a mode of operation for symmetric key cryptographic block ciphers
 	// - https://en.wikipedia.org/wiki/Galois/Counter_Mode
 	gcm, err := cipher.NewGCM(block)
-	task.Assert(err)
+	if err != nil { panic(err) }
 
 	if nonce == nil {
 		nonce = make([]byte, gcm.NonceSize())
 		_, err = io.ReadFull(rand.Reader, nonce)
-		task.Assert(err)
+		if err != nil { panic(err) }
 	}
 
-	return symCipher{task, block, gcm, nonce}
+	return symCipher{block, gcm, nonce}
 }
 
 func (c symCipher) GetNonce() []byte {
@@ -44,6 +47,6 @@ func (c symCipher) Encrypt(data []byte) []byte {
 
 func (c symCipher) Decrypt(data []byte) []byte {
 	plain, err := c.gcm.Open(data[:0], c.nonce, data, nil)
-	c.task.Assert(err)
+	if err != nil { panic(err) }
 	return plain
 }

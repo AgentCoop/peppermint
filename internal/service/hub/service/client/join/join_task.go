@@ -6,7 +6,6 @@ import (
 	job "github.com/AgentCoop/go-work"
 	"github.com/AgentCoop/peppermint/internal/crypto"
 	"github.com/AgentCoop/peppermint/internal/grpc/client"
-	"github.com/AgentCoop/peppermint/internal/grpc/codec"
 	data "github.com/AgentCoop/peppermint/internal/service/hub/grpc/data/client/join"
 )
 
@@ -27,7 +26,7 @@ func (ctx *joinCtx) JoinCmdTask(j job.Job) (job.Init, job.Run, job.Finalize) {
 		dataBag := resp.(data.JoinHello_DataBag)
 		ctx.encKey = keyExch.ComputeKey(dataBag.HubPubKey())
 
-		codec.SetEncKey(ctx.encKey)
+		//codec.SetEncKey(ctx.encKey)
 		fmt.Printf("client enc key %x\n", ctx.encKey)
 
 		pair = client.NewRequestResponsePair(ctx.HubClient, context.Background())
