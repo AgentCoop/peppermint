@@ -59,6 +59,7 @@ func (p *reqResPair) AssignNewResponse(new Response) Response {
 }
 
 type BaseServer interface {
+	Address() string
 	Handle() *grpc.Server
 	StartTask(j job.Job) (job.Init, job.Run, job.Finalize)
 	RegisterServer()
@@ -69,6 +70,10 @@ type baseServer struct {
 	task job.Task
 	handle *grpc.Server
 	lis net.Listener
+}
+
+func (s *baseServer) Address() string {
+	return s.address
 }
 
 func (s *baseServer) RegisterServer() {
