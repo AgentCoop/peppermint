@@ -1,0 +1,12 @@
+syntax = "proto3";
+
+package balancer.backoffice.peppermint;
+
+option go_package = "peppermint/service/backoffice/balancer";
+
+message Stats {
+  message Request {
+  }
+  message Response {
+  }
+}

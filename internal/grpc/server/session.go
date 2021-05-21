@@ -13,6 +13,7 @@ type Session interface {
 	Id()
 	NodeId()
 	Job() job.Job
+	FindNodeBySessionId()
 }
 
 var sessionMap map[grpc.SessionId]job.Job

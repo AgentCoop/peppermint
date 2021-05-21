@@ -1,23 +1,38 @@
 package balancer
 
-import "google.golang.org/grpc"
-
-type proxyLink struct {
-	ss grpc.ServerStream
-	cs grpc.ClientStream
-}
-
-type grpcMessage struct {
-
-}
+import (
+	job "github.com/AgentCoop/go-work"
+	"github.com/AgentCoop/peppermint/internal/grpc/codec"
+	"google.golang.org/grpc"
+)
 
 type proxyConn struct {
-	upstream proxyLink
-	downstream proxyLink
-	msgReceived int
-	msgSent int
+	downstream grpc.ServerStream
+	upstream grpc.ClientStream
+	uprecvx int // upstream messages received count
+	downrecvx int // downstream
+	downEncKey []byte
+	upEncKey []byte
+	downstreamChan chan codec.Packet
+	upstreamChan chan codec.Packet
 }
 
-func NewProxyLink() *proxyLink {
-	return nil
+func NewProxyConn(downstream grpc.ServerStream, upstream grpc.ClientStream, downKey []byte, upKey []byte) *proxyConn {
+	conn := &proxyConn{
+		downstream,
+		upstream,
+		0, 0,
+		downKey, upKey,
+		nil, nil,
+	}
+	return conn
+}
+
+func NewProxyConnJob() job.Job {
+	j := job.NewJob(nil)
+	proxyConn := NewProxyConn()
+	j.AddTask(proxyConn.readDownstreamTask)
+	j.AddTask(proxyConn.readUpstreamTask)
+	j.AddTask(proxyConn.writeStreamTask)
+	return j
 }

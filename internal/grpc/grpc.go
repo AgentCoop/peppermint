@@ -1,6 +1,7 @@
 package grpc
 
 import (
+	"fmt"
 	"github.com/AgentCoop/peppermint/internal/api/peppermint/service"
 )
 
@@ -19,4 +20,16 @@ type customErr struct {
 
 func NewCustomError(code service.StatusCode, text string) {
 
+}
+
+type addr struct {
+}
+
+type ServiceAddress interface {
+	fmt.Stringer
+}
+
+func NewServiceAddress() *addr {
+	a := new(addr)
+	return a
 }

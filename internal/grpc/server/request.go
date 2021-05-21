@@ -37,6 +37,7 @@ func NewRequest(ctx context.Context) *request {
 	if !ok {
 		return r
 	}
+	//
 	var vals []string
 	vals = md.Get(grpc.META_FIELD_NODE_ID)
 	if len(vals) > 1 {

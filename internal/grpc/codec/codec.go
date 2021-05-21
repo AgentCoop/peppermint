@@ -25,16 +25,24 @@ type codec struct {}
 
 type packet struct {
 	typ     packetType
-	data 	interface{}
+	payload interface{}
 	encKey  []byte
 }
 
-func NewMessage(data interface{}, encKey []byte) *packet {
-	return &packet{SerializedPacket, data, encKey}
+type Packet interface {
+	Payload() interface{}
 }
 
-func NewRawMessage(raw []byte, encKey []byte) *packet {
+func NewPacket(message interface{}, encKey []byte) *packet {
+	return &packet{SerializedPacket, message, encKey}
+}
+
+func NewRawPacket(raw []byte, encKey []byte) *packet {
 	return &packet{RawPacket,  raw, encKey}
+}
+
+func (p *packet) Payload() interface{} {
+	return p.payload
 }
 
 func (codec) Marshal(v interface{}) ([]byte, error) {
@@ -46,16 +54,16 @@ func (codec) Marshal(v interface{}) ([]byte, error) {
 	var err error
 	switch p.typ {
 	case SerializedPacket:
-		data, err = proto.Marshal(p.data.(proto.Message))
+		data, err = proto.Marshal(p.payload.(proto.Message))
 		if err != nil { panic(err) }
 	case RawPacket:
-		data = p.data.([]byte)
+		data = p.payload.([]byte)
 	}
 	return encrypt(data, p.encKey), nil
 }
 
-// Encrypt data using symmetric cipher.
-// Encrypted data will be prefixed with a cryptographic nonce preceded by its one-byte length
+// Encrypt payload using symmetric cipher.
+// Encrypted payload will be prefixed with a cryptographic nonce preceded by its one-byte length
 func encrypt(in []byte, key []byte) []byte {
 	if key == nil {
 		return in
@@ -92,9 +100,9 @@ func (codec) Unmarshal(data []byte, v interface{}) error {
 	switch p.typ {
 	case SerializedPacket:
 		decrypted := decrypt(data, p.encKey)
-		err = proto.Unmarshal(decrypted, p.data.(proto.Message))
+		err = proto.Unmarshal(decrypted, p.payload.(proto.Message))
 	case RawPacket:
-		p.data = decrypt(data, p.encKey)
+		p.payload = decrypt(data, p.encKey)
 	}
 	return err
 }
