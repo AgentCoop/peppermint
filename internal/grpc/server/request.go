@@ -1,21 +1,22 @@
 package server
 
 import (
-	"github.com/AgentCoop/peppermint/internal/utils"
+	i "github.com/AgentCoop/peppermint/internal"
 	"github.com/AgentCoop/peppermint/internal/grpc"
+	"github.com/AgentCoop/peppermint/internal/utils"
 	"google.golang.org/grpc/metadata"
 	"context"
 )
 
 type request struct {
 	context.Context
-	sessId grpc.SessionId
-	nodeId grpc.NodeId
+	sessId i.SessionId
+	nodeId i.NodeId
 }
 
 type RequestHeader interface {
-	SessionId() grpc.SessionId
-	NodeId() grpc.NodeId
+	SessionId() i.SessionId
+	NodeId() i.NodeId
 	RequiredServices() []string // Optional. If presented, hub must forward request to a host with the required services available
 }
 
@@ -41,19 +42,29 @@ func NewRequest(ctx context.Context) *request {
 	var vals []string
 	vals = md.Get(grpc.META_FIELD_NODE_ID)
 	if len(vals) > 1 {
-		r.nodeId = grpc.NodeId(utils.Hex2int(vals[0]))
+		r.nodeId = i.NodeId(utils.Hex2int(vals[0]))
 	}
 	return r
 }
 
-func (r *request) SessionId() grpc.SessionId {
+func (r *request) SessionId() i.SessionId {
 	return r.sessId
 }
 
-func (r *request) NodeId() grpc.NodeId {
+func (r *request) NodeId() i.NodeId {
 	return r.nodeId
 }
 
 func (r *request) RequiredServices() []string {
 	return nil
 }
+
+type reqHeader struct {
+
+}
+
+func NewRequestHeader(md metadata.MD) *reqHeader {
+	r := new(reqHeader)
+	return r
+}
+

@@ -2,6 +2,8 @@ package db
 
 import job "github.com/AgentCoop/go-work"
 
+type PrimaryKey uint64
+
 type SqlTransaction interface {
 	Start()
 	Rollback()

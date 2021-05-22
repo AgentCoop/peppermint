@@ -2,23 +2,26 @@ package server
 
 import (
 	job "github.com/AgentCoop/go-work"
-	"github.com/AgentCoop/peppermint/internal/grpc"
+	i "github.com/AgentCoop/peppermint/internal"
+	"github.com/AgentCoop/peppermint/internal/model/node"
 )
 
-type session struct {
-
-}
+type session struct {}
 
 type Session interface {
 	Id()
 	NodeId()
 	Job() job.Job
-	FindNodeBySessionId()
+	Node(id i.SessionId) (node.Node, error)
 }
 
-var sessionMap map[grpc.SessionId]job.Job
+func(session) Node(id i.SessionId) (node.Node, error) {
+	return nil, nil
+}
 
-func FindSessionById(id grpc.SessionId) job.Job {
+var sessionMap map[i.SessionId]job.Job
+
+func FindSessionById(id i.SessionId) job.Job {
 	j, ok := sessionMap[id]
 	if ok {
 		return j
@@ -27,6 +30,6 @@ func FindSessionById(id grpc.SessionId) job.Job {
 	}
 }
 
-func StartNewSession(j job.Job) grpc.SessionId {
+func StartNewSession(j job.Job) i.SessionId {
 	return 2
 }
