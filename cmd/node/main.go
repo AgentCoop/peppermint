@@ -1,37 +1,41 @@
 package main
 
 import (
-	"fmt"
 	"github.com/AgentCoop/go-work"
 	"github.com/AgentCoop/peppermint/internal/runtime"
+	"github.com/AgentCoop/peppermint/internal/runtime/cliparser"
+	_ "github.com/AgentCoop/peppermint/internal/service/hub"
+	"os"
 )
 
 const (
-	CLI_CMD_ARG_JOIN = "join"
-	CLI_CMD_ARG_CREATEDB = "createdb"
+	DbFilename = "node.db"
 )
 
-var (
-	mainJob job.Job = job.NewJob(nil)
-
-	//
-	cliParser runtime.CliParser
-)
-
-func addJoinCommand() {
-	cliParser.AddCommand(CLI_CMD_ARG_JOIN, &options.JoinCmd, "", "")
+type app struct {
+	runtime.Runtime
 }
 
-func addCreateDb() {
-	cliParser.AddCommand(CLI_CMD_ARG_CREATEDB, &options.CreateDb, "", "")
+func addServices(j job.Job, app *app) {
+	//for _, service := range app.Services() {
+	//	j.AddTask(service.StartTask)
+	//}
 }
 
 func main() {
-	r := runtime.NewRuntime(runtime.NewCliParser(&options))
-	mainJob.SetValue(r)
+	app := new(app)
+	app.Runtime = runtime.NewRuntime(
+		cliparser.NewParser(&options),
+		DbFilename,
+	)
+	appJob := job.NewJob(nil)
+	appJob.AddOneshotTask(app.InitTask)
+	appJob.AddTask(app.NodeTask)
+	<-appJob.Run()
 
-	//mainJob = job.NewJob(nil)
-	//cliParser = runtime.NewCliParser(&options)
-	//clie
-	fmt.Printf("main\n")
+	_, err := appJob.GetInterruptedBy()
+	if err != nil {
+		panic(err)
+	}
+	os.Exit(0)
 }

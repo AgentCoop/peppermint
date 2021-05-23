@@ -8,6 +8,7 @@ require (
 	github.com/AgentCoop/go-work v0.0.1
 	github.com/desertbit/timer v0.0.0-20180107155436-c41aec40b27f // indirect
 	github.com/golang/protobuf v1.5.2
+	github.com/iancoleman/strcase v0.1.3 // indirect
 	github.com/improbable-eng/grpc-web v0.14.0 // indirect
 	github.com/jessevdk/go-flags v1.5.0
 	github.com/mattn/go-sqlite3 v1.14.6

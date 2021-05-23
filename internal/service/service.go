@@ -5,6 +5,5 @@ import (
 )
 
 type Service interface {
-	CreateDbTask() job.JobTask
-	StartTask() job.JobTask
+	StartTask(j job.Job) (job.Init, job.Run, job.Finalize)
 }
