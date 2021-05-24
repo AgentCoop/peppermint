@@ -3,7 +3,9 @@ package webproxy
 import (
 	model "github.com/AgentCoop/peppermint/internal/model/webproxy"
 	"github.com/AgentCoop/peppermint/internal/runtime"
+	"io/ioutil"
 	"net"
+	"strconv"
 )
 
 type cfg struct {
@@ -22,32 +24,32 @@ func (w *cfg) Fetch() {
 	rec := &model.WebProxyConfig{}
 	db.Handle().FirstOrCreate(rec)
 	w.port = rec.Port
-	w.address = rec.Address
+	w.address = "peppermint.io" //rec.Address
 }
 
 func (w *cfg) MergeCliOptions(parser runtime.CliParser) {
-	_, isset := parser.OptionValue("wp-port")
+	val, isset := parser.OptionValue("wp-port")
 	if isset {
-		w.port = 12000 //val.(int)
+		w.port = val.(int)
 	}
 }
 
 func (w *cfg) Address() net.Addr {
-	return &net.TCPAddr{
-		IP:   []byte(w.address),
-		Port: w.port,
-		Zone: "",
-	}
+	addr, err := net.ResolveTCPAddr("tcp", w.address + ":" + strconv.Itoa(w.port))
+	if err != nil { panic(err) }
+	return addr
 }
 
 func (w *cfg) ServerName() string {
-	return ""
+	return "peppermint.io"
 }
 
 func (w *cfg) X509CertPEM() []byte {
-	return nil
+	cert, _ := ioutil.ReadFile("/home/pihpah/mycerts/peppermint.io/server.crt")
+	return cert
 }
 
 func (w *cfg) X509KeyPEM() []byte {
-	return nil
+	key, _ := ioutil.ReadFile("/home/pihpah/mycerts/peppermint.io/server.key")
+	return key
 }
