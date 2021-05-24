@@ -11,7 +11,6 @@ import (
 type cfg struct {
 	model model.WebProxyConfig
 	port int
-	Foo string
 	address string
 }
 

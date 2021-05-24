@@ -27,9 +27,9 @@ func withUnaryServerMiddlewares() grpc.ServerOption {
 	)
 }
 
-func NewServer(address net.Addr, serverName string, x509CertPem []byte, x509KeyPem []byte) *webproxy {
+func NewServer(name string, address net.Addr, serverName string, x509CertPem []byte, x509KeyPem []byte) *webproxy {
 	s := new(webproxy)
-	s.BaseServer = server.NewBaseServer(address, grpc.NewServer(
+	s.BaseServer = server.NewBaseServer(name, address, grpc.NewServer(
 		withUnaryServerMiddlewares(),
 	))
 	s.serverName = serverName
@@ -64,9 +64,11 @@ func (w *webproxy) StartTask(j job.Job) (job.Init, job.Run, job.Finalize) {
 			// Fall back to other servers.
 			http.DefaultServeMux.ServeHTTP(resp, req)
 		})
-		lis, err := tls.Listen("tcp", w.BaseServer.Address().String(), &tlsCfg)
+		addr := w.BaseServer.Address().String()
+		lis, err := tls.Listen("tcp", addr, &tlsCfg)
 		task.Assert(err)
 		w.lis = lis
+		//j.Log(0, w.BaseServer.Name()) <- fmt.Sprintf("is listening on %s", addr)
 	}
 	run := func(task job.Task) {
 		w.tlsHttpServer.Serve(w.lis)

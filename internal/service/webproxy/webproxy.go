@@ -34,6 +34,7 @@ func init() {
 
 func (w *webProxy) initializer() service.Service {
 	proxy := grpc.NewServer(
+		Name,
 		w.WebProxyConfigurator.Address(),
 		w.WebProxyConfigurator.ServerName(),
 		w.WebProxyConfigurator.X509CertPEM(),
