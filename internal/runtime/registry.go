@@ -1,6 +1,7 @@
 package runtime
 
 import (
+	"github.com/AgentCoop/peppermint/internal/db"
 	"github.com/AgentCoop/peppermint/internal/service"
 )
 
@@ -12,7 +13,8 @@ var (
 	regMap registryMap
 	runtimeKey  = regKey("runtime")
 	serviceKey = regKey("service")
-	parserCmdHookKey = regKey("parser-hook")
+	parserCmdHookKey = regKey("cli-parser-hook")
+	dbKey = regKey("db")
 )
 
 func init() {
@@ -20,6 +22,7 @@ func init() {
 	regMap[runtimeKey] = make([]interface{}, 1)
 	regMap[serviceKey] = make([]interface{}, 0)
 	regMap[parserCmdHookKey] = make([]interface{}, 0)
+	regMap[dbKey] = make([]interface{}, 1)
 }
 
 func GlobalRegistry() GlobalRegistryInterface {
@@ -29,6 +32,8 @@ func GlobalRegistry() GlobalRegistryInterface {
 type GlobalRegistryInterface interface {
 	Runtime() Runtime
 	SetRuntime(Runtime)
+	Db() db.Db
+	SetDb(db.Db)
 	RegisterService(string, service.Service)
 	RegisterParserCmdHook(string, parserCmdHook)
 	LookupParserCmdHook(string) []parserCmdHook
@@ -40,6 +45,14 @@ func (m registryMap) Runtime() Runtime {
 
 func (m registryMap) SetRuntime(r Runtime) {
 	m[runtimeKey][0] = r
+}
+
+func (m registryMap) Db() db.Db {
+	return m[dbKey][0].(db.Db)
+}
+
+func (m registryMap) SetDb(db db.Db) {
+	m[dbKey][0] = db
 }
 
 type serviceDesc struct {

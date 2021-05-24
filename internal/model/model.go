@@ -1,11 +1,9 @@
 package model
 
-import "github.com/AgentCoop/peppermint/internal/db"
+import (
+	"gorm.io/gorm"
+)
 
-type Model interface {
-	Create() db.PrimaryKey
-	Read(key db.PrimaryKey) Model
-	Update() Model
-	Delete()
-	SqlDDLStatement() string
+type Model struct {
+	gorm.Model
 }

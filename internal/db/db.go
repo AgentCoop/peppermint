@@ -1,43 +1,33 @@
 package db
 
-import job "github.com/AgentCoop/go-work"
+import (
+	"gorm.io/gorm"
+)
 
 type PrimaryKey uint64
 
-type SqlTransaction interface {
-	Start()
-	Rollback()
-	Commit()
-	AddQuery()
+type Db interface {
+	Handle() *gorm.DB
+	Backup()
 }
 
-type SqlQuery interface {
-
+type sqlitedb struct {
+	handle *gorm.DB
+	dbFilename string
 }
 
-type TaskHook func()
-
-type unitOfWorkContext struct {
-	sqlTrans SqlTransaction
-	hook TaskHook
-}
-
-func (c *unitOfWorkContext) SqlQueryExecTask(j job.Job) (job.Init, job.Run, job.Finalize) {
-	init := func(task job.Task) {
-		c.sqlTrans.Start()
+func NewDb(handle *gorm.DB, dbFilename string) sqlitedb {
+	return sqlitedb{
+		handle,
+		dbFilename,
 	}
-	run := func(task job.Task) {
-		c.hook()
-		task.Done()
-	}
-	fin := func(task job.Task) {
-		switch j.GetState() {
-		case job.Cancelled:
-			c.sqlTrans.Rollback()
-		default:
-			c.sqlTrans.Commit()
-		}
-	}
-	return init, run, fin
 }
 
+func (s sqlitedb) Handle() *gorm.DB {
+	return s.handle
+}
+
+func (s sqlitedb) Backup() {
+	s.handle.Raw("BEGIN EXCLUSIVE")
+	s.handle.Raw("COMMIT")
+}

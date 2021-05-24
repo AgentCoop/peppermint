@@ -3,6 +3,7 @@ package hub
 
 import (
 	"fmt"
+	model "github.com/AgentCoop/peppermint/internal/model/hub"
 	"github.com/AgentCoop/peppermint/internal/runtime"
 	"github.com/AgentCoop/peppermint/internal/runtime/cliparser"
 )
@@ -23,6 +24,9 @@ func init() {
 }
 
 func (h *hubService) createDb(data interface{}) {
+	db := runtime.GlobalRegistry().Db()
+	gorm := db.Handle()
+	_ = gorm.AutoMigrate(&model.JoinedNode{})
 	fmt.Printf("time to sleep, Andrew!\n")
 }
 

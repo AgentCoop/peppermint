@@ -11,11 +11,13 @@ require (
 	github.com/iancoleman/strcase v0.1.3 // indirect
 	github.com/improbable-eng/grpc-web v0.14.0 // indirect
 	github.com/jessevdk/go-flags v1.5.0
-	github.com/mattn/go-sqlite3 v1.14.6
+	github.com/mattn/go-sqlite3 v1.14.7
 	github.com/monnand/dhkx v0.0.0-20180522003156-9e5b033f1ac4 // indirect
 	github.com/rs/cors v1.7.0 // indirect
 	google.golang.org/grpc v1.35.0
 	google.golang.org/grpc/cmd/protoc-gen-go-grpc v1.1.0 // indirect
 	google.golang.org/protobuf v1.26.0
+	gorm.io/driver/sqlite v1.1.4 // indirect
+	gorm.io/gorm v1.21.10 // indirect
 	nhooyr.io/websocket v1.8.7 // indirect
 )
