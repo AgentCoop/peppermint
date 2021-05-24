@@ -3,9 +3,9 @@ package hub
 
 import (
 	"fmt"
+	"github.com/AgentCoop/peppermint/cmd"
 	model "github.com/AgentCoop/peppermint/internal/model/hub"
 	"github.com/AgentCoop/peppermint/internal/runtime"
-	"github.com/AgentCoop/peppermint/internal/runtime/cliparser"
 )
 
 const (
@@ -20,10 +20,10 @@ func init() {
 	hub := &hubService{}
 	reg := runtime.GlobalRegistry()
 	reg.RegisterService(Name, hub)
-	reg.RegisterParserCmdHook(cliparser.CREATEDB_CMD_NAME, hub.createDb)
+	reg.RegisterParserCmdHook(cmd.CMD_NAME_DB_MIGRATE, hub.migrateDb)
 }
 
-func (h *hubService) createDb(data interface{}) {
+func (h *hubService) migrateDb(data interface{}) {
 	db := runtime.GlobalRegistry().Db()
 	gorm := db.Handle()
 	_ = gorm.AutoMigrate(&model.JoinedNode{})

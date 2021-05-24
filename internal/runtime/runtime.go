@@ -5,10 +5,12 @@ import job "github.com/AgentCoop/go-work"
 type CliParser interface {
 	Data() interface{}
 	Run() error
+	CurrentCmd() (string, bool)
+	GetCmdOptions(cmdName string) (interface{}, error)
 }
 
 type runtime struct {
-	CliParser
+	parser CliParser
 	dbFilename string
 }
 
@@ -22,9 +24,12 @@ func NewRuntime(parser CliParser, dbFilename string) *runtime {
 }
 
 type Runtime interface {
+	CliParser() CliParser
 	InitTask(j job.Job) (job.Init, job.Run, job.Finalize)
-	//OsSignalTask(j job.Job) (job.Init, job.Run, job.Finalize)
-	NodeTask(j job.Job) (job.Init, job.Run, job.Finalize)
+}
+
+func (r *runtime) CliParser() CliParser {
+	return r.parser
 }
 
 

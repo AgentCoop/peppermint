@@ -1,13 +1,14 @@
 package cliparser
 
 import (
+	"fmt"
 	"github.com/AgentCoop/peppermint/internal/runtime"
 	"github.com/iancoleman/strcase"
 	"github.com/jessevdk/go-flags"
 	"reflect"
 )
 
-const CREATEDB_CMD_NAME = "create_db"
+//const CMD_NAME_DB_MIGRATE = "db_migrate"
 
 type CmdHook func(data interface{})
 //type CreateDbHook func(opts CreateDbOptions)
@@ -38,18 +39,27 @@ func (p *parser) Data() interface{} {
 	return p.data
 }
 
-func (p *parser) getCmdOptions(cmdName string) interface{} {
+func (p *parser) CurrentCmd() (string, bool) {
+	switch {
+	case p.handle.Active != nil:
+		return p.handle.Active.Name, true
+	default:
+		return "", false
+	}
+}
+
+func (p *parser) GetCmdOptions(cmdName string) (interface{}, error) {
 	r := reflect.ValueOf(p.data)
 	fieldName := strcase.ToCamel(cmdName)
 	cmdOpts := reflect.Indirect(r).FieldByName(fieldName)
 	if ! cmdOpts.CanInterface() {
-		panic("")
+		return nil, fmt.Errorf("cli-parser: failed to retrieve options field %s", fieldName)
 	}
-	return cmdOpts.Interface()
+	return cmdOpts.Interface(), nil
 }
 
 func (p *parser) invokeCmdHooks(cmdName string) {
-	opts := p.getCmdOptions(cmdName)
+	opts, _ := p.GetCmdOptions(cmdName)
 	for _, hook := range runtime.GlobalRegistry().LookupParserCmdHook(cmdName) {
 		hook(opts)
 	}

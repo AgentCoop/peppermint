@@ -1,0 +1,8 @@
+package cmd
+
+const (
+	CMD_NAME_VERSION = "version"
+	CMD_NAME_DB_MIGRATE = "db_migrate"
+	CMD_NAME_RUN = "run"
+	CMD_NAME_JOIN = "join"
+)
