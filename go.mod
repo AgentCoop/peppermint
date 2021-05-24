@@ -14,6 +14,9 @@ require (
 	github.com/mattn/go-sqlite3 v1.14.7
 	github.com/monnand/dhkx v0.0.0-20180522003156-9e5b033f1ac4 // indirect
 	github.com/rs/cors v1.7.0 // indirect
+	golang.org/x/crypto v0.0.0-20210513164829-c07d793c2f9a // indirect
+	golang.org/x/term v0.0.0-20210503060354-a79de5458b56 // indirect
+	golang.org/x/text v0.3.6 // indirect
 	google.golang.org/grpc v1.35.0
 	google.golang.org/grpc/cmd/protoc-gen-go-grpc v1.1.0 // indirect
 	google.golang.org/protobuf v1.26.0

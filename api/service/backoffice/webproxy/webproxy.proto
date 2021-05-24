@@ -6,6 +6,6 @@ package webproxy.backoffice.peppermint;
 
 option go_package = "peppermint/service/backoffice/webproxy";
 
-service Balancer {
+service WebProxy {
   rpc GetStats(Stats.Request) returns (Stats.Response) { }
 }
