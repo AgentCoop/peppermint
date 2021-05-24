@@ -1,11 +1,11 @@
 syntax = "proto3";
 
-import "service/hub/join.proto";
+import "service/backoffice/hub/join.proto";
 import "service/rpc.proto";
 
 package hub.peppermint;
 
-option go_package = "peppermint/service/hub";
+option go_package = "peppermint/service/backoffice/hub";
 
 service Hub {
   rpc JoinHello(JoinHello.Request) returns (JoinHello.Response) { }

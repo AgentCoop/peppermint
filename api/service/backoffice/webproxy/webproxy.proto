@@ -1,0 +1,11 @@
+syntax = "proto3";
+
+import "service/backoffice/webproxy/stats.proto";
+
+package webproxy.backoffice.peppermint;
+
+option go_package = "peppermint/service/backoffice/webproxy";
+
+service Balancer {
+  rpc GetStats(Stats.Request) returns (Stats.Response) { }
+}

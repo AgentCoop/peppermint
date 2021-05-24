@@ -2,9 +2,9 @@ syntax = "proto3";
 
 import "service/types.proto";
 
-package hub.peppermint;
+package hub.backoffice.peppermint;
 
-option go_package = "peppermint/service/hub";
+option go_package = "peppermint/service/backoffice/hub";
 
 message JoinHello {
   message Request {

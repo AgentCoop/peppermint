@@ -57,16 +57,6 @@ func (w *webproxy) StartTask(j job.Job) (job.Init, job.Run, job.Finalize) {
 		w.tlsHttpServer = &http.Server{
 			Addr:              w.BaseServer.Address(),
 			TLSConfig:         &tlsCfg,
-			ReadTimeout:       0,
-			ReadHeaderTimeout: 0,
-			WriteTimeout:      0,
-			IdleTimeout:       0,
-			MaxHeaderBytes:    0,
-			TLSNextProto:      nil,
-			ConnState:         nil,
-			ErrorLog:          nil,
-			BaseContext:       nil,
-			ConnContext:       nil,
 		}
 
 		wrappedGrpc := grpcweb.WrapServer(w.Handle())

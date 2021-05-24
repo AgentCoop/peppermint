@@ -12,10 +12,10 @@ type Session interface {
 	Id()
 	NodeId()
 	Job() job.Job
-	Node(id i.SessionId) (node.Node, error)
+	Node(id i.SessionId) (service.Node, error)
 }
 
-func(session) Node(id i.SessionId) (node.Node, error) {
+func(session) Node(id i.SessionId) (service.Node, error) {
 	return nil, nil
 }
 
