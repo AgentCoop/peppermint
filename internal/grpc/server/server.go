@@ -59,20 +59,20 @@ func (p *reqResPair) AssignNewResponse(new Response) Response {
 }
 
 type BaseServer interface {
-	Address() string
+	Address() net.Addr
 	Handle() *grpc.Server
 	StartTask(j job.Job) (job.Init, job.Run, job.Finalize)
 	RegisterServer()
 }
 
 type baseServer struct {
-	address string
+	address net.Addr
 	task job.Task
 	handle *grpc.Server
 	lis net.Listener
 }
 
-func (s *baseServer) Address() string {
+func (s *baseServer) Address() net.Addr {
 	return s.address
 }
 
@@ -80,7 +80,7 @@ func (s *baseServer) RegisterServer() {
 	panic("implement me")
 }
 
-func NewBaseServer(address string, server *grpc.Server) *baseServer {
+func NewBaseServer(address net.Addr, server *grpc.Server) *baseServer {
 	s := new(baseServer)
 	s.address = address
 	s.handle = server
@@ -99,7 +99,7 @@ func (s *baseServer) StartTask(j job.Job) (job.Init, job.Run, job.Finalize) {
 	init := func(task job.Task) {
 		s.task = task
 
-		lis, err := net.Listen("tcp", s.address)
+		lis, err := net.Listen("tcp", s.address.String())
 		task.Assert(err)
 
 		s.lis = lis

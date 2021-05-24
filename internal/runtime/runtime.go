@@ -1,12 +1,27 @@
 package runtime
 
-import job "github.com/AgentCoop/go-work"
+import (
+	job "github.com/AgentCoop/go-work"
+	"github.com/AgentCoop/peppermint/internal/service"
+)
 
 type CliParser interface {
 	Data() interface{}
 	Run() error
 	CurrentCmd() (string, bool)
+	OptionValue(string) (interface{}, bool)
 	GetCmdOptions(cmdName string) (interface{}, error)
+}
+
+type Configurator interface {
+	Fetch() // fetch configuration data from DB
+	MergeCliOptions(CliParser)
+}
+
+type ServiceInfo struct {
+	Name string
+	Cfg Configurator
+	Initializer func() service.Service
 }
 
 type runtime struct {

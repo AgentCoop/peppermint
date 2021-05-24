@@ -3,7 +3,6 @@ package server
 import (
 	job "github.com/AgentCoop/go-work"
 	i "github.com/AgentCoop/peppermint/internal"
-	"github.com/AgentCoop/peppermint/internal/model/node"
 )
 
 type session struct {}
@@ -12,12 +11,12 @@ type Session interface {
 	Id()
 	NodeId()
 	Job() job.Job
-	Node(id i.SessionId) (service.Node, error)
+//	Node(id i.SessionId) (service.Node, error)
 }
 
-func(session) Node(id i.SessionId) (service.Node, error) {
-	return nil, nil
-}
+//func(session) Node(id i.SessionId) (service.Node, error) {
+//	return nil, nil
+//}
 
 var sessionMap map[i.SessionId]job.Job
 

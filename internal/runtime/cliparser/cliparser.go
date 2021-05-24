@@ -8,13 +8,11 @@ import (
 	"reflect"
 )
 
-//const CMD_NAME_DB_MIGRATE = "db_migrate"
-
 type CmdHook func(data interface{})
-//type CreateDbHook func(opts CreateDbOptions)
 
 type parser struct {
 	data interface{}
+	cfgs []runtime.Configurator
 	handle *flags.Parser
 }
 
@@ -22,17 +20,33 @@ func NewParser(data interface{}) *parser {
 	p := new(parser)
 	p.data = data
 	p.handle = flags.NewParser(data, flags.IgnoreUnknown)
-	//p.handle.SubcommandsOptional = true
+	p.cfgs = make([]runtime.Configurator, 0)
 	return p
 }
 
 func (p *parser) Run() error {
 	_, err := p.handle.Parse()
 	if err != nil { panic(err) }
+
 	if p.handle.Active != nil {
 		p.invokeCmdHooks(p.handle.Active.Name)
 	}
 	return err
+}
+
+func (p *parser) OptionValue(longName string) (interface{}, bool) {
+	var opt *flags.Option
+	switch {
+	case p.handle.Active != nil:
+		opt = p.handle.Active.FindOptionByLongName(longName)
+	default:
+		opt = p.handle.FindOptionByLongName(longName)
+	}
+	if opt == nil || opt.IsSetDefault() {
+		return nil, false
+	} else {
+		return opt.Value(), true
+	}
 }
 
 func (p *parser) Data() interface{} {

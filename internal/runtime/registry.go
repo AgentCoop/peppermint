@@ -8,6 +8,7 @@ import (
 type parserCmdHook func(interface{})
 type regKey string
 type registryMap map[regKey][]interface{}
+type serviceDelayedConfig func() (service.Service, Configurator)
 
 var (
 	regMap registryMap
@@ -34,7 +35,8 @@ type GlobalRegistryInterface interface {
 	SetRuntime(Runtime)
 	Db() db.Db
 	SetDb(db.Db)
-	RegisterService(string, service.Service)
+	RegisterService(*ServiceInfo)
+	Services() []*ServiceInfo
 	RegisterParserCmdHook(string, parserCmdHook)
 	LookupParserCmdHook(string) []parserCmdHook
 }
@@ -55,13 +57,18 @@ func (m registryMap) SetDb(db db.Db) {
 	m[dbKey][0] = db
 }
 
-type serviceDesc struct {
-	name string
-	service service.Service
+func (m registryMap) RegisterService(info *ServiceInfo) {
+	m[serviceKey] = append(m[serviceKey], info)
 }
 
-func (m registryMap) RegisterService(name string, service service.Service) {
-	m[serviceKey] = append(m[serviceKey], &serviceDesc{name, service})
+func (m registryMap) Services() []*ServiceInfo {
+	var out []*ServiceInfo
+	out = make([]*ServiceInfo, 0)
+	for _, v := range m[serviceKey] {
+		vv := v.(*ServiceInfo)
+		out = append(out, vv)
+	}
+	return out
 }
 
 type parserCmdHookDesc struct {

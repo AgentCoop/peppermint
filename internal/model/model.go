@@ -7,3 +7,5 @@ import (
 type Model struct {
 	gorm.Model
 }
+
+type ModelInterface interface {}

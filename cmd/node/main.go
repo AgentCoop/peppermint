@@ -5,6 +5,7 @@ import (
 	"github.com/AgentCoop/peppermint/internal/runtime"
 	"github.com/AgentCoop/peppermint/internal/runtime/cliparser"
 	_ "github.com/AgentCoop/peppermint/internal/service/hub"
+	_ "github.com/AgentCoop/peppermint/internal/service/webproxy"
 	"os"
 )
 
