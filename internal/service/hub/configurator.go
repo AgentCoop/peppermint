@@ -28,11 +28,14 @@ func (c *cfg) Fetch() {
 }
 
 func (c *cfg) MergeCliOptions(parser runtime.CliParser) {
-	// val, isset := parser.OptionValue("")
+	val, isset := parser.OptionValue("hub-port")
+	if isset {
+		c.port = val.(int)
+	}
 }
 
-func (w *cfg) Address() net.Addr {
-	addr, err := net.ResolveTCPAddr("tcp", w.address + ":" + strconv.Itoa(w.port))
+func (c *cfg) Address() net.Addr {
+	addr, err := net.ResolveTCPAddr("tcp", c.address + ":" + strconv.Itoa(c.port))
 	if err != nil { panic(err) }
 	return addr
 }

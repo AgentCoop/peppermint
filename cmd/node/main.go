@@ -12,7 +12,7 @@ const (
 )
 
 func main() {
-	appJob := node.AppJob(DbFilename)
+	appJob := node.AppInit(DbFilename)
 	<-appJob.Run()
 
 	_, err := appJob.GetInterruptedBy()

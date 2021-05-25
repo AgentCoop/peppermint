@@ -22,8 +22,8 @@ type DbMigrate struct {
 }
 
 type Run struct {
-	HubPort int `long:"hub-port" default:"11000"`
-	WebProxyPort int `long:"wp-port" default:"443"`
+	HubPort int `long:"hub-port"`
+	WebProxyPort int `long:"wp-port"`
 }
 
 var (

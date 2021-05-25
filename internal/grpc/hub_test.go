@@ -1,12 +1,11 @@
 package grpc_test
 
 import (
-	"github.com/AgentCoop/go-work"
-	server2 "github.com/AgentCoop/peppermint/internal/service/hub/grpc/server"
+	"github.com/AgentCoop/peppermint/internal/app/node"
 	cmd "github.com/AgentCoop/peppermint/internal/service/hub/service/client/join"
-	"net"
-	"time"
+	"os"
 	"testing"
+	"time"
 
 	_ "github.com/AgentCoop/peppermint/internal/service/hub"
 )
@@ -16,12 +15,9 @@ var (
 )
 
 func TestJoinHello(t *testing.T) {
-	serverJob := job.NewJob(t)
-	localAddr, _ := net.ResolveTCPAddr("tcp", "localhost:9911")
-	server := server2.NewServer("Hub", localAddr)
-	serverJob.AddTask(server.StartTask)
-	//j.AddTask(createClient)
-	serverJob.Run()
+	os.Args = []string{"testapp", "run", "--hub-port=9911"}
+	appJob := node.AppInitTest()
+	appJob.Run()
 
 	time.Sleep(100 * time.Millisecond)
 	clientJob := cmd.JoinCmd(serverAddr, "secretword")

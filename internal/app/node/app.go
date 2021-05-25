@@ -12,7 +12,26 @@ type app struct {
 	runtime.Runtime
 }
 
-func AppJob(dbFilename string) job.Job {
+func AppInitTest() job.Job {
+	app := new(app)
+	app.Runtime = runtime.NewRuntime(
+		cliparser.NewParser(&cmd.Options),
+		"test.db",
+	)
+
+	dbJob := job.NewJob(nil)
+	dbJob.AddOneshotTask(app.InitTask)
+	dbJob.AddTask(app.SetupTestDbTask)
+	<-dbJob.Run()
+
+	appJob := job.NewJob(nil)
+	appJob.AddOneshotTask(app.InitTask)
+	appJob.AddTask(app.ParserTask)
+
+	return appJob
+}
+
+func AppInit(dbFilename string) job.Job {
 	app := new(app)
 	app.Runtime = runtime.NewRuntime(
 		cliparser.NewParser(&cmd.Options),
