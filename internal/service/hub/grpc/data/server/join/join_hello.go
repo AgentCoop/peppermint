@@ -1,7 +1,7 @@
 package join
 
 import (
-	msg "github.com/AgentCoop/peppermint/internal/api/peppermint/service/hub"
+	msg "github.com/AgentCoop/peppermint/internal/api/peppermint/service/backoffice/hub"
 	"github.com/AgentCoop/peppermint/internal/grpc/server"
 )
 

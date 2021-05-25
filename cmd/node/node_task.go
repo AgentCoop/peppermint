@@ -10,7 +10,8 @@ import (
 
 func (app *app) NodeTask(j job.Job) (job.Init, job.Run, job.Finalize) {
 	init := func(task job.Task) {
-		// Merge command-line options with DB settings
+		// Fetch configurator data from DB and
+		// and merge command-line options with fetched data
 		regServices := runtime.GlobalRegistry().Services()
 		for _, desc := range regServices {
 			desc.Cfg.Fetch()
@@ -18,16 +19,21 @@ func (app *app) NodeTask(j job.Job) (job.Init, job.Run, job.Finalize) {
 		}
 	}
 	run := func(task job.Task) {
-		cmdName, _ := app.CliParser().CurrentCmd()
+		db := runtime.GlobalRegistry().Db()
+		parser := app.CliParser()
+		cmdName, _ := parser.CurrentCmd()
 		switch cmdName {
 		case cmd.CMD_NAME_VERSION:
-			opts, err := app.CliParser().GetCmdOptions(cmdName)
+			opts, err := parser.GetCmdOptions(cmdName)
 			task.Assert(err)
 			verbose := opts.(Version).Verbose
 			showVersion(verbose)
 
 		case cmd.CMD_NAME_DB_MIGRATE:
-			fmt.Printf("db migrate\n")
+			opts, err := parser.GetCmdOptions(cmdName)
+			task.Assert(err)
+			v := opts.(DbMigrate)
+			dbMigrateCmd(db, parser, v.Drop)
 
 		case cmd.CMD_NAME_RUN:
 			serviceJob := job.NewJob(nil)

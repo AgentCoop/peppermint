@@ -3,7 +3,7 @@ syntax = "proto3";
 import "service/backoffice/hub/join.proto";
 import "service/rpc.proto";
 
-package hub.peppermint;
+package hub.backoffice.peppermint;
 
 option go_package = "peppermint/service/backoffice/hub";
 

@@ -10,7 +10,7 @@ type Join struct {
 }
 
 type DbMigrate struct {
-	Force bool `long:"force"`
+	Drop bool `long:"drop" description:"Drop database before migration"`
 }
 
 type Run struct {

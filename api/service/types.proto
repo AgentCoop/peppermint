@@ -4,20 +4,7 @@ option go_package = "peppermint/service";
 
 package peppermint;
 
-message DateTime {
-  fixed64 unix_dt = 1;
-}
-
-message ClientUuid {
-
-}
-
-message SessionId {
-  fixed64 node_id = 1; // where
-  DateTime created_at = 2; // when
-  ClientUuid created_by = 3; // by whom
-}
-
-message ContentId {
-
+message ServiceDesc {
+  string name = 1;
+  int32 port = 2;
 }

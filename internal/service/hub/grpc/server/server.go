@@ -1,10 +1,11 @@
 package server
 
 import (
-	"github.com/AgentCoop/peppermint/internal/api/peppermint/service/hub"
+	"github.com/AgentCoop/peppermint/internal/api/peppermint/service/backoffice/hub"
 	middleware "github.com/AgentCoop/peppermint/internal/grpc/middleware/server"
 	md_middleware "github.com/AgentCoop/peppermint/internal/grpc/middleware/server/metadata"
 	"github.com/AgentCoop/peppermint/internal/grpc/server"
+	"net"
 
 	"google.golang.org/grpc"
 )
@@ -25,9 +26,9 @@ func withUnaryServerMiddlewares() grpc.ServerOption {
 	)
 }
 
-func NewServer(address string) *hubServer {
+func NewServer(name string, address net.Addr) *hubServer {
 	s := new(hubServer)
-	s.BaseServer = server.NewBaseServer(address, grpc.NewServer(
+	s.BaseServer = server.NewBaseServer(name, address, grpc.NewServer(
 		withUnaryServerMiddlewares(),
 	))
 	s.RegisterServer()

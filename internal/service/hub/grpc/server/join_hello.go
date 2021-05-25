@@ -3,10 +3,9 @@ package server
 import (
 	"context"
 	job "github.com/AgentCoop/go-work"
-	msg "github.com/AgentCoop/peppermint/internal/api/peppermint/service/hub"
+	msg "github.com/AgentCoop/peppermint/internal/api/peppermint/service/backoffice/hub"
 	data "github.com/AgentCoop/peppermint/internal/service/hub/grpc/data/server/join"
 	srv "github.com/AgentCoop/peppermint/internal/grpc/server"
-	//srv "github.com/AgentCoop/peppermint/internal/grpc/server/hub"
 	join "github.com/AgentCoop/peppermint/internal/service/hub/service/server/join"
 )
 

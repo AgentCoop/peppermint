@@ -27,10 +27,6 @@ func NewParser(data interface{}) *parser {
 func (p *parser) Run() error {
 	_, err := p.handle.Parse()
 	if err != nil { panic(err) }
-
-	if p.handle.Active != nil {
-		p.invokeCmdHooks(p.handle.Active.Name)
-	}
 	return err
 }
 
@@ -70,11 +66,4 @@ func (p *parser) GetCmdOptions(cmdName string) (interface{}, error) {
 		return nil, fmt.Errorf("cli-parser: failed to retrieve options field %s", fieldName)
 	}
 	return cmdOpts.Interface(), nil
-}
-
-func (p *parser) invokeCmdHooks(cmdName string) {
-	opts, _ := p.GetCmdOptions(cmdName)
-	for _, hook := range runtime.GlobalRegistry().LookupParserCmdHook(cmdName) {
-		hook(opts)
-	}
 }
