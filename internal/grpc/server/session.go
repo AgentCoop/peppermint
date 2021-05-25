@@ -37,8 +37,9 @@ func (m sessionMap) New(j job.Job, expireInSecs time.Duration) i.SessionId {
 	return id
 }
 
-func (m sessionMap) Lookup(id i.SessionId) runtime.SessionDesc {
-	return nil
+func (m sessionMap) Lookup(id i.SessionId) (runtime.SessionDesc, bool) {
+	v, ok := m[id]
+	return v, ok
 }
 
 func (m sessionMap) Remove(id i.SessionId) {

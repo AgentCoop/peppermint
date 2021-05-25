@@ -1,4 +1,4 @@
-package hub
+package context
 
 import (
 	"github.com/AgentCoop/peppermint/internal/grpc/server"

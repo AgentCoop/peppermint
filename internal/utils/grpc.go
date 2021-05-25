@@ -3,7 +3,10 @@ package utils
 import (
 	i "github.com/AgentCoop/peppermint/internal"
 	grpc "github.com/AgentCoop/peppermint/internal/grpc"
+	"github.com/AgentCoop/peppermint/internal/runtime"
+	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
+	"google.golang.org/grpc/status"
 )
 
 func AddMetaValue(md *metadata.MD, key string, value string) {
@@ -31,4 +34,14 @@ func ExtractGrpcSessionId(md *metadata.MD) i.SessionId {
 
 func RandomGrpcSessionId() i.SessionId {
 	return i.SessionId(RandUint64())
+}
+
+func GetSessDescriptorById(id i.SessionId) (runtime.SessionDesc, error) {
+	sess := runtime.GlobalRegistry().GrpcSession()
+	desc, ok := sess.Lookup(id)
+	if !ok  {
+		return nil, status.Error(codes.DeadlineExceeded, "gRPC session has been expired or session ID is invalid")
+	} else {
+		return desc, nil
+	}
 }

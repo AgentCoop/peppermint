@@ -26,7 +26,8 @@ func NewJoin(pair client.RequestResponsePair, secret string) *joinRequest {
 }
 
 func (r *joinRequest) ToGrpcRequest() interface{} {
-	greq :=  new(hub.Join_Request)
+	greq := &hub.Join_Request{}
+	greq.JoinSecret = r.secret
 	return greq
 }
 

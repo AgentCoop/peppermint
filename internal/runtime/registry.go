@@ -40,7 +40,7 @@ type SessionDesc interface {
 
 type Session interface {
 	New(job job.Job, expireInSecs time.Duration) i.SessionId
-	Lookup(i.SessionId) SessionDesc
+	Lookup(i.SessionId) (SessionDesc, bool)
 	Remove(i.SessionId)
 }
 

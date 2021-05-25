@@ -34,15 +34,21 @@ type Request interface {
 func NewRequest(ctx context.Context) *request {
 	r := new(request)
 	r.Context = ctx
+
 	md, ok := metadata.FromIncomingContext(ctx)
 	if !ok {
 		return r
 	}
-	//
+	// Extract and convert values of header fields
 	var vals []string
 	vals = md.Get(grpc.META_FIELD_NODE_ID)
-	if len(vals) > 1 {
+	if len(vals) == 1 {
 		r.nodeId = i.NodeId(utils.Hex2int(vals[0]))
+	}
+
+	vals = md.Get(grpc.META_FIELD_SESSION_ID)
+	if len(vals) == 1 {
+		r.sessId = i.SessionId(utils.Hex2int(vals[0]))
 	}
 	return r
 }

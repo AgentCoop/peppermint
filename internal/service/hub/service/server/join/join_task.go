@@ -19,7 +19,6 @@ func (ctx *joinCtx) JoinTask(j job.Job) (job.Init, job.Run, job.Finalize) {
 		if cfg.Secret() != secret {
 			panic("wrong secret word")
 		}
-
 		_, _ = secret, tags
 	}
 	return nil, run, nil
