@@ -2,7 +2,7 @@ package client
 
 import (
 	job "github.com/AgentCoop/go-work"
-	"github.com/AgentCoop/peppermint/internal/api/peppermint/service/hub"
+	"github.com/AgentCoop/peppermint/internal/api/peppermint/service/backoffice/hub"
 	c "github.com/AgentCoop/peppermint/internal/grpc/client"
 	middleware "github.com/AgentCoop/peppermint/internal/grpc/middleware/client"
 	md_middleware "github.com/AgentCoop/peppermint/internal/grpc/middleware/client/metadata"

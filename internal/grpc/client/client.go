@@ -3,7 +3,7 @@ package client
 import (
 	"context"
 	job "github.com/AgentCoop/go-work"
-	g "github.com/AgentCoop/peppermint/internal/grpc"
+	i "github.com/AgentCoop/peppermint/internal"
 	"github.com/AgentCoop/peppermint/internal/grpc/codec"
 	"google.golang.org/grpc"
 	"net"
@@ -20,8 +20,8 @@ type BaseClient interface {
 	Connection() grpc.ClientConnInterface
 	OnConnectedHook(onConnectedHook)
 	WithMiddlewareHook(middlewareHook)
-	SessionId() g.SessionId
-	SetSessionId(id g.SessionId)
+	SessionId() i.SessionId
+	SetSessionId(id i.SessionId)
 }
 
 type baseClient struct {
@@ -31,7 +31,7 @@ type baseClient struct {
 	address net.Addr
 	onConnectedHook onConnectedHook
 	withMiddlewareHook middlewareHook
-	sId g.SessionId
+	sId i.SessionId
 }
 
 func NewBaseClient(address net.Addr) *baseClient {
@@ -47,11 +47,11 @@ func NewBaseClientWithContext(address net.Addr, ctx context.Context, opts... grp
 	return c
 }
 
-func (c *baseClient) SessionId() g.SessionId {
+func (c *baseClient) SessionId() i.SessionId {
 	return c.sId
 }
 
-func (c *baseClient) SetSessionId(id g.SessionId) {
+func (c *baseClient) SetSessionId(id i.SessionId) {
 	c.sId = id
 }
 

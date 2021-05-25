@@ -2,7 +2,7 @@ package server
 
 import (
 	"context"
-	g "github.com/AgentCoop/peppermint/internal/grpc"
+	g "github.com/AgentCoop/peppermint/internal"
 	"github.com/AgentCoop/peppermint/internal/utils"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
@@ -46,7 +46,7 @@ func (r *response) AddBinMetaValue(key string, value []byte) {
 }
 
 func (r *response) SetSessionId(id g.SessionId) {
-	utils.SetSessionId(&r.md, id)
+	utils.SetGrpcSessionId(&r.md, id)
 }
 
 func (r *response) ToGrpcResponse() interface{} {

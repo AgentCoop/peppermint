@@ -47,7 +47,7 @@ func (app *app) NodeTask(j job.Job) (job.Init, job.Run, job.Finalize) {
 		case cmd.CMD_NAME_JOIN:
 			secret, err := utils.ReadPassword("Enter join secret")
 			task.Assert(err)
-			opts, err := app.CliParser().GetCmdOptions(cmdName)
+			opts, err := parser.GetCmdOptions(cmdName)
 			task.Assert(err)
 			v := opts.(Join)
 			joinCmd(secret, v.Tags, v.Hub)

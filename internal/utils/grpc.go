@@ -1,7 +1,8 @@
 package utils
 
 import (
-	g "github.com/AgentCoop/peppermint/internal/grpc"
+	i "github.com/AgentCoop/peppermint/internal"
+	grpc "github.com/AgentCoop/peppermint/internal/grpc"
 	"google.golang.org/grpc/metadata"
 )
 
@@ -13,17 +14,21 @@ func AddBinMetaValue(md *metadata.MD, key string, value []byte) {
 	md.Append(key + "-bin", string(value))
 }
 
-func SetSessionId(md *metadata.MD, id g.SessionId) {
+func SetGrpcSessionId(md *metadata.MD, id i.SessionId) {
 	if id == 0 {
 		return
 	}
-	AddMetaValue(md, g.META_FIELD_SESSION_ID, IntToHex(id, 16))
+	AddMetaValue(md, grpc.META_FIELD_SESSION_ID, IntToHex(id, 16))
 }
 
-func GetSessionId(md *metadata.MD) g.SessionId {
-	vals := md.Get(g.META_FIELD_SESSION_ID)
+func ExtractGrpcSessionId(md *metadata.MD) i.SessionId {
+	vals := md.Get(grpc.META_FIELD_SESSION_ID)
 	if len(vals) == 0 {
 		return 0
 	}
-	return g.SessionId(Hex2int(vals[0]))
+	return i.SessionId(Hex2int(vals[0]))
+}
+
+func RandomGrpcSessionId() i.SessionId {
+	return i.SessionId(RandUint64())
 }

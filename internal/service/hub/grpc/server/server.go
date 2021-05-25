@@ -20,16 +20,16 @@ type hubServer struct {
 	hub.UnimplementedHubServer
 }
 
-func withUnaryServerMiddlewares() grpc.ServerOption {
+func withUnaryServerMiddlewares(serviceName string) grpc.ServerOption {
 	return middleware.WithUnaryServerChain(
-		md_middleware.UnaryServerInterceptor(),
+		md_middleware.UnaryServerInterceptor(serviceName),
 	)
 }
 
 func NewServer(name string, address net.Addr) *hubServer {
 	s := new(hubServer)
 	s.BaseServer = server.NewBaseServer(name, address, grpc.NewServer(
-		withUnaryServerMiddlewares(),
+		withUnaryServerMiddlewares(name),
 	))
 	s.RegisterServer()
 	return s

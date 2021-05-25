@@ -21,16 +21,16 @@ type webproxy struct {
 	serverName string
 }
 
-func withUnaryServerMiddlewares() grpc.ServerOption {
+func withUnaryServerMiddlewares(serviceName string) grpc.ServerOption {
 	return middleware.WithUnaryServerChain(
-		md_middleware.UnaryServerInterceptor(),
+		md_middleware.UnaryServerInterceptor(serviceName),
 	)
 }
 
 func NewServer(name string, address net.Addr, serverName string, x509CertPem []byte, x509KeyPem []byte) *webproxy {
 	s := new(webproxy)
 	s.BaseServer = server.NewBaseServer(name, address, grpc.NewServer(
-		withUnaryServerMiddlewares(),
+		withUnaryServerMiddlewares(name),
 	))
 	s.serverName = serverName
 	s.x509CertPEM = x509CertPem

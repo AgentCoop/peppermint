@@ -4,6 +4,7 @@ import (
 	"context"
 	job "github.com/AgentCoop/go-work"
 	_ "github.com/AgentCoop/peppermint/internal/grpc/codec"
+	"github.com/AgentCoop/peppermint/internal/runtime"
 	"google.golang.org/grpc"
 	"net"
 )
@@ -20,6 +21,7 @@ type reqResPair struct {
 	context.Context
 	Request
 	Response
+	runtime.Configurator
 }
 
 type RequestResponsePair interface {
@@ -30,14 +32,19 @@ type RequestResponsePair interface {
 	AssignNewRequest(Request) Request
 	GetResponse() Response
 	AssignNewResponse(Response) Response
+	GetConfigurator() runtime.Configurator
 }
 
-func NewRequestResponsePair(ctx context.Context) *reqResPair {
-	return &reqResPair{ctx,NewRequest(ctx), NewResponse(ctx)}
+func NewRequestResponsePair(ctx context.Context, cfg runtime.Configurator) *reqResPair {
+	return &reqResPair{ctx,NewRequest(ctx), NewResponse(ctx), cfg}
 }
 
 func (p *reqResPair) GetRequest() Request {
 	return p.Request
+}
+
+func (p *reqResPair) GetConfigurator() runtime.Configurator {
+	return p.Configurator
 }
 
 // Replaces the base request with an extended one

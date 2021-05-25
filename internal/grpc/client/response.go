@@ -37,7 +37,7 @@ func NewResponse(c BaseClient) Response {
 }
 
 func (r *response) Process() {
-	r.client.SetSessionId(utils.GetSessionId(&r.header))
+	r.client.SetSessionId(utils.ExtractGrpcSessionId(&r.header))
 }
 
 func (r *response) GetHeader() *metadata.MD {

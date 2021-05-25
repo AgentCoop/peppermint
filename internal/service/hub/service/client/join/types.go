@@ -3,6 +3,7 @@ package join
 import (
 	"github.com/AgentCoop/peppermint/internal/grpc/client"
 	client2 "github.com/AgentCoop/peppermint/internal/service/hub/grpc/client"
+	"net"
 )
 
 type joinCtx struct {
@@ -13,7 +14,7 @@ type joinCtx struct {
 	resChan []client.ResChan
 }
 
-func NewJoinContext(address string, secret string) *joinCtx {
+func NewJoinContext(address net.Addr, secret string) *joinCtx {
 	ctx := new(joinCtx)
 	ctx.HubClient = client2.NewClient(client.NewBaseClient(address))
 	ctx.secret = secret

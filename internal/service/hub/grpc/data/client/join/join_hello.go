@@ -2,7 +2,7 @@ package join
 
 import (
 	"github.com/AgentCoop/peppermint/internal/api/peppermint/service/backoffice/hub"
-	g "github.com/AgentCoop/peppermint/internal/grpc"
+	g "github.com/AgentCoop/peppermint/internal"
 	"github.com/AgentCoop/peppermint/internal/grpc/client"
 )
 

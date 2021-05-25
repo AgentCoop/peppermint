@@ -4,9 +4,11 @@ import (
 	"github.com/AgentCoop/go-work"
 	server2 "github.com/AgentCoop/peppermint/internal/service/hub/grpc/server"
 	cmd "github.com/AgentCoop/peppermint/internal/service/hub/service/client/join"
+	"net"
 	"time"
-
 	"testing"
+
+	_ "github.com/AgentCoop/peppermint/internal/service/hub"
 )
 
 var (
@@ -15,7 +17,8 @@ var (
 
 func TestJoinHello(t *testing.T) {
 	serverJob := job.NewJob(t)
-	server := server2.NewServer(serverAddr)
+	localAddr, _ := net.ResolveTCPAddr("tcp", "localhost:9911")
+	server := server2.NewServer("Hub", localAddr)
 	serverJob.AddTask(server.StartTask)
 	//j.AddTask(createClient)
 	serverJob.Run()

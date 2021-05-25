@@ -10,6 +10,7 @@ import (
 type cfg struct {
 	port int
 	address string
+	secret string
 }
 
 func NewConfigurator() *cfg {
@@ -22,7 +23,8 @@ func (c *cfg) Fetch() {
 	rec := &model.HubConfig{}
 	db.Handle().FirstOrCreate(rec)
 	c.port = rec.Port
-	c.address = "localhost" //rec.Address
+	c.address = rec.Address
+	c.secret = rec.Secret
 }
 
 func (c *cfg) MergeCliOptions(parser runtime.CliParser) {
@@ -33,4 +35,8 @@ func (w *cfg) Address() net.Addr {
 	addr, err := net.ResolveTCPAddr("tcp", w.address + ":" + strconv.Itoa(w.port))
 	if err != nil { panic(err) }
 	return addr
+}
+
+func (c *cfg) Secret() string {
+	return c.secret
 }

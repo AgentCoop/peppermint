@@ -6,19 +6,27 @@ import (
 
 type joinCtx struct {
 	encKey []byte
-	ReqChan [1]server.PairChan
-	ResChan [1]server.PairChan
+	reqChan [2]server.PairChan
+	resChan [2]server.PairChan
 }
 
 func NewJoinContext() *joinCtx {
 	ctx := new(joinCtx)
-	ctx.ReqChan = [1]server.PairChan{
+	ctx.reqChan = [2]server.PairChan{
+		make(server.PairChan),
 		make(server.PairChan),
 	}
-	ctx.ResChan = [1]server.PairChan{
+	ctx.resChan = [2]server.PairChan{
+		make(server.PairChan),
 		make(server.PairChan),
 	}
-	//ctx.JoinHelloReqCh = make(server.PairChan)
-	//ctx.JoinHelloRespCh = make(server.PairChan)
 	return ctx
+}
+
+func (ctx *joinCtx) ReqChan() [2]server.PairChan {
+	return ctx.reqChan
+}
+
+func (ctx *joinCtx) ResChan() [2]server.PairChan {
+	return ctx.resChan
 }

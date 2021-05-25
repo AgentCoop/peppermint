@@ -4,9 +4,10 @@ import (
 	"context"
 	job "github.com/AgentCoop/go-work"
 	msg "github.com/AgentCoop/peppermint/internal/api/peppermint/service/backoffice/hub"
-	data "github.com/AgentCoop/peppermint/internal/service/hub/grpc/data/server/join"
 	srv "github.com/AgentCoop/peppermint/internal/grpc/server"
-	join "github.com/AgentCoop/peppermint/internal/service/hub/service/server/join"
+	"github.com/AgentCoop/peppermint/internal/runtime"
+	data "github.com/AgentCoop/peppermint/internal/service/hub/grpc/data/server/join"
+	"github.com/AgentCoop/peppermint/internal/service/hub/service/server/join"
 )
 
 func (s *hubServer) JoinHello(ctx context.Context, originalReq *msg.JoinHello_Request) (*msg.JoinHello_Response, error) {
@@ -14,21 +15,19 @@ func (s *hubServer) JoinHello(ctx context.Context, originalReq *msg.JoinHello_Re
 	req := data.NewJoinHello(pair, originalReq)
 	_ = req.Validate()
 
-	j := job.NewJob(nil)
-	sessId := srv.StartNewSession(j)
-	_ = sessId
-
 	joinCtx := join.NewJoinContext()
+	j := job.NewJob(joinCtx)
 	j.AddTask(joinCtx.JoinHelloTask)
 	j.AddTask(joinCtx.JoinTask)
 	j.Run()
 
+	sessId := runtime.GlobalRegistry().GrpcSession().New(j, 3600)
 	// Dispatch request-response pair to JoinHelloTask started above
-	joinCtx.ReqChan[0] <- pair
-	<-joinCtx.ResChan[0]
+	joinCtx.ReqChan()[0] <- pair
+	<-joinCtx.ResChan()[0]
 
 	res := pair.GetResponse()
-	res.SetSessionId(3)
+	res.SetSessionId(sessId)
 
 	return res.ToGrpcResponse().(*msg.JoinHello_Response), nil
 }

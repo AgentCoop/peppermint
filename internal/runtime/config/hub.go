@@ -8,4 +8,5 @@ import (
 type HubConfigurator interface {
 	runtime.Configurator
 	Address() net.Addr
+	Secret() string
 }

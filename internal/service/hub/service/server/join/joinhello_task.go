@@ -8,7 +8,7 @@ import (
 
 func (ctx *joinCtx) JoinHelloTask(j job.Job) (job.Init, job.Run, job.Finalize) {
 	run := func(task job.Task) {
-		pair := <-ctx.ReqChan[0]
+		pair := <-ctx.reqChan[0]
 		task.AssertNotNil(pair)
 		req := pair.GetRequest()
 
@@ -19,7 +19,7 @@ func (ctx *joinCtx) JoinHelloTask(j job.Job) (job.Init, job.Run, job.Finalize) {
 		ctx.encKey = keyExch.ComputeKey(pubKey)
 
 		data.NewJoinHelloResponse(pair, keyExch.GetPublicKey())
-		ctx.ResChan[0] <- nil
+		ctx.resChan[0] <- nil
 
 		task.Done()
 	}
