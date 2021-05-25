@@ -1,5 +1,5 @@
-package main
+package cmd
 
-func runCmd() {
+func RunCmd() {
 	//runtime.GlobalRegistry().
 }

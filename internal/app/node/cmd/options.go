@@ -1,4 +1,12 @@
-package main
+package cmd
+
+const (
+	CMD_NAME_VERSION = "version"
+	CMD_NAME_DB_MIGRATE = "db_migrate"
+	CMD_NAME_RUN = "run"
+	CMD_NAME_JOIN = "join"
+	CMD_NAME_WEB_PROXY = "proxy-cfg"
+)
 
 type Version struct {
 	Verbose []bool `short:"v" long:"verbose" description:""`
@@ -19,10 +27,10 @@ type Run struct {
 }
 
 var (
-	options = struct {
+	Options = struct {
 		DbMigrate `command:"db_migrate"`
-		Run `command:"run"`
-		Join `command:"join"`
-		Version `command:"version"`
+		Run       `command:"run"`
+		Join      `command:"join"`
+		Version   `command:"version"`
 	}{}
 )

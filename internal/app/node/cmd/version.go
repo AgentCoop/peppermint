@@ -1,8 +1,8 @@
-package main
+package cmd
 
 import "fmt"
 
-func showVersion(verbose []bool) {
+func ShowVersion(verbose []bool) {
 	fmt.Printf("vebose options len %d\n", len(verbose))
 	fmt.Printf("Build: \n")
 }

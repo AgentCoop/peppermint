@@ -1,14 +1,14 @@
-package main
+package node
 
 import (
 	"fmt"
 	job "github.com/AgentCoop/go-work"
-	"github.com/AgentCoop/peppermint/cmd"
+	cmd "github.com/AgentCoop/peppermint/internal/app/node/cmd"
 	"github.com/AgentCoop/peppermint/internal/runtime"
 	"github.com/AgentCoop/peppermint/internal/utils"
 )
 
-func (app *app) NodeTask(j job.Job) (job.Init, job.Run, job.Finalize) {
+func (app *app) ParserTask(j job.Job) (job.Init, job.Run, job.Finalize) {
 	init := func(task job.Task) {
 		// Fetch configurator data from DB and
 		// and merge command-line options with fetched data
@@ -26,14 +26,14 @@ func (app *app) NodeTask(j job.Job) (job.Init, job.Run, job.Finalize) {
 		case cmd.CMD_NAME_VERSION:
 			opts, err := parser.GetCmdOptions(cmdName)
 			task.Assert(err)
-			verbose := opts.(Version).Verbose
-			showVersion(verbose)
+			verbose := opts.(cmd.Version).Verbose
+			cmd.ShowVersion(verbose)
 
 		case cmd.CMD_NAME_DB_MIGRATE:
 			opts, err := parser.GetCmdOptions(cmdName)
 			task.Assert(err)
-			v := opts.(DbMigrate)
-			dbMigrateCmd(db, parser, v.Drop)
+			v := opts.(cmd.DbMigrate)
+			cmd.DbMigrateCmd(db, parser, v.Drop)
 
 		case cmd.CMD_NAME_RUN:
 			serviceJob := job.NewJob(nil)
@@ -49,8 +49,8 @@ func (app *app) NodeTask(j job.Job) (job.Init, job.Run, job.Finalize) {
 			task.Assert(err)
 			opts, err := parser.GetCmdOptions(cmdName)
 			task.Assert(err)
-			v := opts.(Join)
-			joinCmd(secret, v.Tags, v.Hub)
+			v := opts.(cmd.Join)
+			cmd.JoinCmd(secret, v.Tags, v.Hub)
 		default:
 			fmt.Printf("no command\n")
 		}

@@ -1,4 +1,4 @@
-package main
+package cmd
 
 import (
 	"fmt"
@@ -17,7 +17,7 @@ func dropAllTables(migrator gorm.Migrator) {
 	)
 }
 
-func dbMigrateCmd(db db.Db, parser runtime.CliParser, drop bool) {
+func DbMigrateCmd(db db.Db, parser runtime.CliParser, drop bool) {
 	h := db.Handle()
 	if drop {
 		fmt.Printf("-> dropping all tables before migration\n")
