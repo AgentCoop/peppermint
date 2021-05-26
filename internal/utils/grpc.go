@@ -47,7 +47,7 @@ func GetSessDescriptorById(id i.SessionId) (runtime.SessionDesc, error) {
 	}
 }
 
-func grpcErrorWrapper(err interface{}) interface{} {
+func GrpcErrorWrapper(err interface{}) interface{} {
 	var text string
 	switch v := err.(type) {
 	case error:
@@ -64,6 +64,6 @@ func grpcErrorWrapper(err interface{}) interface{} {
 
 func DefaultGrpcJob(value interface{}) job.Job {
 	job := job.NewJob(value)
-	job.WithErrorWrapper(grpcErrorWrapper)
+	job.WithErrorWrapper(GrpcErrorWrapper)
 	return job
 }

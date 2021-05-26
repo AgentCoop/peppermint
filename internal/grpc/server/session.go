@@ -83,14 +83,18 @@ type communicator struct {
 	svcChanMu       [CommunicatorMaxChans]sync.Mutex
 	svcChan         [CommunicatorMaxChans]chan interface{}
 	grpcChan        [CommunicatorMaxChans]chan interface{}
+	serviceJob      job.Job
 }
 
 func NewCommunicator() *communicator {
 	c := &communicator{}
+	c.serviceJob = job.NewJob(c)
+	c.serviceJob.WithErrorWrapper(utils.GrpcErrorWrapper)
+	c.serviceJob.WithShutdown(c.shutdown)
 	return c
 }
 
-func (c *communicator) shutdown(err error) {
+func (c *communicator) shutdown(err interface{}) {
 	for i := 0; i < CommunicatorMaxChans; i++ {
 		// Terminate job tasks listening on provided channels
 		// and propagate error to the gRPC layer
@@ -187,5 +191,8 @@ func (c *communicator) serviceRx(chanIdx int) interface{} {
 func (c *communicator) ServiceRx(chanIdx int) interface{} {
 	return c.serviceRx(chanIdx)
 }
-
 //.
+
+func (c *communicator) Job() job.Job {
+	return c.serviceJob
+}

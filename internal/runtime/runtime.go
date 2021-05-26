@@ -12,6 +12,7 @@ type GrpcServiceCommunicator interface {
 	GrpcRx(int) <-chan interface{}
 	ServiceTx(int, interface{})
 	ServiceRx(int) interface{}
+	Job() job.Job
 }
 
 type CliParser interface {
