@@ -9,7 +9,7 @@ import (
 type GrpcServiceCommunicator interface {
 	GrpcTx(int, interface{})
 	GrpcTxStreamable(int, interface{})
-	GrpcRx(int) <-chan interface{}
+	GrpcRx(int) interface{}
 	ServiceTx(int, interface{})
 	ServiceRx(int) interface{}
 	Job() job.Job

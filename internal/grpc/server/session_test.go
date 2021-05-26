@@ -11,6 +11,7 @@ import (
 
 type dataBag struct {
 	msg string
+	num int
 }
 
 func TestCommunicator_DataPingPong(t *testing.T) {
@@ -38,7 +39,7 @@ func TestCommunicator_DataPingPong(t *testing.T) {
 		data.msg = "ping"
 		expected := "pong"
 		comm.GrpcTx(0, data)
-		rxData := <-comm.GrpcRx(0)
+		rxData := comm.GrpcRx(0)
 		switch rxData.(type) {
 		case error:
 			t.Fatal(rxData)
@@ -76,7 +77,7 @@ func TestCommunicator_ErrorPropagation(t *testing.T) {
 	data := &dataBag{}
 	go func() {
 		comm.GrpcTx(0, data)
-		rxData := <-comm.GrpcRx(0)
+		rxData := comm.GrpcRx(0)
 		switch v := rxData.(type) {
 		case *status.Status:
 			if rxData.(*status.Status).Message() != svcErr.Error() {
@@ -93,3 +94,53 @@ func TestCommunicator_ErrorPropagation(t *testing.T) {
 	}
 }
 
+type cruncher struct {
+	val int
+}
+
+func (c *cruncher) StreamableNumCruncher(j job.Job) (job.Init, job.Run, job.Finalize) {
+	run := func(task job.Task) {
+		comm := j.GetValue().(runtime.GrpcServiceCommunicator)
+		data := comm.ServiceRx(0) // service <- grpc
+		task.AssertNotNil(data)
+		num := data.(*dataBag).num
+		data.(*dataBag).num = num * num
+		comm.ServiceTx(0, data) // service -> grpc
+		if c.val == 19 {
+			task.Done()
+		} else {
+			c.val++
+			task.Tick()
+		}
+	}
+	return nil, run, nil
+}
+
+func TestCommunicator_Streamable(t *testing.T) {
+	comm := server.NewCommunicator()
+	count := 20
+	var recvx int
+	j := comm.Job()
+	crunch := new(cruncher)
+	j.AddTask(crunch.StreamableNumCruncher)
+	for i := 0; i < count; i++ {
+		num := i
+		go func() {
+			data := &dataBag{}
+			data.num = num
+			comm.GrpcTxStreamable(0, data)
+			rxData := comm.GrpcRx(0)
+			recvx++
+			if rxData.(*dataBag).num != num * num {
+				t.Fatalf("expected %d, got %v", num* num, rxData)
+			}
+		}()
+	}
+	<-j.Run()
+	switch {
+	case j.GetState() != job.Done:
+		t.Fatalf("expected job state %s, got %s", job.Done, j.GetState())
+	case crunch.val != count - 1:
+		t.Fatalf("expected %d to be crunched, got %d", count, crunch.val)
+	}
+}

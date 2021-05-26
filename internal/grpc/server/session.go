@@ -94,6 +94,12 @@ func NewCommunicator() *communicator {
 	return c
 }
 
+func NewOutOfOrderCommunicator() *communicator {
+	c := NewCommunicator()
+	c.callOrder = OutOfOrder
+	return c
+}
+
 func (c *communicator) shutdown(err interface{}) {
 	for i := 0; i < CommunicatorMaxChans; i++ {
 		// Terminate job tasks listening on provided channels
@@ -125,7 +131,7 @@ func (c *communicator) grpcTx(chanIdx int, streamable bool, data interface{}) {
 	case !streamable && prevAccess&mask != 0:
 		c.shutdown(ErrNotStreamableCall)
 		return
-	case c.callOrder == Sequential && prevAccess^(mask-1) != 0: // out of order call
+	case c.callOrder == Sequential && prevAccess^(mask-1) != 0 && prevAccess != c.accessBitMask: // out of order call
 		c.shutdown(ErrOutOfOrderCall)
 		return
 	}
@@ -141,30 +147,23 @@ func (c *communicator) GrpcTx(chanId int, data interface{}) {
 func (c *communicator) GrpcTxStreamable(chanId int, data interface{}) {
 	c.grpcTx(chanId, true, data)
 }
-
 //.
 
-func (c *communicator) grpcRx(chanIdx int) chan interface{} {
-	return c.grpcChan[chanIdx]
+func (c *communicator) grpcRx(chanIdx int) interface{} {
+	// Assume that access to the service channel was locked in a preceding grpcTx call,
+	// otherwise we are misusing the communication mechanism
+	defer c.svcChanMu[chanIdx].Unlock()
+	v := <- c.grpcChan[chanIdx]
+	return v
 }
 
 // grpcRx public method
-func (c *communicator) GrpcRx(chanIdx int) <-chan interface{} {
+func (c *communicator) GrpcRx(chanIdx int) interface{} {
 	return c.grpcRx(chanIdx)
 }
-
 //.
 
 func (c *communicator) serviceTx(chanIdx int, data interface{}) {
-	// Assume that access to the service channel was locked in the gRPC layer when sending data,
-	// otherwise we are misusing the communication mechanism
-	defer c.svcChanMu[chanIdx].Unlock()
-
-	switch {
-	case chanIdx >= CommunicatorMaxChans:
-		c.shutdown(nil)
-		return
-	}
 	switch data.(type) {
 	case error:
 		c.shutdown(data.(error))
@@ -178,7 +177,6 @@ func (c *communicator) serviceTx(chanIdx int, data interface{}) {
 func (c *communicator) ServiceTx(chanIdx int, data interface{}) {
 	c.serviceTx(chanIdx, data)
 }
-
 //.
 
 func (c *communicator) serviceRx(chanIdx int) interface{} {
