@@ -5,7 +5,6 @@ import (
 	job "github.com/AgentCoop/go-work"
 	"github.com/AgentCoop/peppermint/internal/grpc/server"
 	"github.com/AgentCoop/peppermint/internal/runtime"
-	"google.golang.org/grpc/status"
 	"testing"
 	"time"
 )
@@ -16,7 +15,7 @@ type dataBag struct {
 }
 
 func TestCommunicator_DataPingPong(t *testing.T) {
-	comm := server.NewCommunicator()
+	comm := server.NewCommunicator(time.Minute)
 	j := comm.Job()
 	ping, pong := "ping", "pong"
 	j.AddTask(func(j job.Job) (job.Init, job.Run, job.Finalize) {
@@ -54,7 +53,7 @@ func TestCommunicator_DataPingPong(t *testing.T) {
 }
 
 func TestCommunicator_ErrorPropagation(t *testing.T) {
-	comm := server.NewCommunicator()
+	comm := server.NewCommunicator(time.Minute)
 	j := comm.Job()
 	svcErr := errors.New("service error")
 	j.AddTask(func(j job.Job) (job.Init, job.Run, job.Finalize) {
@@ -68,6 +67,7 @@ func TestCommunicator_ErrorPropagation(t *testing.T) {
 	})
 	j.AddTask(func(j job.Job) (job.Init, job.Run, job.Finalize) {
 		run := func(task job.Task) {
+			time.Sleep(50 * time.Millisecond)
 			c := j.GetValue().(runtime.GrpcServiceCommunicator)
 			data := c.ServiceRx(1)
 			task.AssertNotNil(data)
@@ -80,8 +80,8 @@ func TestCommunicator_ErrorPropagation(t *testing.T) {
 		comm.GrpcTx(0, data)
 		rxData := comm.GrpcRx(0)
 		switch v := rxData.(type) {
-		case *status.Status:
-			if rxData.(*status.Status).Message() != svcErr.Error() {
+		case error:
+			if v != nil && v.Error() != svcErr.Error() {
 				t.Fatalf("expected %v", svcErr)
 			}
 		default:
@@ -120,7 +120,7 @@ func (c *cruncher) StreamableNumCruncher(j job.Job) (job.Init, job.Run, job.Fina
 }
 
 func TestCommunicator_Streamable(t *testing.T) {
-	comm := server.NewCommunicator()
+	comm := server.NewCommunicator(time.Minute)
 	N := 20
 	var recvx int
 	j := comm.Job()
@@ -149,7 +149,7 @@ func TestCommunicator_Streamable(t *testing.T) {
 }
 
 func TestCommunicator_OutOfOrder(t *testing.T) {
-	comm := server.NewOutOfOrderCommunicator()
+	comm := server.NewOutOfOrderCommunicator(time.Minute)
 	j := comm.Job()
 	crunch := &cruncher{0, 1, 0}
 	crunch2 := &cruncher{0, 1, 1}

@@ -59,7 +59,7 @@ func GrpcErrorWrapper(err interface{}) interface{} {
 	default:
 		text = "Unknown system error"
 	}
-	return status.New(codes.Internal, text)
+	return status.Error(codes.Internal, text)
 }
 
 func DefaultGrpcJob(value interface{}) job.Job {

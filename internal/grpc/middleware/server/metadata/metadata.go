@@ -13,7 +13,7 @@ func UnaryServerInterceptor(serviceName string) grpc.UnaryServerInterceptor {
 		md , _ := metadata.FromIncomingContext(ctx)
 		_ = md
 		desc := runtime.GlobalRegistry().LookupService(serviceName)
-		pair := server.NewRequestResponsePair(ctx, desc.Cfg)
+		pair := server.NewCallDescriptor(ctx, desc.Cfg)
 		resp, err := handler(pair, req)
 		pair.GetResponse().SendHeader()
 		return resp, err

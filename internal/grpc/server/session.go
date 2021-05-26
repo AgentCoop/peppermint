@@ -76,6 +76,7 @@ var (
 )
 
 type communicator struct {
+	sId             i.SessionId
 	callOrder       gRpcCallOder
 	accessBitMask   int
 	lazyInitBitmask int
@@ -87,18 +88,24 @@ type communicator struct {
 	shutdownOnce    sync.Once
 }
 
-func NewCommunicator() *communicator {
+// Session lifetime time in seconds
+func NewCommunicator(sessLifetime time.Duration) *communicator {
 	c := &communicator{}
 	c.serviceJob = job.NewJob(c)
 	c.serviceJob.WithErrorWrapper(utils.GrpcErrorWrapper)
 	c.serviceJob.WithShutdown(c.shutdown)
+	c.sId = runtime.GlobalRegistry().GrpcSession().New(c.serviceJob, sessLifetime)
 	return c
 }
 
-func NewOutOfOrderCommunicator() *communicator {
-	c := NewCommunicator()
+func NewOutOfOrderCommunicator(sessLifetime time.Duration) *communicator {
+	c := NewCommunicator(sessLifetime)
 	c.callOrder = OutOfOrder
 	return c
+}
+
+func (c *communicator) SessionId() i.SessionId {
+	return c.sId
 }
 
 func (c *communicator) _shutdown(err interface{}) {
@@ -155,8 +162,6 @@ func (c *communicator) GrpcTxStreamable(chanId int, data interface{}) {
 	c.grpcTx(chanId, true, data)
 }
 
-//.
-
 func (c *communicator) grpcRx(chanIdx int) interface{} {
 	// Assume that access to the service channel was locked in a preceding grpcTx call,
 	// otherwise we are misusing the communication mechanism
@@ -169,8 +174,6 @@ func (c *communicator) grpcRx(chanIdx int) interface{} {
 func (c *communicator) GrpcRx(chanIdx int) interface{} {
 	return c.grpcRx(chanIdx)
 }
-
-//.
 
 func (c *communicator) serviceTx(chanIdx int, data interface{}) {
 	switch data.(type) {
@@ -187,8 +190,6 @@ func (c *communicator) ServiceTx(chanIdx int, data interface{}) {
 	c.serviceTx(chanIdx, data)
 }
 
-//.
-
 func (c *communicator) serviceRx(chanIdx int) interface{} {
 	c.chansLazyInit(chanIdx)
 	v := <-c.svcChan[chanIdx]
@@ -199,8 +200,6 @@ func (c *communicator) serviceRx(chanIdx int) interface{} {
 func (c *communicator) ServiceRx(chanIdx int) interface{} {
 	return c.serviceRx(chanIdx)
 }
-
-//.
 
 func (c *communicator) Job() job.Job {
 	return c.serviceJob

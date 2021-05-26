@@ -16,7 +16,7 @@ type Join_DataBag interface {
 	Tags() []string
 }
 
-func NewJoin(pair server.RequestResponsePair, original *msg.Join_Request) *joinRequest {
+func NewJoin(pair server.GrpcCallDescriptor, original *msg.Join_Request) *joinRequest {
 	r := new(joinRequest)
 	r.secret = original.JoinSecret
 	r.tags  = original.Tag
@@ -41,16 +41,17 @@ func (r *joinRequest) Tags() []string {
 //
 
 type joinResponse struct {
-	server.MetaData
+	server.Response
 }
 
-func NewJoinResponse(md server.MetaData, hubPubKey []byte) *joinResponse {
+func NewJoinResponse(desc server.GrpcCallDescriptor, hubPubKey []byte) *joinResponse {
 	r := new(joinResponse)
-	r.MetaData = md
+	r.Response = desc.AssignNewResponse(r)
 	return r
 }
 
 func (r *joinResponse) ToGrpcResponse() interface{} {
 	resp := new(msg.Join_Response)
+	resp.NodeId = 1
 	return resp
 }

@@ -14,7 +14,7 @@ type DataBag interface {
 	NodePubKey() []byte
 }
 
-func NewJoinHello(pair server.RequestResponsePair, original *msg.JoinHello_Request) *joinHelloRequest {
+func NewJoinHello(pair server.GrpcCallDescriptor, original *msg.JoinHello_Request) *joinHelloRequest {
 	r := new(joinHelloRequest)
 	r.Populate(original)
 	r.Request = pair.AssignNewRequest(r)
@@ -42,7 +42,7 @@ type joinHelloResponse struct {
 	hubPubKey []byte
 }
 
-func NewJoinHelloResponse(pair server.RequestResponsePair, hubPubKey []byte) *joinHelloResponse {
+func NewJoinHelloResponse(pair server.GrpcCallDescriptor, hubPubKey []byte) *joinHelloResponse {
 	r := new(joinHelloResponse)
 	r.hubPubKey = hubPubKey
 	r.Response = pair.AssignNewResponse(r)

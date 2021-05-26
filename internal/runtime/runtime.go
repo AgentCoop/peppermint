@@ -2,6 +2,7 @@ package runtime
 
 import (
 	job "github.com/AgentCoop/go-work"
+	i "github.com/AgentCoop/peppermint/internal"
 	"github.com/AgentCoop/peppermint/internal/service"
 )
 
@@ -13,6 +14,7 @@ type GrpcServiceCommunicator interface {
 	ServiceTx(int, interface{})
 	ServiceRx(int) interface{}
 	Job() job.Job
+	SessionId() i.SessionId
 }
 
 type CliParser interface {
