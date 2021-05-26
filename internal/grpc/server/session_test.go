@@ -7,6 +7,7 @@ import (
 	"github.com/AgentCoop/peppermint/internal/runtime"
 	"google.golang.org/grpc/status"
 	"testing"
+	"time"
 )
 
 type dataBag struct {
@@ -95,21 +96,23 @@ func TestCommunicator_ErrorPropagation(t *testing.T) {
 }
 
 type cruncher struct {
-	val int
+	tick int
+	jobsize int
+	usechan int
 }
 
 func (c *cruncher) StreamableNumCruncher(j job.Job) (job.Init, job.Run, job.Finalize) {
 	run := func(task job.Task) {
 		comm := j.GetValue().(runtime.GrpcServiceCommunicator)
-		data := comm.ServiceRx(0) // service <- grpc
+		data := comm.ServiceRx(c.usechan) // service <- grpc
 		task.AssertNotNil(data)
 		num := data.(*dataBag).num
 		data.(*dataBag).num = num * num
-		comm.ServiceTx(0, data) // service -> grpc
-		if c.val == 19 {
+		comm.ServiceTx(c.usechan, data) // service -> grpc
+		c.tick++
+		if c.tick == c.jobsize {
 			task.Done()
 		} else {
-			c.val++
 			task.Tick()
 		}
 	}
@@ -118,18 +121,18 @@ func (c *cruncher) StreamableNumCruncher(j job.Job) (job.Init, job.Run, job.Fina
 
 func TestCommunicator_Streamable(t *testing.T) {
 	comm := server.NewCommunicator()
-	count := 20
+	N := 20
 	var recvx int
 	j := comm.Job()
-	crunch := new(cruncher)
+	crunch := &cruncher{0, N, 0}
 	j.AddTask(crunch.StreamableNumCruncher)
-	for i := 0; i < count; i++ {
+	for i := 0; i < N; i++ {
 		num := i
 		go func() {
 			data := &dataBag{}
 			data.num = num
-			comm.GrpcTxStreamable(0, data)
-			rxData := comm.GrpcRx(0)
+			comm.GrpcTxStreamable(crunch.usechan, data)
+			rxData := comm.GrpcRx(crunch.usechan)
 			recvx++
 			if rxData.(*dataBag).num != num * num {
 				t.Fatalf("expected %d, got %v", num* num, rxData)
@@ -140,7 +143,43 @@ func TestCommunicator_Streamable(t *testing.T) {
 	switch {
 	case j.GetState() != job.Done:
 		t.Fatalf("expected job state %s, got %s", job.Done, j.GetState())
-	case crunch.val != count - 1:
-		t.Fatalf("expected %d to be crunched, got %d", count, crunch.val)
+	case crunch.tick != N:
+		t.Fatalf("expected %d to be crunched, got %d", N, crunch.tick)
+	}
+}
+
+func TestCommunicator_OutOfOrder(t *testing.T) {
+	comm := server.NewOutOfOrderCommunicator()
+	j := comm.Job()
+	crunch := &cruncher{0, 1, 0}
+	crunch2 := &cruncher{0, 1, 1}
+	j.AddTask(crunch.StreamableNumCruncher)
+	j.AddTask(crunch2.StreamableNumCruncher)
+	// Out of order call
+	go func() {
+		data := &dataBag{}
+		data.num = 3
+		comm.GrpcTx(1, data)
+		rxData := comm.GrpcRx(1)
+		if rxData.(*dataBag).num != 9 {
+			t.Fatalf("expected %d, got %v", 9, rxData)
+		}
+	}()
+	go func() {
+		time.Sleep(10 * time.Millisecond)
+		data := &dataBag{}
+		data.num = 2
+		comm.GrpcTx(0, data)
+		rxData := comm.GrpcRx(0)
+		if rxData.(*dataBag).num != 4 {
+			t.Fatalf("expected %d, got %v", 4, rxData)
+		}
+	}()
+	<-j.Run()
+	switch {
+	case j.GetState() != job.Done:
+		t.Fatalf("expected job state %s, got %s", job.Done, j.GetState())
+	case crunch.tick != 1 || crunch2.tick != 1:
+		t.Fatalf("expected %d to be crunched, got %d %d", 2, crunch.tick, crunch2.tick)
 	}
 }
