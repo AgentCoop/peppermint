@@ -130,6 +130,7 @@ func (c *communicator) chansLazyInit(chanIdx int) {
 }
 
 func (c *communicator) grpcTx(chanIdx int, streamable bool, data interface{}) {
+	c.svcChanMu[chanIdx].Lock()
 	mask := (1 << chanIdx)
 	prevAccess := c.accessBitMask
 	c.chansLazyInit(chanIdx)
@@ -142,7 +143,6 @@ func (c *communicator) grpcTx(chanIdx int, streamable bool, data interface{}) {
 		c.shutdown(ErrOutOfOrderCall)
 		return
 	}
-	c.svcChanMu[chanIdx].Lock()
 	c.svcChan[chanIdx] <- data
 }
 
