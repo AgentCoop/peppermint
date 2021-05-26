@@ -5,6 +5,15 @@ import (
 	"github.com/AgentCoop/peppermint/internal/service"
 )
 
+// Orchestrates communication between the gRPC and Service layer
+type GrpcServiceCommunicator interface {
+	GrpcTx(int, interface{})
+	GrpcTxStreamable(int, interface{})
+	GrpcRx(int) <-chan interface{}
+	ServiceTx(int, interface{})
+	ServiceRx(int) interface{}
+}
+
 type CliParser interface {
 	Data() interface{}
 	Run() error

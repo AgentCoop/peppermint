@@ -1,10 +1,12 @@
 package server
 
 import (
+	"errors"
 	job "github.com/AgentCoop/go-work"
 	i "github.com/AgentCoop/peppermint/internal"
 	"github.com/AgentCoop/peppermint/internal/runtime"
 	"github.com/AgentCoop/peppermint/internal/utils"
+	"sync"
 	"time"
 )
 
@@ -20,17 +22,17 @@ func init() {
 }
 
 type sessionDesc struct {
-	job job.Job
+	job       job.Job
 	createdAt time.Time
-	expireAt time.Time
+	expireAt  time.Time
 }
 
 func (m sessionMap) New(j job.Job, expireInSecs time.Duration) i.SessionId {
 	now := time.Now().UTC()
 	desc := &sessionDesc{
-		job:             j,
-		createdAt:       now,
-		expireAt: now.Add(expireInSecs * time.Second),
+		job:       j,
+		createdAt: now,
+		expireAt:  now.Add(expireInSecs * time.Second),
 	}
 	id := utils.RandomGrpcSessionId()
 	m[id] = desc
@@ -55,3 +57,135 @@ func (d *sessionDesc) Expired() bool {
 	now := time.Now().UTC()
 	return now.After(d.expireAt)
 }
+
+//
+// The main mechanism of communication between the gRPC and service layer.
+//
+type gRpcCallOder int
+
+const (
+	Sequential gRpcCallOder = iota
+	OutOfOrder
+)
+
+const CommunicatorMaxChans = 8
+
+var (
+	ErrOutOfOrderCall    = errors.New("gRPC call is out of order")
+	ErrNotStreamableCall = errors.New("gRPC call is not streamable")
+)
+
+type communicator struct {
+	callOrder       gRpcCallOder
+	accessBitMask   int
+	lazyInitBitmask int
+	lazyInitMu      [CommunicatorMaxChans]sync.Mutex
+	svcChanMu       [CommunicatorMaxChans]sync.Mutex
+	svcChan         [CommunicatorMaxChans]chan interface{}
+	grpcChan        [CommunicatorMaxChans]chan interface{}
+}
+
+func NewCommunicator() *communicator {
+	c := &communicator{}
+	return c
+}
+
+func (c *communicator) shutdown(err error) {
+	for i := 0; i < CommunicatorMaxChans; i++ {
+		// Terminate job tasks listening on provided channels
+		// and propagate error to the gRPC layer
+		if c.accessBitMask&(1<<i) != 0 {
+			close(c.svcChan[i])
+			c.grpcChan[i] <- err
+		}
+	}
+}
+
+func (c *communicator) chansLazyInit(chanIdx int) {
+	c.lazyInitMu[chanIdx].Lock()
+	defer c.lazyInitMu[chanIdx].Unlock()
+	mask := (1 << chanIdx)
+	if c.lazyInitBitmask&mask == 0 {
+		c.grpcChan[chanIdx] = make(chan interface{}, 1)
+		c.svcChan[chanIdx] = make(chan interface{}, 1)
+		c.lazyInitBitmask |= mask
+	}
+}
+
+func (c *communicator) grpcTx(chanIdx int, streamable bool, data interface{}) {
+	mask := (1 << chanIdx)
+	prevAccess := c.accessBitMask
+	c.chansLazyInit(chanIdx)
+	c.accessBitMask |= mask
+	switch {
+	case !streamable && prevAccess&mask != 0:
+		c.shutdown(ErrNotStreamableCall)
+		return
+	case c.callOrder == Sequential && prevAccess^(mask-1) != 0: // out of order call
+		c.shutdown(ErrOutOfOrderCall)
+		return
+	}
+	c.svcChanMu[chanIdx].Lock()
+	c.svcChan[chanIdx] <- data
+}
+
+// grpcTx public methods
+func (c *communicator) GrpcTx(chanId int, data interface{}) {
+	c.grpcTx(chanId, false, data)
+}
+
+func (c *communicator) GrpcTxStreamable(chanId int, data interface{}) {
+	c.grpcTx(chanId, true, data)
+}
+
+//.
+
+func (c *communicator) grpcRx(chanIdx int) chan interface{} {
+	return c.grpcChan[chanIdx]
+}
+
+// grpcRx public method
+func (c *communicator) GrpcRx(chanIdx int) <-chan interface{} {
+	return c.grpcRx(chanIdx)
+}
+
+//.
+
+func (c *communicator) serviceTx(chanIdx int, data interface{}) {
+	// Assume that access to the service channel was locked in the gRPC layer when sending data,
+	// otherwise we are misusing the communication mechanism
+	defer c.svcChanMu[chanIdx].Unlock()
+
+	switch {
+	case chanIdx >= CommunicatorMaxChans:
+		c.shutdown(nil)
+		return
+	}
+	switch data.(type) {
+	case error:
+		c.shutdown(data.(error))
+		return
+	default:
+		c.grpcChan[chanIdx] <- data
+	}
+}
+
+// serviceTx public method
+func (c *communicator) ServiceTx(chanIdx int, data interface{}) {
+	c.serviceTx(chanIdx, data)
+}
+
+//.
+
+func (c *communicator) serviceRx(chanIdx int) interface{} {
+	c.chansLazyInit(chanIdx)
+	v := <-c.svcChan[chanIdx]
+	return v
+}
+
+// serviceRx public method
+func (c *communicator) ServiceRx(chanIdx int) interface{} {
+	return c.serviceRx(chanIdx)
+}
+
+//.

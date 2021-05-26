@@ -2,12 +2,12 @@ package server
 
 import (
 	"context"
-	job "github.com/AgentCoop/go-work"
 	msg "github.com/AgentCoop/peppermint/internal/api/peppermint/service/backoffice/hub"
 	srv "github.com/AgentCoop/peppermint/internal/grpc/server"
 	"github.com/AgentCoop/peppermint/internal/runtime"
 	data "github.com/AgentCoop/peppermint/internal/service/hub/grpc/data/server/join"
 	"github.com/AgentCoop/peppermint/internal/service/hub/service/server/join"
+	"github.com/AgentCoop/peppermint/internal/utils"
 )
 
 func (s *hubServer) JoinHello(ctx context.Context, originalReq *msg.JoinHello_Request) (*msg.JoinHello_Response, error) {
@@ -16,7 +16,7 @@ func (s *hubServer) JoinHello(ctx context.Context, originalReq *msg.JoinHello_Re
 	_ = req.Validate()
 
 	joinCtx := join.NewJoinContext()
-	j := job.NewJob(joinCtx)
+	j := utils.DefaultGrpcJob(joinCtx)
 	j.AddTask(joinCtx.JoinHelloTask)
 	j.AddTask(joinCtx.JoinTask)
 	j.Run()

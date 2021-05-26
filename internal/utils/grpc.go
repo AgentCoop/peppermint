@@ -1,6 +1,7 @@
 package utils
 
 import (
+	job "github.com/AgentCoop/go-work"
 	i "github.com/AgentCoop/peppermint/internal"
 	grpc "github.com/AgentCoop/peppermint/internal/grpc"
 	"github.com/AgentCoop/peppermint/internal/runtime"
@@ -44,4 +45,25 @@ func GetSessDescriptorById(id i.SessionId) (runtime.SessionDesc, error) {
 	} else {
 		return desc, nil
 	}
+}
+
+func grpcErrorWrapper(err interface{}) interface{} {
+	var text string
+	switch v := err.(type) {
+	case error:
+		text = err.(error).Error()
+	case string:
+		text = v
+	case status.Status:
+		return v
+	default:
+		text = "Unknown system error"
+	}
+	return status.New(codes.Internal, text)
+}
+
+func DefaultGrpcJob(value interface{}) job.Job {
+	job := job.NewJob(value)
+	job.WithErrorWrapper(grpcErrorWrapper)
+	return job
 }

@@ -4,6 +4,8 @@ import (
 	job "github.com/AgentCoop/go-work"
 	"github.com/AgentCoop/peppermint/internal/runtime/config"
 	data "github.com/AgentCoop/peppermint/internal/service/hub/grpc/data/server/join"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 )
 
 func (ctx *joinCtx) JoinTask(j job.Job) (job.Init, job.Run, job.Finalize) {
@@ -17,9 +19,11 @@ func (ctx *joinCtx) JoinTask(j job.Job) (job.Init, job.Run, job.Finalize) {
 
 		cfg := pair.GetConfigurator().(config.HubConfigurator)
 		if cfg.Secret() != secret {
-			panic("wrong secret word")
+			j.Cancel(status.Error(codes.PermissionDenied, "Invalid join secret"))
+			return
 		}
 		_, _ = secret, tags
+		task.Done()
 	}
 	return nil, run, nil
 }

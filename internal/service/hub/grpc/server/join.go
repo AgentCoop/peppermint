@@ -24,6 +24,12 @@ func (s *hubServer) Join(ctx context.Context, r *msg.Join_Request) (*msg.Join_Re
 	joinJob := desc.Job()
 	joinCtx := joinJob.GetValue().(context2.JoinContext)
 	joinCtx.ReqChan()[1] <- pair
+	//<-joinCtx.ResChan()[1]
+
+	_, err2 := joinJob.GetInterruptedBy()
+	if err2 != nil {
+		return nil, err2.(error)
+	}
 
 	return &msg.Join_Response{NodeId: 1}, nil
 }
