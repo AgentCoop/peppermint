@@ -84,6 +84,7 @@ type communicator struct {
 	svcChan         [CommunicatorMaxChans]chan interface{}
 	grpcChan        [CommunicatorMaxChans]chan interface{}
 	serviceJob      job.Job
+	shutdownOnce    sync.Once
 }
 
 func NewCommunicator() *communicator {
@@ -100,7 +101,7 @@ func NewOutOfOrderCommunicator() *communicator {
 	return c
 }
 
-func (c *communicator) shutdown(err interface{}) {
+func (c *communicator) _shutdown(err interface{}) {
 	for i := 0; i < CommunicatorMaxChans; i++ {
 		// Terminate job tasks listening on provided channels
 		// and propagate error to the gRPC layer
@@ -109,6 +110,12 @@ func (c *communicator) shutdown(err interface{}) {
 			c.grpcChan[i] <- err
 		}
 	}
+}
+
+func (c *communicator) shutdown(err interface{}) {
+	c.shutdownOnce.Do(func() {
+		c._shutdown(err)
+	})
 }
 
 func (c *communicator) chansLazyInit(chanIdx int) {
@@ -147,13 +154,14 @@ func (c *communicator) GrpcTx(chanId int, data interface{}) {
 func (c *communicator) GrpcTxStreamable(chanId int, data interface{}) {
 	c.grpcTx(chanId, true, data)
 }
+
 //.
 
 func (c *communicator) grpcRx(chanIdx int) interface{} {
 	// Assume that access to the service channel was locked in a preceding grpcTx call,
 	// otherwise we are misusing the communication mechanism
 	defer c.svcChanMu[chanIdx].Unlock()
-	v := <- c.grpcChan[chanIdx]
+	v := <-c.grpcChan[chanIdx]
 	return v
 }
 
@@ -161,6 +169,7 @@ func (c *communicator) grpcRx(chanIdx int) interface{} {
 func (c *communicator) GrpcRx(chanIdx int) interface{} {
 	return c.grpcRx(chanIdx)
 }
+
 //.
 
 func (c *communicator) serviceTx(chanIdx int, data interface{}) {
@@ -177,6 +186,7 @@ func (c *communicator) serviceTx(chanIdx int, data interface{}) {
 func (c *communicator) ServiceTx(chanIdx int, data interface{}) {
 	c.serviceTx(chanIdx, data)
 }
+
 //.
 
 func (c *communicator) serviceRx(chanIdx int) interface{} {
@@ -189,6 +199,7 @@ func (c *communicator) serviceRx(chanIdx int) interface{} {
 func (c *communicator) ServiceRx(chanIdx int) interface{} {
 	return c.serviceRx(chanIdx)
 }
+
 //.
 
 func (c *communicator) Job() job.Job {
