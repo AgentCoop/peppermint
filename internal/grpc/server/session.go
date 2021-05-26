@@ -98,7 +98,7 @@ func (c *communicator) shutdown(err interface{}) {
 	for i := 0; i < CommunicatorMaxChans; i++ {
 		// Terminate job tasks listening on provided channels
 		// and propagate error to the gRPC layer
-		if c.accessBitMask&(1<<i) != 0 {
+		if c.lazyInitBitmask&(1<<i) != 0 {
 			close(c.svcChan[i])
 			c.grpcChan[i] <- err
 		}

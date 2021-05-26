@@ -2,7 +2,6 @@ package server_test
 
 import (
 	"errors"
-	"fmt"
 	job "github.com/AgentCoop/go-work"
 	"github.com/AgentCoop/peppermint/internal/grpc/server"
 	"github.com/AgentCoop/peppermint/internal/runtime"
@@ -69,8 +68,7 @@ func TestCommunicator_ErrorPropagation(t *testing.T) {
 		run := func(task job.Task) {
 			c := j.GetValue().(runtime.GrpcServiceCommunicator)
 			data := c.ServiceRx(1)
-			fmt.Printf("%v\n", data)
-			//task.AssertNotNil(data)
+			task.AssertNotNil(data)
 			task.Done()
 		}
 		return nil, run, nil
