@@ -20,7 +20,7 @@ func (c *hubClient) JoinTask(j job.Job) (job.Init, job.Run, job.Finalize) {
 		task.Assert(err)
 
 		data.NewJoinResponse(pair, origResp)
-		joinCtx.ResChan(1) <- struct{}{}
+		//joinCtx.ResChan(1) <- struct{}{}
 
 		task.Done()
 	}

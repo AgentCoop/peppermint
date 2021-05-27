@@ -15,7 +15,7 @@ func (r *runtime) InitTask(j job.Job) (job.Init, job.Run, job.Finalize) {
 	run := func(task job.Task) {
 		if len(r.dbFilename) != 0 {
 			sqliteDb, err := gorm.Open(sqlite.Open(r.dbFilename), &gorm.Config{
-				DisableForeignKeyConstraintWhenMigrating: true,
+				//DisableForeignKeyConstraintWhenMigrating: true,
 				NamingStrategy: schema.NamingStrategy{
 					SingularTable: true, // use singular table name, table for `User` would be `user` with this option enabled
 				},

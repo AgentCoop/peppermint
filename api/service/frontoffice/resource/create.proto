@@ -1,0 +1,10 @@
+syntax = "proto3";
+
+package resmngr.frontoffice.peppermint;
+
+option go_package = "peppermint/service/frontoffice/resmngr";
+
+message Create {
+  message Request { }
+  message Response { }
+}

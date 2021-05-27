@@ -30,6 +30,7 @@ func init() {
 	}
 	reg.RegisterService(serviceInfo)
 	reg.RegisterParserCmdHook(cmd.CMD_NAME_DB_MIGRATE, hub.migrateDb)
+	reg.RegisterParserCmdHook(cmd.CMD_NAME_DB_CREATE, hub.createDd)
 }
 
 func (w *hubService) initializer() service.Service {
@@ -43,7 +44,13 @@ func (w *hubService) initializer() service.Service {
 func (hub *hubService) migrateDb(options interface{}) {
 	db := runtime.GlobalRegistry().Db()
 	h := db.Handle()
-	h.AutoMigrate(&model.HubConfig{})
+	h.AutoMigrate(&model.HubConfig{}, &model.HubJoinedNode{}, &model.HubNodeTag{})
 }
 
+func (hub *hubService) createDd(options interface{}) {
+	db := runtime.GlobalRegistry().Db()
+	h := db.Handle()
+	h.Migrator().DropTable(model.Tables...)
+	h.Migrator().CreateTable(model.Tables...)
+}
 

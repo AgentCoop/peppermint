@@ -1,0 +1,21 @@
+syntax = "proto3";
+
+import "service/frontoffice/resource/messages.proto";
+import "service/frontoffice/resource/create.proto";
+import "service/rpc.proto";
+
+package resmngr.frontoffice.peppermint;
+
+option go_package = "peppermint/service/backoffice/resource";
+
+//
+// ResourceManager is a service that is responsible for creating, updating, deleting and versioning of user resources.
+// A resource may be a single file or a collection of files.
+// Each resource has to be available over Web by an URL.
+//
+service ResourceManager {
+  rpc Create(Create.Request) returns (Create.Response) { }
+  rpc DestroySession(DestroySession.Request) returns (DestroySession.Response) {}
+  rpc CreateRemoteFile(stream CreateRemoteFile.Request) returns (CreateRemoteFile.Response) {}
+  rpc TransferFileChunks(stream TransferFileChunks.Request) returns (TransferFileChunks.Response) {}
+}

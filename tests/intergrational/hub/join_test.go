@@ -1,4 +1,4 @@
-package grpc_test
+package hub_test
 
 import (
 	"github.com/AgentCoop/peppermint/internal/app/node"
@@ -20,7 +20,7 @@ func TestJoinHello(t *testing.T) {
 	appJob.Run()
 
 	time.Sleep(100 * time.Millisecond)
-	clientJob := cmd.JoinCmd(serverAddr, "secretword")
+	clientJob := cmd.JoinCmd(serverAddr, "secret")
 	<-clientJob.Run()
 
 	_, err := clientJob.GetInterruptedBy()

@@ -1,6 +1,7 @@
 package join
 
 import (
+	i "github.com/AgentCoop/peppermint/internal"
 	msg "github.com/AgentCoop/peppermint/internal/api/peppermint/service/backoffice/hub"
 	"github.com/AgentCoop/peppermint/internal/grpc/server"
 )
@@ -42,16 +43,18 @@ func (r *joinRequest) Tags() []string {
 
 type joinResponse struct {
 	server.Response
+	nodeId i.UniqueId
 }
 
-func NewJoinResponse(desc server.GrpcCallDescriptor, hubPubKey []byte) *joinResponse {
+func NewJoinResponse(desc server.GrpcCallDescriptor, nodeId i.UniqueId) *joinResponse {
 	r := new(joinResponse)
 	r.Response = desc.AssignNewResponse(r)
+	r.nodeId = nodeId
 	return r
 }
 
 func (r *joinResponse) ToGrpcResponse() interface{} {
 	resp := new(msg.Join_Response)
-	resp.NodeId = 1
+	resp.NodeId = r.nodeId.NodeId()
 	return resp
 }

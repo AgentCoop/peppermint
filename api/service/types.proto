@@ -8,3 +8,12 @@ message ServiceDesc {
   string name = 1;
   int32 port = 2;
 }
+
+message KeyValueStr {
+  string key = 1;
+  string val = 2;
+}
+
+message BinKeyValue {
+
+}
