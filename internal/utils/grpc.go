@@ -1,7 +1,6 @@
 package utils
 
 import (
-	job "github.com/AgentCoop/go-work"
 	i "github.com/AgentCoop/peppermint/internal"
 	grpc "github.com/AgentCoop/peppermint/internal/grpc"
 	"github.com/AgentCoop/peppermint/internal/runtime"
@@ -60,10 +59,4 @@ func GrpcErrorWrapper(err interface{}) interface{} {
 		text = "Unknown system error"
 	}
 	return status.Error(codes.Internal, text)
-}
-
-func DefaultGrpcJob(value interface{}) job.Job {
-	job := job.NewJob(value)
-	job.WithErrorWrapper(GrpcErrorWrapper)
-	return job
 }

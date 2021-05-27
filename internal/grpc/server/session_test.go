@@ -5,6 +5,7 @@ import (
 	job "github.com/AgentCoop/go-work"
 	"github.com/AgentCoop/peppermint/internal/grpc/server"
 	"github.com/AgentCoop/peppermint/internal/runtime"
+	"google.golang.org/grpc/status"
 	"testing"
 	"time"
 )
@@ -81,7 +82,8 @@ func TestCommunicator_ErrorPropagation(t *testing.T) {
 		rxData := comm.GrpcRx(0)
 		switch v := rxData.(type) {
 		case error:
-			if v != nil && v.Error() != svcErr.Error() {
+			st := status.Convert(rxData.(error))
+			if st.Message() != svcErr.Error() {
 				t.Fatalf("expected %v", svcErr)
 			}
 		default:
