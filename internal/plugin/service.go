@@ -1,4 +1,4 @@
-package service
+package plugin
 
 import (
 	"github.com/AgentCoop/peppermint/internal/runtime"

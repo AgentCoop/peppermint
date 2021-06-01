@@ -4,17 +4,18 @@ import (
 	"fmt"
 	"github.com/AgentCoop/peppermint/cmd"
 	"github.com/AgentCoop/peppermint/internal/db"
-	"github.com/AgentCoop/peppermint/internal/model/hub"
-	"github.com/AgentCoop/peppermint/internal/model/webproxy"
+	//"github.com/AgentCoop/peppermint/internal/model/hub"
+	//"github.com/AgentCoop/peppermint/internal/model/webproxy"
 	"github.com/AgentCoop/peppermint/internal/runtime"
+	//"github.com/AgentCoop/peppermint/internal/service/webproxy/model"
 	"gorm.io/gorm"
 )
 
 func dropAllTables(migrator gorm.Migrator) {
-	migrator.DropTable(
-		webproxy.WebProxyConfig{},
-		hub.HubConfig{},
-	)
+	//migrator.DropTable(
+	//	model.WebProxyConfig{},
+	//	model.HubConfig{},
+	//)
 }
 
 func DbMigrateCmd(db db.Db, parser runtime.CliParser, drop bool) {

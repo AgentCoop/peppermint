@@ -3,10 +3,10 @@ package join
 import (
 	job "github.com/AgentCoop/go-work"
 	"github.com/AgentCoop/peppermint/internal/grpc/server"
-	"github.com/AgentCoop/peppermint/internal/model/hub"
+	"github.com/AgentCoop/peppermint/internal/plugin/hub/model"
 	"github.com/AgentCoop/peppermint/internal/runtime"
 	"github.com/AgentCoop/peppermint/internal/runtime/config"
-	data "github.com/AgentCoop/peppermint/internal/service/hub/grpc/data/server/join"
+	data "github.com/AgentCoop/peppermint/internal/plugin/hub/grpc/data/server/join"
 	"github.com/AgentCoop/peppermint/internal/utils"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -35,10 +35,10 @@ func (ctx *joinCtx) JoinTask(j job.Job) (job.Init, job.Run, job.Finalize) {
 
 		// Persist node data
 		_ = tags
-		newNode := &hub.HubJoinedNode{
+		newNode := &model.HubJoinedNode{
 			EncKey: ctx.encKey,
 			NodeId: uint64(joinedId),
-			Tags:   []hub.HubNodeTag{{Name: "foo222"}},
+			Tags:   []model.HubNodeTag{{Name: "foo222"}},
 		}
 
 		db := runtime.GlobalRegistry().Db().Handle()

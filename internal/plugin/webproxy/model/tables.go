@@ -1,4 +1,4 @@
-package webproxy
+package model
 
 var Tables = []interface{} {
 	&WebProxyConfig{},

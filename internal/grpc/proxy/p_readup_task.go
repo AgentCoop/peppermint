@@ -21,7 +21,7 @@ func (c *proxyConn) readUpstreamTask(j job.Job) (job.Init, job.Run, job.Finalize
 			return
 		}
 		c.upstreamChan <- recvRaw
-		c.uprecvx++
+		//c.uprecvx++
 		task.Tick()
 	}
 	fin := func(task job.Task) {

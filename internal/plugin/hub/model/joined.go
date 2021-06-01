@@ -1,4 +1,4 @@
-package hub
+package model
 
 import (
 	"github.com/AgentCoop/peppermint/internal/model"
@@ -7,7 +7,7 @@ import (
 type HubJoinedNode struct {
 	model.Model
 	EncKey []byte
-	NodeId uint64 `gorm:"type:uint64"`
+	NodeId uint64     `gorm:"type:uint64"`
 	Tags []HubNodeTag `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;"`
 }
 

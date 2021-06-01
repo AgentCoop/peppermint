@@ -5,7 +5,7 @@ import (
 	msg "github.com/AgentCoop/peppermint/internal/api/peppermint/service/backoffice/hub"
 	srv "github.com/AgentCoop/peppermint/internal/grpc/server"
 	"github.com/AgentCoop/peppermint/internal/runtime"
-	"github.com/AgentCoop/peppermint/internal/service/hub/grpc/data/server/join"
+	"github.com/AgentCoop/peppermint/internal/plugin/hub/grpc/data/server/join"
 	"github.com/AgentCoop/peppermint/internal/utils"
 	//"github.com/AgentCoop/peppermint/internal/service/hub"
 )

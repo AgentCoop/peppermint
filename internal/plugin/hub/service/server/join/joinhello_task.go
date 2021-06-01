@@ -5,7 +5,7 @@ import (
 	"github.com/AgentCoop/peppermint/internal/crypto"
 	"github.com/AgentCoop/peppermint/internal/grpc/server"
 	"github.com/AgentCoop/peppermint/internal/runtime"
-	data "github.com/AgentCoop/peppermint/internal/service/hub/grpc/data/server/join"
+	data "github.com/AgentCoop/peppermint/internal/plugin/hub/grpc/data/server/join"
 )
 
 func (ctx *joinCtx) JoinHelloTask(j job.Job) (job.Init, job.Run, job.Finalize) {

@@ -4,8 +4,8 @@ import (
 	"context"
 	msg "github.com/AgentCoop/peppermint/internal/api/peppermint/service/backoffice/hub"
 	srv "github.com/AgentCoop/peppermint/internal/grpc/server"
-	data "github.com/AgentCoop/peppermint/internal/service/hub/grpc/data/server/join"
-	"github.com/AgentCoop/peppermint/internal/service/hub/service/server/join"
+	data "github.com/AgentCoop/peppermint/internal/plugin/hub/grpc/data/server/join"
+	"github.com/AgentCoop/peppermint/internal/plugin/hub/service/server/join"
 	"time"
 )
 

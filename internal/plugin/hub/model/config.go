@@ -1,4 +1,4 @@
-package hub
+package model
 
 import "github.com/AgentCoop/peppermint/internal/model"
 

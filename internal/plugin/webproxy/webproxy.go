@@ -2,10 +2,10 @@ package webproxy
 
 import (
 	"github.com/AgentCoop/peppermint/cmd"
-	model "github.com/AgentCoop/peppermint/internal/model/webproxy"
+	model "github.com/AgentCoop/peppermint/internal/plugin/webproxy/model"
 	"github.com/AgentCoop/peppermint/internal/runtime"
 	"github.com/AgentCoop/peppermint/internal/runtime/config"
-	g "github.com/AgentCoop/peppermint/internal/service/webproxy/grpc/server"
+	g "github.com/AgentCoop/peppermint/internal/plugin/webproxy/grpc/server"
 )
 
 const (

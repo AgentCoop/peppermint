@@ -2,12 +2,15 @@ syntax = "proto3";
 
 import "service/backoffice/hub/join.proto";
 import "service/rpc.proto";
+import "options.proto";
 
 package hub.backoffice.peppermint;
 
 option go_package = "peppermint/service/backoffice/hub";
 
 service Hub {
+  option (.peppermint.unix_domain_socket) = "foo";
+
   rpc JoinHello(JoinHello.Request) returns (JoinHello.Response) { }
   rpc Join(Join.Request) returns (Join.Response) {  }
 }

@@ -2,8 +2,8 @@ package main
 
 import (
 	"github.com/AgentCoop/peppermint/internal/app/node"
-	_ "github.com/AgentCoop/peppermint/internal/service/hub"
-	_ "github.com/AgentCoop/peppermint/internal/service/webproxy"
+	_ "github.com/AgentCoop/peppermint/internal/plugin/hub"
+	_ "github.com/AgentCoop/peppermint/internal/plugin/webproxy"
 	"os"
 )
 

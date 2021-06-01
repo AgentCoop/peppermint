@@ -1,7 +1,7 @@
 package webproxy
 
 import (
-	model "github.com/AgentCoop/peppermint/internal/model/webproxy"
+	model "github.com/AgentCoop/peppermint/internal/plugin/webproxy/model"
 	"github.com/AgentCoop/peppermint/internal/runtime"
 	"io/ioutil"
 	"net"

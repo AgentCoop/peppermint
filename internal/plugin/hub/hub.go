@@ -3,10 +3,10 @@ package hub
 
 import (
 	"github.com/AgentCoop/peppermint/cmd"
-	model "github.com/AgentCoop/peppermint/internal/model/hub"
+	"github.com/AgentCoop/peppermint/internal/plugin/hub/model"
 	"github.com/AgentCoop/peppermint/internal/runtime"
 	"github.com/AgentCoop/peppermint/internal/runtime/config"
-	grpc "github.com/AgentCoop/peppermint/internal/service/hub/grpc/server"
+	grpc "github.com/AgentCoop/peppermint/internal/plugin/hub/grpc/server"
 )
 
 const (

@@ -1,7 +1,7 @@
 package hub
 
 import (
-	model "github.com/AgentCoop/peppermint/internal/model/hub"
+	"github.com/AgentCoop/peppermint/internal/plugin/hub/model"
 	"github.com/AgentCoop/peppermint/internal/runtime"
 	"net"
 	"strconv"
