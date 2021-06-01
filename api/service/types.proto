@@ -9,6 +9,10 @@ message ServiceDesc {
   int32 port = 2;
 }
 
+enum ResourceType {
+  Image = 0;
+}
+
 message KeyValueStr {
   string key = 1;
   string val = 2;

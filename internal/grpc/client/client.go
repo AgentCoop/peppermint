@@ -5,6 +5,7 @@ import (
 	job "github.com/AgentCoop/go-work"
 	i "github.com/AgentCoop/peppermint/internal"
 	"github.com/AgentCoop/peppermint/internal/grpc/codec"
+	"github.com/AgentCoop/peppermint/internal/runtime"
 	"google.golang.org/grpc"
 	"net"
 )
@@ -22,10 +23,12 @@ type BaseClient interface {
 	WithMiddlewareHook(middlewareHook)
 	SessionId() i.SessionId
 	SetSessionId(id i.SessionId)
+	EncKey() []byte
 }
 
 type baseClient struct {
 	ctx context.Context
+	encKey []byte
 	conn    grpc.ClientConnInterface
 	opts []grpc.DialOption
 	address net.Addr
@@ -34,21 +37,26 @@ type baseClient struct {
 	sId i.SessionId
 }
 
-func NewBaseClient(address net.Addr) *baseClient {
+func NewBaseClient(endpoint runtime.ServiceEndpoint, opts... grpc.DialOption) *baseClient {
 	c := new(baseClient)
-	c.address = address
+	c.address = endpoint.Address()
+	c.encKey = endpoint.EncKey()
+	c.opts = opts
 	return c
 }
 
-func NewBaseClientWithContext(address net.Addr, ctx context.Context, opts... grpc.DialOption) *baseClient {
-	c := new(baseClient)
-	c.address = address
-	c.opts = opts
+func NewBaseClientWithContext(ctx context.Context, endpoint runtime.ServiceEndpoint, opts... grpc.DialOption) *baseClient {
+	c := NewBaseClient(endpoint, opts...)
+	c.ctx = ctx
 	return c
 }
 
 func (c *baseClient) SessionId() i.SessionId {
 	return c.sId
+}
+
+func (c *baseClient) EncKey() []byte {
+	return c.encKey
 }
 
 func (c *baseClient) SetSessionId(id i.SessionId) {

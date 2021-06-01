@@ -6,7 +6,6 @@ import (
 	model "github.com/AgentCoop/peppermint/internal/model/hub"
 	"github.com/AgentCoop/peppermint/internal/runtime"
 	"github.com/AgentCoop/peppermint/internal/runtime/config"
-	"github.com/AgentCoop/peppermint/internal/service"
 	grpc "github.com/AgentCoop/peppermint/internal/service/hub/grpc/server"
 )
 
@@ -33,7 +32,7 @@ func init() {
 	reg.RegisterParserCmdHook(cmd.CMD_NAME_DB_CREATE, hub.createDd)
 }
 
-func (w *hubService) initializer() service.Service {
+func (w *hubService) initializer() runtime.Service {
 	proxy := grpc.NewServer(
 		Name,
 		w.HubConfigurator.Address(),

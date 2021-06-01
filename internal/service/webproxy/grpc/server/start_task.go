@@ -1,47 +1,11 @@
-package webproxy
+package server
 
 import (
 	"crypto/tls"
 	job "github.com/AgentCoop/go-work"
-	middleware "github.com/AgentCoop/peppermint/internal/grpc/middleware/server"
-	md_middleware "github.com/AgentCoop/peppermint/internal/grpc/middleware/server/metadata"
-	"github.com/AgentCoop/peppermint/internal/grpc/server"
 	"github.com/improbable-eng/grpc-web/go/grpcweb"
-	"google.golang.org/grpc"
-	"net"
 	"net/http"
 )
-
-type webproxy struct {
-	server.BaseServer
-	lis net.Listener
-	tlsHttpServer *http.Server
-	x509CertPEM []byte
-	x509KeyPEM []byte
-	serverName string
-}
-
-func withUnaryServerMiddlewares(serviceName string) grpc.ServerOption {
-	return middleware.WithUnaryServerChain(
-		md_middleware.UnaryServerInterceptor(serviceName),
-	)
-}
-
-func NewServer(name string, address net.Addr, serverName string, x509CertPem []byte, x509KeyPem []byte) *webproxy {
-	s := new(webproxy)
-	s.BaseServer = server.NewBaseServer(name, address, grpc.NewServer(
-		withUnaryServerMiddlewares(name),
-	))
-	s.serverName = serverName
-	s.x509CertPEM = x509CertPem
-	s.x509KeyPEM = x509KeyPem
-	s.RegisterServer()
-	return s
-}
-
-func (b *webproxy) RegisterServer() {
-	//t.RegisterTestServer(b.Handle(), b)
-}
 
 func (w *webproxy) StartTask(j job.Job) (job.Init, job.Run, job.Finalize) {
 	init := func(task job.Task) {
@@ -78,3 +42,4 @@ func (w *webproxy) StartTask(j job.Job) (job.Init, job.Run, job.Finalize) {
 	}
 	return init, run, fin
 }
+

@@ -1,10 +1,52 @@
 package runtime
 
 import (
+	"context"
 	job "github.com/AgentCoop/go-work"
 	i "github.com/AgentCoop/peppermint/internal"
-	"github.com/AgentCoop/peppermint/internal/service"
+	//"github.com/AgentCoop/peppermint/internal/service"
+	"net"
 )
+
+type NodeStatus int
+const (
+	Available NodeStatus = iota + 1
+)
+
+type Node interface {
+	Id() i.NodeId
+	ServiceEndpointByName(string) ServiceEndpoint
+}
+
+type NodePool interface {
+	Add(Node)
+	Remove(i.NodeId)
+	FindById(i.NodeId) Node
+	FilterByStatus(NodeStatus) NodePool
+	Len() int
+}
+
+type ServiceLocator interface {
+	FindByMethodName(string) NodePool
+	ServiceNameByMethod(string) string
+}
+
+type ServiceEndpoint interface {
+	Address() net.Addr
+	EncKey() []byte
+}
+
+type Stream interface {
+	Context() context.Context
+	SendMsg(m interface{}) error
+	RecvMsg(m interface{}) error
+}
+
+type StreamInfo interface {
+	EncKey() []byte
+	FullMethod() string
+	MessagesReceived() int
+}
 
 // Orchestrates communication between the gRPC and Service layer
 type GrpcServiceCommunicator interface {
@@ -30,10 +72,19 @@ type Configurator interface {
 	MergeCliOptions(CliParser)
 }
 
+type ServiceConfigurator interface {
+	Configurator
+	Address() net.Addr
+}
+
+type Service interface {
+	StartTask(j job.Job) (job.Init, job.Run, job.Finalize)
+}
+
 type ServiceInfo struct {
 	Name string
 	Cfg Configurator
-	Initializer func() service.Service
+	Initializer func() Service
 }
 
 type runtime struct {

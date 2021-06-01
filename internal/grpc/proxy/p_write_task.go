@@ -1,4 +1,4 @@
-package balancer
+package proxy
 
 import (
 	job "github.com/AgentCoop/go-work"

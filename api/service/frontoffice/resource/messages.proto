@@ -2,9 +2,9 @@ syntax = "proto3";
 
 import "service/types.proto";
 
-package uploader.peppermint;
+package resource.frontoffice.peppermint;
 
-option go_package = "peppermint/uploader";
+option go_package = "peppermint/service/frontoffice/resource";
 
 /**
   Format of the 64-bit session identifier: yy-m-d

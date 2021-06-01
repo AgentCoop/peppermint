@@ -57,6 +57,7 @@ type GlobalRegistryInterface interface {
 	RegisterService(*ServiceInfo)
 	Services() []*ServiceInfo
 	LookupService(string) *ServiceInfo
+	ServiceLocator(string) ServiceLocator
 
 	RegisterParserCmdHook(string, parserCmdHook)
 	LookupParserCmdHook(string) []parserCmdHook
@@ -107,6 +108,10 @@ func (m registryMap) LookupService(name string) *ServiceInfo {
 			return vv
 		}
 	}
+	return nil
+}
+
+func (m registryMap) ServiceLocator(svcName string) ServiceLocator {
 	return nil
 }
 

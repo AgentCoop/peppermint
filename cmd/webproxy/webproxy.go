@@ -3,13 +3,13 @@ package main
 import (
 	"fmt"
 	job "github.com/AgentCoop/go-work"
-	"github.com/AgentCoop/peppermint/internal/grpc/webproxy"
+	"github.com/AgentCoop/peppermint/internal/service/webproxy/grpc/webproxy"
 )
 
 func main() {
 	j := job.NewJob(nil)
 
-	proxy := webproxy.NewServer("localhost:9900")
+	proxy := server.NewServer("localhost:9900")
 
 	j.AddTask(proxy.StartTask)
 

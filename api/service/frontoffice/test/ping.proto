@@ -1,8 +1,8 @@
 syntax = "proto3";
 
-package test.peppermint;
+package test.frontoffice.peppermint;
 
-option go_package = "peppermint/service/test";
+option go_package = "peppermint/service/frontoffice/test";
 
 message Ping {
   message Request {

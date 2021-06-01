@@ -1,9 +1,13 @@
 package service
 
 import (
-	job "github.com/AgentCoop/go-work"
+	"github.com/AgentCoop/peppermint/internal/runtime"
+	"google.golang.org/grpc"
 )
 
-type Service interface {
-	StartTask(j job.Job) (job.Init, job.Run, job.Finalize)
+type WebProxyBalancer interface {
+	ForwardCall(srv interface{}, stream grpc.ServerStream) error
+	SimpleRandom(svcName string, pool runtime.NodePool) runtime.ServiceEndpoint
+	//RoundRobin(string, runtime.NodePool) runtime.ServiceEndpoint
+	///LeastConns(string, runtime.NodePool) runtime.ServiceEndpoint
 }
