@@ -74,16 +74,12 @@ type ServiceInfo struct {
 type runtime struct {
 	nodeCfg deps.NodeConfigurator
 	parser deps.CliParser
-	appDir *string
-	dbFilename string
 }
 
-func NewRuntime(nodeCfg deps.NodeConfigurator, parser deps.CliParser, appDir *string, dbFilename string) *runtime {
+func NewRuntime(nodeCfg deps.NodeConfigurator, parser deps.CliParser) *runtime {
 	r := &runtime{
 		nodeCfg: nodeCfg,
 		parser: parser,
-		appDir: appDir,
-		dbFilename: dbFilename,
 	}
 	GlobalRegistry().SetRuntime(r)
 	return r
@@ -92,8 +88,6 @@ func NewRuntime(nodeCfg deps.NodeConfigurator, parser deps.CliParser, appDir *st
 type Runtime interface {
 	CliParser() deps.CliParser
 	NodeConfigurator() deps.NodeConfigurator
-	AppDir() string
-	InitTask(j job.Job) (job.Init, job.Run, job.Finalize)
 }
 
 func (r *runtime) NodeConfigurator() deps.NodeConfigurator {
@@ -103,8 +97,3 @@ func (r *runtime) NodeConfigurator() deps.NodeConfigurator {
 func (r *runtime) CliParser() deps.CliParser {
 	return r.parser
 }
-
-func (r *runtime) AppDir() string {
-	return *r.appDir
-}
-
