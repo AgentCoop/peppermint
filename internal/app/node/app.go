@@ -14,15 +14,21 @@ type app struct {
 	dbFilename string
 }
 
-func AppInitTest() job.Job {
+func NewApp(dbFilename string) *app {
 	app := &app{
 		appDir: &cmd.Options.AppDir,
-		dbFilename: "test.db",
+		dbFilename: dbFilename,
 	}
 	app.Runtime = runtime.NewRuntime(
 		node.NewConfigurator(),
 		cliparser.NewParser(&cmd.Options),
 	)
+	runtime.GlobalRegistry().SetRuntime(app)
+	return app
+}
+
+func AppInitTest() job.Job {
+	app := NewApp("test.db")
 
 	dbJob := job.NewJob(nil)
 	dbJob.AddOneshotTask(app.InitTask)
@@ -37,14 +43,7 @@ func AppInitTest() job.Job {
 }
 
 func AppInit(dbFilename string) job.Job {
-	app := &app{
-		appDir: &cmd.Options.AppDir,
-		dbFilename: dbFilename,
-	}
-	app.Runtime = runtime.NewRuntime(
-		node.NewConfigurator(),
-		cliparser.NewParser(&cmd.Options),
-	)
+	app := NewApp(dbFilename)
 	appJob := job.NewJob(nil)
 	appJob.AddOneshotTask(app.InitTask)
 	appJob.AddTask(app.ParserTask)

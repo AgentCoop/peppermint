@@ -81,7 +81,6 @@ func NewRuntime(nodeCfg deps.NodeConfigurator, parser deps.CliParser) *runtime {
 		nodeCfg: nodeCfg,
 		parser: parser,
 	}
-	GlobalRegistry().SetRuntime(r)
 	return r
 }
 
