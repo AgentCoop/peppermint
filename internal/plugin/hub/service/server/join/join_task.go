@@ -3,11 +3,10 @@ package join
 import (
 	job "github.com/AgentCoop/go-work"
 	"github.com/AgentCoop/peppermint/internal/grpc/server"
+	data "github.com/AgentCoop/peppermint/internal/plugin/hub/grpc/data/server/join"
 	"github.com/AgentCoop/peppermint/internal/plugin/hub/model"
 	"github.com/AgentCoop/peppermint/internal/runtime"
 	"github.com/AgentCoop/peppermint/internal/runtime/config"
-	data "github.com/AgentCoop/peppermint/internal/plugin/hub/grpc/data/server/join"
-	"github.com/AgentCoop/peppermint/internal/utils"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
@@ -30,8 +29,8 @@ func (ctx *joinCtx) JoinTask(j job.Job) (job.Init, job.Run, job.Finalize) {
 			return
 		}
 
-		joinedId := utils.UniqueId()
-		data.NewJoinResponse(callDesc, joinedId)
+		joinedId := 1//utils.Rand_UniqueId()
+		data.NewJoinResponse(callDesc, 0)
 
 		// Persist node data
 		_ = tags

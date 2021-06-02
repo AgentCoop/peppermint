@@ -89,21 +89,28 @@ type ServiceInfo struct {
 
 type runtime struct {
 	parser CliParser
+	appDir *string
 	dbFilename string
 }
 
-func NewRuntime(parser CliParser, dbFilename string) *runtime {
+func NewRuntime(parser CliParser, appDir *string, dbFilename string) *runtime {
 	r := &runtime{
-		parser,
-		dbFilename,
+		parser: parser,
+		appDir: appDir,
+		dbFilename: dbFilename,
 	}
 	GlobalRegistry().SetRuntime(r)
 	return r
 }
 
 type Runtime interface {
+	AppDir() string
 	CliParser() CliParser
 	InitTask(j job.Job) (job.Init, job.Run, job.Finalize)
+}
+
+func (r *runtime) AppDir() string {
+	return *r.appDir
 }
 
 func (r *runtime) CliParser() CliParser {

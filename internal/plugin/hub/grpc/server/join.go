@@ -4,9 +4,10 @@ import (
 	"context"
 	msg "github.com/AgentCoop/peppermint/internal/api/peppermint/service/backoffice/hub"
 	srv "github.com/AgentCoop/peppermint/internal/grpc/server"
-	"github.com/AgentCoop/peppermint/internal/runtime"
 	"github.com/AgentCoop/peppermint/internal/plugin/hub/grpc/data/server/join"
-	"github.com/AgentCoop/peppermint/internal/utils"
+	"github.com/AgentCoop/peppermint/internal/runtime"
+	"github.com/AgentCoop/peppermint/internal/utils/grpc"
+
 	//"github.com/AgentCoop/peppermint/internal/service/hub"
 )
 
@@ -14,7 +15,7 @@ func (s *hubServer) Join(ctx context.Context, r *msg.Join_Request) (*msg.Join_Re
 	callDesc := ctx.(srv.GrpcCallDescriptor)
 	req := join.NewJoin(callDesc, r)
 	id := req.SessionId()
-	desc, err := utils.GetSessDescriptorById(id)
+	desc, err := grpc.GetSessDescriptorById(id)
 	if err != nil  { return nil, err }
 
 	joinJob := desc.Job()

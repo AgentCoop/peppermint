@@ -1,5 +1,5 @@
 package node
 
 var Tables = []interface{} {
-	&NodeConfig{},
+	&Node{}, &NodeTag{},
 }

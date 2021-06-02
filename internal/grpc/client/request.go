@@ -2,7 +2,7 @@ package client
 
 import (
 	i "github.com/AgentCoop/peppermint/internal"
-	"github.com/AgentCoop/peppermint/internal/utils"
+	"github.com/AgentCoop/peppermint/internal/utils/grpc"
 	"google.golang.org/grpc/metadata"
 )
 
@@ -34,12 +34,12 @@ func NewRequest(client BaseClient) *request {
 	r := new(request)
 	r.md = metadata.New(nil)
 	r.client = client
-	utils.SetGrpcSessionId(&r.md, client.SessionId())
+	grpc.SetGrpcSessionId(&r.md, client.SessionId())
 	return r
 }
 
 func (r *request) SetSessionId(id i.SessionId) {
-	utils.SetGrpcSessionId(&r.md, id)
+	grpc.SetGrpcSessionId(&r.md, id)
 }
 
 func (r *request) MetaData() metadata.MD {

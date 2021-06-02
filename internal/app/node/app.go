@@ -16,6 +16,7 @@ func AppInitTest() job.Job {
 	app := new(app)
 	app.Runtime = runtime.NewRuntime(
 		cliparser.NewParser(&cmd.Options),
+		&cmd.Options.AppDir,
 		"test.db",
 	)
 
@@ -35,6 +36,7 @@ func AppInit(dbFilename string) job.Job {
 	app := new(app)
 	app.Runtime = runtime.NewRuntime(
 		cliparser.NewParser(&cmd.Options),
+		&cmd.Options.AppDir,
 		dbFilename,
 	)
 	appJob := job.NewJob(nil)

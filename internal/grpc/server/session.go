@@ -5,7 +5,7 @@ import (
 	job "github.com/AgentCoop/go-work"
 	i "github.com/AgentCoop/peppermint/internal"
 	"github.com/AgentCoop/peppermint/internal/runtime"
-	"github.com/AgentCoop/peppermint/internal/utils"
+	"github.com/AgentCoop/peppermint/internal/utils/grpc"
 	"sync"
 	"time"
 )
@@ -34,7 +34,7 @@ func (m sessionMap) New(j job.Job, expireInSecs time.Duration) i.SessionId {
 		createdAt: now,
 		expireAt:  now.Add(expireInSecs * time.Second),
 	}
-	id := utils.RandomGrpcSessionId()
+	id := grpc.RandomGrpcSessionId()
 	m[id] = desc
 	return id
 }
@@ -92,7 +92,7 @@ type communicator struct {
 func NewCommunicator(sessLifetime time.Duration) *communicator {
 	c := &communicator{}
 	c.serviceJob = job.NewJob(c)
-	c.serviceJob.WithErrorWrapper(utils.GrpcErrorWrapper)
+	c.serviceJob.WithErrorWrapper(grpc.GrpcErrorWrapper)
 	c.serviceJob.WithShutdown(c.shutdown)
 	c.sId = runtime.GlobalRegistry().GrpcSession().New(c.serviceJob, sessLifetime)
 	return c

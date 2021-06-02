@@ -1,6 +1,7 @@
 package cmd
 
 const (
+	CMD_NAME_BOOTSTRAP  = "bootstrap"
 	CMD_NAME_VERSION    = "version"
 	CMD_NAME_DB_MIGRATE = "db_migrate"
 	CMD_NAME_DB_CREATE  = "db_create"
@@ -8,6 +9,11 @@ const (
 	CMD_NAME_JOIN       = "join"
 	CMD_NAME_WEB_PROXY  = "proxy-cfg"
 )
+
+type Bootstrap struct {
+	Tags     []string `long:"tag"`
+	IdFromInterface string  `long:"id-from-nic"`
+}
 
 type Version struct {
 	Verbose []bool `short:"v" long:"verbose" description:""`
@@ -33,6 +39,8 @@ type Run struct {
 
 var (
 	Options = struct {
+		AppDir string `long:"appdir" short:"d"`
+		Bootstrap `command:"bootstrap"`
 		DbMigrate `command:"db_migrate"`
 		DbCreate  `command:"db_create"`
 		Run       `command:"run"`

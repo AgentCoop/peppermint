@@ -1,7 +1,6 @@
 package utils
 
 import (
-	i "github.com/AgentCoop/peppermint/internal"
 	"math/rand"
 	"time"
 )
@@ -12,7 +11,4 @@ func init() {
 
 func RandUint64() uint64 {
 	return rand.Uint64()
-}
-func UniqueId() i.UniqueId {
-	return i.UniqueId(rand.Uint64())
 }

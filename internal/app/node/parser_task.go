@@ -23,6 +23,12 @@ func (app *app) ParserTask(j job.Job) (job.Init, job.Run, job.Finalize) {
 		parser := app.CliParser()
 		cmdName, _ := parser.CurrentCmd()
 		switch cmdName {
+		case cmd.CMD_NAME_BOOTSTRAP:
+			opts, err := parser.GetCmdOptions(cmdName)
+			task.Assert(err)
+			v := opts.(cmd.Bootstrap)
+			cmd.BootstrapCmd(v.IdFromInterface, v.Tags)
+
 		case cmd.CMD_NAME_VERSION:
 			opts, err := parser.GetCmdOptions(cmdName)
 			task.Assert(err)

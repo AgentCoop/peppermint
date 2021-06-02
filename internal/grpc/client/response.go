@@ -2,7 +2,7 @@ package client
 
 import (
 	"context"
-	"github.com/AgentCoop/peppermint/internal/utils"
+	"github.com/AgentCoop/peppermint/internal/utils/grpc"
 	"google.golang.org/grpc/metadata"
 )
 
@@ -37,7 +37,7 @@ func NewResponse(c BaseClient) Response {
 }
 
 func (r *response) Process() {
-	r.client.SetSessionId(utils.ExtractGrpcSessionId(&r.header))
+	r.client.SetSessionId(grpc.ExtractGrpcSessionId(&r.header))
 }
 
 func (r *response) GetHeader() *metadata.MD {

@@ -1,9 +1,10 @@
-package utils
+package grpc
 
 import (
 	i "github.com/AgentCoop/peppermint/internal"
 	grpc "github.com/AgentCoop/peppermint/internal/grpc"
 	"github.com/AgentCoop/peppermint/internal/runtime"
+	"github.com/AgentCoop/peppermint/internal/utils"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"
@@ -21,7 +22,7 @@ func SetGrpcSessionId(md *metadata.MD, id i.SessionId) {
 	if id == 0 {
 		return
 	}
-	AddMetaValue(md, grpc.META_FIELD_SESSION_ID, IntToHex(id, 16))
+	AddMetaValue(md, grpc.META_FIELD_SESSION_ID, utils.IntToHex(id, 16))
 }
 
 func ExtractGrpcSessionId(md *metadata.MD) i.SessionId {
@@ -29,11 +30,11 @@ func ExtractGrpcSessionId(md *metadata.MD) i.SessionId {
 	if len(vals) == 0 {
 		return 0
 	}
-	return i.SessionId(Hex2int(vals[0]))
+	return i.SessionId(utils.Hex2int(vals[0]))
 }
 
 func RandomGrpcSessionId() i.SessionId {
-	return i.SessionId(RandUint64())
+	return i.SessionId(utils.RandUint64())
 }
 
 func GetSessDescriptorById(id i.SessionId) (runtime.SessionDesc, error) {

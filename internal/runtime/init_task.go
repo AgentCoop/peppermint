@@ -3,20 +3,24 @@ package runtime
 import (
 	job "github.com/AgentCoop/go-work"
 	"github.com/AgentCoop/peppermint/internal/db"
+	"github.com/AgentCoop/peppermint/internal/utils"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 	"gorm.io/gorm/schema"
+	"os"
+	"path"
 )
 
 func (r *runtime) initDb() error {
 	if len(r.dbFilename) != 0 {
-		sqliteDb, err := gorm.Open(sqlite.Open(r.dbFilename), &gorm.Config{
+		pathname := path.Join(r.AppDir(), r.dbFilename)
+		sqliteDb, err := gorm.Open(sqlite.Open(pathname), &gorm.Config{
 			//DisableForeignKeyConstraintWhenMigrating: true,
 			NamingStrategy: schema.NamingStrategy{
 				SingularTable: true, // use singular table name, table for `User` would be `user` with this option enabled
 			},
 		})
-		GlobalRegistry().SetDb(db.NewDb(sqliteDb, r.dbFilename))
+		GlobalRegistry().SetDb(db.NewDb(sqliteDb, pathname))
 		return err
 	}
 	return nil
@@ -27,10 +31,18 @@ func (r *runtime) InitTask(j job.Job) (job.Init, job.Run, job.Finalize) {
 
 	}
 	run := func(task job.Task) {
-		err := r.initDb()
+		err := r.parser.Run()
 		task.Assert(err)
 
-		err = r.parser.Run()
+		// Default application directory is the current working directory
+		if len(r.AppDir()) == 0 {
+			*r.appDir, err = os.Getwd()
+			task.Assert(err)
+		}
+		err = utils.FS_FileOrDirExists(r.AppDir())
+		task.Assert(err)
+
+		err = r.initDb()
 		task.Assert(err)
 
 		task.Done()

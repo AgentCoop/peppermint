@@ -13,7 +13,7 @@ func (b *webProxy) SimpleRandom(svcName string, pool runtime.NodePool) runtime.S
 
 func (b *webProxy) ForwardCall(srv interface{}, stream grpc.ServerStream) error {
 	fullMethod, _ := grpc.MethodFromServerStream(stream)
-	locator := runtime.GlobalRegistry().ServiceLocator()
+	locator := runtime.GlobalRegistry().ServiceLocator("")
 	nodesPool := locator.FindByMethodName(fullMethod)
 	available := nodesPool.FilterByStatus(runtime.Available)
 	if available.Len() == 0 {
