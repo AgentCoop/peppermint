@@ -4,6 +4,8 @@ import (
 	"context"
 	job "github.com/AgentCoop/go-work"
 	i "github.com/AgentCoop/peppermint/internal"
+	"github.com/AgentCoop/peppermint/internal/runtime/deps"
+
 	//"github.com/AgentCoop/peppermint/internal/service"
 	"net"
 )
@@ -59,42 +61,26 @@ type GrpcServiceCommunicator interface {
 	SessionId() i.SessionId
 }
 
-type CliParser interface {
-	Data() interface{}
-	Run() error
-	CurrentCmd() (string, bool)
-	OptionValue(string) (interface{}, bool)
-	GetCmdOptions(cmdName string) (interface{}, error)
-}
-
-type Configurator interface {
-	Fetch() // fetch configuration data from DB
-	MergeCliOptions(CliParser)
-}
-
-type ServiceConfigurator interface {
-	Configurator
-	Address() net.Addr
-}
-
 type Service interface {
 	StartTask(j job.Job) (job.Init, job.Run, job.Finalize)
 }
 
 type ServiceInfo struct {
 	Name string
-	Cfg Configurator
+	Cfg deps.Configurator
 	Initializer func() Service
 }
 
 type runtime struct {
-	parser CliParser
+	nodeCfg deps.NodeConfigurator
+	parser deps.CliParser
 	appDir *string
 	dbFilename string
 }
 
-func NewRuntime(parser CliParser, appDir *string, dbFilename string) *runtime {
+func NewRuntime(nodeCfg deps.NodeConfigurator, parser deps.CliParser, appDir *string, dbFilename string) *runtime {
 	r := &runtime{
+		nodeCfg: nodeCfg,
 		parser: parser,
 		appDir: appDir,
 		dbFilename: dbFilename,
@@ -104,17 +90,21 @@ func NewRuntime(parser CliParser, appDir *string, dbFilename string) *runtime {
 }
 
 type Runtime interface {
+	CliParser() deps.CliParser
+	NodeConfigurator() deps.NodeConfigurator
 	AppDir() string
-	CliParser() CliParser
 	InitTask(j job.Job) (job.Init, job.Run, job.Finalize)
+}
+
+func (r *runtime) NodeConfigurator() deps.NodeConfigurator {
+	return r.nodeCfg
+}
+
+func (r *runtime) CliParser() deps.CliParser {
+	return r.parser
 }
 
 func (r *runtime) AppDir() string {
 	return *r.appDir
 }
-
-func (r *runtime) CliParser() CliParser {
-	return r.parser
-}
-
 

@@ -2,14 +2,14 @@ package server
 
 import (
 	"context"
-	"github.com/AgentCoop/peppermint/internal/runtime"
+	"github.com/AgentCoop/peppermint/internal/runtime/deps"
 )
 
 type callDesc struct {
 	context.Context
 	Request
 	Response
-	runtime.Configurator
+	deps.Configurator
 }
 
 type GrpcCallDescriptor interface {
@@ -20,10 +20,10 @@ type GrpcCallDescriptor interface {
 	AssignNewRequest(Request) Request
 	GetResponse() Response
 	AssignNewResponse(Response) Response
-	GetConfigurator() runtime.Configurator
+	GetConfigurator() deps.Configurator
 }
 
-func NewCallDescriptor(ctx context.Context, cfg runtime.Configurator) *callDesc {
+func NewCallDescriptor(ctx context.Context, cfg deps.Configurator) *callDesc {
 	return &callDesc{
 		ctx,
 		NewRequest(ctx),
@@ -36,7 +36,7 @@ func (p *callDesc) GetRequest() Request {
 	return p.Request
 }
 
-func (p *callDesc) GetConfigurator() runtime.Configurator {
+func (p *callDesc) GetConfigurator() deps.Configurator {
 	return p.Configurator
 }
 

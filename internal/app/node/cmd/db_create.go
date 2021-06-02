@@ -5,9 +5,10 @@ import (
 	"github.com/AgentCoop/peppermint/internal/db"
 	"github.com/AgentCoop/peppermint/internal/model/node"
 	"github.com/AgentCoop/peppermint/internal/runtime"
+	"github.com/AgentCoop/peppermint/internal/runtime/deps"
 )
 
-func DbCreateCmd(db db.Db, parser runtime.CliParser, force bool) {
+func DbCreateCmd(db db.Db, parser deps.CliParser, force bool) {
 	h := db.Handle()
 	m := h.Migrator()
 

@@ -9,4 +9,5 @@ type Node struct {
 	model.Model
 	ExternalId internal.NodeId `gorm:"type:uint64"`
 	Tags []NodeTag `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
+	EncKey []byte
 }

@@ -2,7 +2,7 @@ package cliparser
 
 import (
 	"fmt"
-	"github.com/AgentCoop/peppermint/internal/runtime"
+	"github.com/AgentCoop/peppermint/internal/runtime/deps"
 	"github.com/iancoleman/strcase"
 	"github.com/jessevdk/go-flags"
 	"reflect"
@@ -12,7 +12,7 @@ type CmdHook func(data interface{})
 
 type parser struct {
 	data interface{}
-	cfgs []runtime.Configurator
+	cfgs []deps.Configurator
 	handle *flags.Parser
 }
 
@@ -20,7 +20,7 @@ func NewParser(data interface{}) *parser {
 	p := new(parser)
 	p.data = data
 	p.handle = flags.NewParser(data, flags.IgnoreUnknown)
-	p.cfgs = make([]runtime.Configurator, 0)
+	p.cfgs = make([]deps.Configurator, 0)
 	return p
 }
 

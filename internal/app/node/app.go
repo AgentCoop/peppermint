@@ -4,6 +4,7 @@ import (
 	job "github.com/AgentCoop/go-work"
 	"github.com/AgentCoop/peppermint/internal/app/node/cmd"
 	"github.com/AgentCoop/peppermint/internal/runtime"
+	"github.com/AgentCoop/peppermint/internal/runtime/node"
 	"github.com/AgentCoop/peppermint/internal/runtime/cliparser"
 
 )
@@ -15,6 +16,7 @@ type app struct {
 func AppInitTest() job.Job {
 	app := new(app)
 	app.Runtime = runtime.NewRuntime(
+		node.NewConfigurator(),
 		cliparser.NewParser(&cmd.Options),
 		&cmd.Options.AppDir,
 		"test.db",
@@ -35,6 +37,7 @@ func AppInitTest() job.Job {
 func AppInit(dbFilename string) job.Job {
 	app := new(app)
 	app.Runtime = runtime.NewRuntime(
+		node.NewConfigurator(),
 		cliparser.NewParser(&cmd.Options),
 		&cmd.Options.AppDir,
 		dbFilename,

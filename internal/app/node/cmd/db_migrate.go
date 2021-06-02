@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"github.com/AgentCoop/peppermint/cmd"
 	"github.com/AgentCoop/peppermint/internal/db"
+	"github.com/AgentCoop/peppermint/internal/runtime/deps"
+
 	//"github.com/AgentCoop/peppermint/internal/model/hub"
 	//"github.com/AgentCoop/peppermint/internal/model/webproxy"
 	"github.com/AgentCoop/peppermint/internal/runtime"
@@ -18,7 +20,7 @@ func dropAllTables(migrator gorm.Migrator) {
 	//)
 }
 
-func DbMigrateCmd(db db.Db, parser runtime.CliParser, drop bool) {
+func DbMigrateCmd(db db.Db, parser deps.CliParser, drop bool) {
 	h := db.Handle()
 	if drop {
 		fmt.Printf("-> dropping all tables before migration\n")

@@ -1,12 +1,12 @@
 package config
 
 import (
-	"github.com/AgentCoop/peppermint/internal/runtime"
+	"github.com/AgentCoop/peppermint/internal/runtime/deps"
 	"net"
 )
 
 type HubConfigurator interface {
-	runtime.Configurator
+	deps.Configurator
 	Address() net.Addr
 	Secret() string
 }

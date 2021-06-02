@@ -3,6 +3,7 @@ package hub
 import (
 	"github.com/AgentCoop/peppermint/internal/plugin/hub/model"
 	"github.com/AgentCoop/peppermint/internal/runtime"
+	"github.com/AgentCoop/peppermint/internal/runtime/deps"
 	"net"
 	"strconv"
 )
@@ -18,16 +19,17 @@ func NewConfigurator() *cfg {
 	return cfg
 }
 
-func (c *cfg) Fetch() {
+func (c *cfg) Fetch() error {
 	db := runtime.GlobalRegistry().Db()
 	rec := &model.HubConfig{}
 	db.Handle().FirstOrCreate(rec)
 	c.port = rec.Port
 	c.address = rec.Address
 	c.secret = rec.Secret
+	return nil
 }
 
-func (c *cfg) MergeCliOptions(parser runtime.CliParser) {
+func (c *cfg) MergeCliOptions(parser deps.CliParser) {
 	val, isset := parser.OptionValue("hub-port")
 	if isset {
 		c.port = val.(int)

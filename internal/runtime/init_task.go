@@ -45,6 +45,10 @@ func (r *runtime) InitTask(j job.Job) (job.Init, job.Run, job.Finalize) {
 		err = r.initDb()
 		task.Assert(err)
 
+		// Fetch node configuration once DB is initialized
+		err = r.NodeConfigurator().Fetch()
+		task.Assert(err)
+
 		task.Done()
 	}
 	fin := func(task job.Task) {

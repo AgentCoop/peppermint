@@ -2,10 +2,11 @@ package config
 
 import (
 	"github.com/AgentCoop/peppermint/internal"
-	"github.com/AgentCoop/peppermint/internal/runtime"
+	"github.com/AgentCoop/peppermint/internal/runtime/deps"
 )
 
 type NodeConfigurator interface {
-	runtime.Configurator
+	deps.Configurator
 	NodeId() internal.NodeId
+	Tags() []string
 }

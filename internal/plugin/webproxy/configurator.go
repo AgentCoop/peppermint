@@ -3,6 +3,7 @@ package webproxy
 import (
 	model "github.com/AgentCoop/peppermint/internal/plugin/webproxy/model"
 	"github.com/AgentCoop/peppermint/internal/runtime"
+	"github.com/AgentCoop/peppermint/internal/runtime/deps"
 	"io/ioutil"
 	"net"
 	"strconv"
@@ -18,15 +19,16 @@ func NewConfigurator() *cfg {
 	return &cfg{}
 }
 
-func (w *cfg) Fetch() {
+func (w *cfg) Fetch() error {
 	db := runtime.GlobalRegistry().Db()
 	rec := &model.WebProxyConfig{}
 	db.Handle().FirstOrCreate(rec)
 	w.port = rec.Port
 	w.address = "peppermint.io" //rec.Address
+	return nil
 }
 
-func (w *cfg) MergeCliOptions(parser runtime.CliParser) {
+func (w *cfg) MergeCliOptions(parser deps.CliParser) {
 	val, isset := parser.OptionValue("wp-port")
 	if isset {
 		w.port = val.(int)
