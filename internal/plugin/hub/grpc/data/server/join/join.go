@@ -55,6 +55,6 @@ func NewJoinResponse(desc server.GrpcCallDescriptor, nodeId i.UniqueId) *joinRes
 
 func (r *joinResponse) ToGrpcResponse() interface{} {
 	resp := new(msg.Join_Response)
-	resp.NodeId = r.nodeId.NodeId()
+	resp.NodeId = uint64(r.nodeId)
 	return resp
 }

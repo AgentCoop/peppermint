@@ -50,6 +50,10 @@ func NewBaseClientWithContext(ctx context.Context, endpoint runtime.ServiceEndpo
 	return c
 }
 
+func (c *baseClient) IsSecure() bool {
+	return false
+}
+
 func (c *baseClient) WithUnaryInterceptors(interceptors ...grpc.UnaryClientInterceptor) {
 	c.unaryInterceptors = interceptors
 }

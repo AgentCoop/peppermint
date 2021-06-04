@@ -10,10 +10,12 @@ import (
 // Name is the name registered for the proto compressor.
 const Name = "proto-enc"
 
-type packetType int
+type PacketType int
+
 const (
-	RawPacket packetType = iota
+	Unpacked PacketType = iota
 	SerializedPacket
+	RawPacket
 )
 
 func init() {
@@ -21,10 +23,10 @@ func init() {
 }
 
 // codec is a Codec implementation with protobuf. It is the default codec for gRPC.
-type codec struct {}
+type codec struct{}
 
 type packet struct {
-	typ     packetType
+	typ     PacketType
 	payload interface{}
 	encKey  []byte
 }
@@ -38,7 +40,7 @@ func NewPacket(message interface{}, encKey []byte) *packet {
 }
 
 func NewRawPacket(raw []byte, encKey []byte) *packet {
-	return &packet{RawPacket,  raw, encKey}
+	return &packet{RawPacket, raw, encKey}
 }
 
 func (p *packet) Payload() interface{} {
@@ -55,7 +57,9 @@ func (codec) Marshal(v interface{}) ([]byte, error) {
 	switch p.typ {
 	case SerializedPacket:
 		data, err = proto.Marshal(p.payload.(proto.Message))
-		if err != nil { panic(err) }
+		if err != nil {
+			panic(err)
+		}
 	case RawPacket:
 		data = p.payload.([]byte)
 	}

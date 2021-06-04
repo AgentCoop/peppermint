@@ -2,6 +2,7 @@ package grpc
 
 import (
 	"context"
+	"google.golang.org/grpc/metadata"
 )
 
 type Stream interface {
@@ -11,13 +12,23 @@ type Stream interface {
 }
 
 type StreamExtended interface {
+	Context() context.Context
 	Close()
 	Send(interface{}) error
 	Recv(interface{}) error
+	Header() metadata.MD
+	WithNewHeader(*metadata.MD)
+	MessagesReceived() int
+	MessagesSent() int
+	EncKey() []byte
 }
 
-type StreamInfo interface {
-	EncKey() []byte
+type ClientStreamExtended interface {
+	StreamExtended
+}
+
+type ServerStreamExtended interface {
+	StreamExtended
+	WithTrailer(*metadata.MD)
 	FullMethod() string
-	MessagesReceived() int
 }

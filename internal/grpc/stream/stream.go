@@ -1,6 +1,7 @@
 package stream
 
 import (
+	"context"
 	"errors"
 	g "github.com/AgentCoop/peppermint/internal/grpc"
 	"github.com/AgentCoop/peppermint/internal/grpc/codec"
@@ -10,7 +11,8 @@ import (
 )
 
 var (
-	ErrEmptyEncryptionKey = errors.New("stream: encryption key is empty")
+	ErrEmptyEncryptionKey       = errors.New("stream: encryption key is empty")
+	ErrFailedToRetrieveMetadata = errors.New("stream: failed to retrieve metadata")
 )
 
 type streamType int
@@ -31,17 +33,29 @@ type stream struct {
 	fullMethod      string
 }
 
-func (s *stream) Close() {
-	s.Send(io.EOF)
-}
-
-func (s *stream) Send(msg interface{}) error {
+func (s *stream) encLayer(msg interface{}) error {
+	_, ok := msg.(codec.Packet)
+	if ok { return nil }
 	if s.isSecure {
 		if len(s.encKey) == 0 {
 			return ErrEmptyEncryptionKey
 		}
 		msg = codec.NewPacket(msg, s.encKey)
 	}
+	return nil
+}
+
+func (s *stream) Context() context.Context {
+	return s.Context()
+}
+
+func (s *stream) Close() {
+	s.Send(io.EOF)
+}
+
+func (s *stream) Send(msg interface{}) error {
+	err := s.encLayer(msg)
+	if err != nil { return nil }
 	switch s.typ {
 	case ServerStream:
 		return s.srvSend(msg)
@@ -52,12 +66,8 @@ func (s *stream) Send(msg interface{}) error {
 }
 
 func (s *stream) Recv(msg interface{}) error {
-	if s.isSecure {
-		if len(s.encKey) == 0 {
-			return ErrEmptyEncryptionKey
-		}
-		msg = codec.NewPacket(msg, s.encKey)
-	}
+	err := s.encLayer(msg)
+	if err != nil { return nil }
 	switch s.typ {
 	case ServerStream:
 		return s.srvRecv(msg)
@@ -129,8 +139,32 @@ func (s *stream) clientSend(msg interface{}) error {
 	}
 }
 
+func (s *stream) Header() metadata.MD {
+	var md metadata.MD
+	var ok bool
+	switch s.typ {
+	case ServerStream:
+		md, ok = metadata.FromIncomingContext(s.Stream.Context())
+		return md
+	case ClientStream:
+		md, ok = metadata.FromOutgoingContext(s.Stream.Context())
+	}
+	if !ok {
+		panic(ErrFailedToRetrieveMetadata)
+	}
+	return md.Copy()
+}
+
 func (s *stream) EncKey() []byte {
 	return s.encKey
+}
+
+func (s *stream) WithNewHeader(md *metadata.MD) {
+	s.header = md
+}
+
+func (s *stream) WithTrailer(md *metadata.MD) {
+	s.trailer = md
 }
 
 func (s *stream) FullMethod() string {
@@ -139,4 +173,8 @@ func (s *stream) FullMethod() string {
 
 func (s *stream) MessagesReceived() int {
 	return s.recvx
+}
+
+func (s *stream) MessagesSent() int {
+	return s.sentx
 }

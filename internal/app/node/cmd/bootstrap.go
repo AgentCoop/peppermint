@@ -8,7 +8,7 @@ import (
 )
 
 func BootstrapCmd(IdFromNic string, tags []string) error {
-	uniqId := new(internal.UniqueId)
+	uniqId := internal.UniqueId(0)
 	switch {
 	case len(IdFromNic) != 0: // Generate node ID from the given network interface
 		macAddr, err := utils.Net_MacAdrr(IdFromNic)
@@ -16,7 +16,7 @@ func BootstrapCmd(IdFromNic string, tags []string) error {
 		hash := sha256.Sum256(macAddr)
 		uniqId.FromByteArray(hash[:])
 	default: // Random node ID
-		uniqId.FromRand()
+		uniqId.Rand()
 	}
-	return node.CreateNode(internal.NodeId(*uniqId), tags)
+	return node.CreateNode(uniqId.NodeId(), tags)
 }

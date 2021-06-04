@@ -3,28 +3,26 @@ package proxy
 import (
 	job "github.com/AgentCoop/go-work"
 	g "github.com/AgentCoop/peppermint/internal/grpc"
+	s "github.com/AgentCoop/peppermint/internal/grpc/stream"
 	"github.com/AgentCoop/peppermint/internal/grpc/client"
 	"github.com/AgentCoop/peppermint/internal/grpc/codec"
-	"github.com/AgentCoop/peppermint/internal/runtime"
 	"google.golang.org/grpc"
-	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/status"
 )
 
 type proxyConn struct {
 	upClient       client.BaseClient
-	downstream     runtime.Stream
-	upstream       runtime.Stream
+	downstream     g.ServerStreamExtended
+	upstream       g.ClientStreamExtended
 	downstreamChan chan codec.Packet
 	upstreamChan   chan codec.Packet
 }
 
 func NewProxyConnJob(upstreamClient client.BaseClient, downstream grpc.ServerStream, downKey []byte) (job.Job, error) {
-	fullMethodName, ok := grpc.MethodFromServerStream(downstream)
-	if !ok {
-		return nil, status.Error(codes.InvalidArgument, "failed to retrieve gRPC method name")
-	}
-	down := g.NewStream(downstream, fullMethodName, downKey)
+	//fullMethodName, ok := grpc.MethodFromServerStream(downstream)
+	//if !ok {
+	//	return nil, status.Error(codes.InvalidArgument, "failed to retrieve gRPC method name")
+	//}
+	down := s.NewServerStream(downstream, false, nil)
 	pconn := &proxyConn{
 		upClient:       upstreamClient,
 		downstream:     down,
