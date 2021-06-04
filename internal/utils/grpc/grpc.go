@@ -57,3 +57,4 @@ func GrpcErrorWrapper(err interface{}) interface{} {
 	}
 	return status.Error(codes.Internal, text)
 }
+

@@ -3,36 +3,35 @@ package session
 import (
 	job "github.com/AgentCoop/go-work"
 	i "github.com/AgentCoop/peppermint/internal"
-	"github.com/AgentCoop/peppermint/internal/runtime"
 	utils "github.com/AgentCoop/peppermint/internal/utils/grpc"
 	"time"
 )
 
-
-func (m sessionMap) New(j job.Job, expireInSecs time.Duration) i.SessionId {
+func (m sessionMap) new(expireInSecs time.Duration, callOrder gRpcCallOder) *sessionDesc {
 	now := time.Now().UTC()
+	sId := i.UniqueId(0).Rand().SessionId()
 	desc := &sessionDesc{
-		job:       j,
+		id:        sId,
+		ipc:       newIpc(callOrder),
 		createdAt: now,
 		expireAt:  now.Add(expireInSecs * time.Second),
 	}
-	sId := i.UniqueId(0).Rand().SessionId()
+	desc.Job().SetValue(desc)
 	m[sId] = desc
-	return sId
+	return desc
+}
+
+func NewSession(expireInSecs time.Duration) *sessionDesc {
+	return sMap.new(expireInSecs, Sequential)
 }
 
 // Session lifetime time in seconds
-func NewIpc(sessLifetime time.Duration) *ipc {
+func newIpc(callOrder gRpcCallOder) *ipc {
 	c := &ipc{}
-	c.serviceJob = job.NewJob(c)
+	c.serviceJob = job.NewJob(nil)
 	c.serviceJob.WithErrorWrapper(utils.GrpcErrorWrapper)
 	c.serviceJob.WithShutdown(c.shutdown)
-	c.sId = runtime.GlobalRegistry().GrpcSession().New(c.serviceJob, sessLifetime)
+	c.callOrder = callOrder
 	return c
 }
 
-func NewOutOfOrderIpc(sessLifetime time.Duration) *ipc {
-	c := NewIpc(sessLifetime)
-	c.callOrder = OutOfOrder
-	return c
-}

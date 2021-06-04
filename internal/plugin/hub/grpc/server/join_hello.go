@@ -4,33 +4,19 @@ import (
 	"context"
 	msg "github.com/AgentCoop/peppermint/internal/api/peppermint/service/backoffice/hub"
 	srv "github.com/AgentCoop/peppermint/internal/grpc/server"
-	data "github.com/AgentCoop/peppermint/internal/plugin/hub/grpc/data/server/join"
-	"github.com/AgentCoop/peppermint/internal/plugin/hub/service/server/join"
-	"time"
+	"github.com/AgentCoop/peppermint/internal/plugin/hub/grpc/server/join"
 )
 
 func (s *hubServer) JoinHello(ctx context.Context, originalReq *msg.JoinHello_Request) (*msg.JoinHello_Response, error) {
+	sess := join.CreateSession()
 	callDesc := ctx.(srv.GrpcCallDescriptor)
-	req := data.NewJoinHello(callDesc, originalReq)
-	_ = req.Validate()
+	join.NewJoinHello(callDesc, originalReq)
 
-	comm := srv.NewCommunicator(time.Minute)
-	joinCtx := join.NewJoinContext()
-	j := comm.Job()
-	j.AddTask(joinCtx.JoinHelloTask)
-	j.AddTask(joinCtx.JoinTask)
-	j.Run()
+	sess.Ipc().Grpc_Send(0, callDesc)
+	v, ok := sess.Ipc().Grpc_Recv(0).(error)
+	if ok { return nil, v }
 
-	// Dispatch request-response pair to JoinHelloTask started above
-	comm.GrpcTx(0, callDesc)
-	v := comm.GrpcRx(0)
-
-	switch v.(type) {
-	case error:
-		return nil, v.(error)
-	default:
-		res := callDesc.GetResponse()
-		res.SetSessionId(comm.SessionId())
-		return res.ToGrpcResponse().(*msg.JoinHello_Response), nil
-	}
+	res := callDesc.GetResponse()
+	res.SetSessionId(sess.Id())
+	return res.ToGrpcResponse().(*msg.JoinHello_Response), nil
 }

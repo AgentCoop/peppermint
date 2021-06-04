@@ -5,12 +5,12 @@ import (
 	c "github.com/AgentCoop/peppermint/internal/grpc/client"
 	middleware "github.com/AgentCoop/peppermint/internal/grpc/middleware/client"
 	"google.golang.org/grpc"
+	"net"
 )
 
-
-func NewClient(baseClient c.BaseClient) *hubClient {
+func NewClient(addr net.Addr, opts ...grpc.DialOption) *hubClient {
 	hubClient := new(hubClient)
-	hubClient.BaseClient = baseClient
+	hubClient.BaseClient = c.NewBaseClient(addr, opts...)
 	hubClient.WithConnProvider(func(cc grpc.ClientConnInterface) {
 		hubClient.HubClient = hub.NewHubClient(cc)
 	})

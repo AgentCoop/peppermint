@@ -17,9 +17,9 @@ func (c *baseClient) ConnectTask(j job.Job) (job.Init, job.Run, job.Finalize) {
 		var err error
 		switch {
 		case c.ctx != nil:
-			conn, err = grpc.DialContext(c.ctx, c.address.String(), opts...)
+			conn, err = grpc.DialContext(c.ctx, c.addr.String(), opts...)
 		default:
-			conn, err = grpc.Dial(c.address.String(), opts...)
+			conn, err = grpc.Dial(c.addr.String(), opts...)
 		}
 		task.Assert(err)
 		c.conn = conn

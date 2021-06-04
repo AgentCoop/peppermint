@@ -14,7 +14,7 @@ func (c *joinContext) JoinTask(j job.Job) (job.Init, job.Run, job.Finalize) {
 		ctx := context.Background()
 		hubClient := j.GetValue().(cc.HubClient)
 
-		// Generate DH public key
+		// Generate a DH public key and exchange it with the hub server
 		keyExch := crypto.NewKeyExchange(task)
 		pubKey := keyExch.GetPublicKey()
 

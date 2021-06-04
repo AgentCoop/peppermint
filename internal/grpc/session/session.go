@@ -4,6 +4,7 @@ import (
 	job "github.com/AgentCoop/go-work"
 	i "github.com/AgentCoop/peppermint/internal"
 	"github.com/AgentCoop/peppermint/internal/runtime"
+	"github.com/AgentCoop/peppermint/internal/grpc"
 	"time"
 )
 
@@ -14,9 +15,23 @@ var (
 )
 
 type sessionDesc struct {
+	id        i.SessionId
 	job       job.Job
 	createdAt time.Time
 	expireAt  time.Time
+	ipc       *ipc
+}
+
+func (s *sessionDesc) Id() i.SessionId {
+	return s.id
+}
+
+func (s *sessionDesc) Ipc() grpc.GrpcServiceLayersIpc {
+	return s.ipc
+}
+
+func (s *sessionDesc) Job() job.Job {
+	return s.ipc.serviceJob
 }
 
 func (m sessionMap) Lookup(id i.SessionId) (runtime.SessionDesc, bool) {
@@ -26,11 +41,6 @@ func (m sessionMap) Lookup(id i.SessionId) (runtime.SessionDesc, bool) {
 
 func (m sessionMap) Remove(id i.SessionId) {
 
-}
-
-// Session descriptor methods
-func (d *sessionDesc) Job() job.Job {
-	return d.job
 }
 
 func (d *sessionDesc) Expired() bool {

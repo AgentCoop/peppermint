@@ -36,6 +36,10 @@ type baseClient struct {
 	sId               i.SessionId
 }
 
+func (c *baseClient) NodeId() i.NodeId {
+	panic("implement me")
+}
+
 func (c *baseClient) IsSecure() bool {
 	return false
 }
@@ -44,7 +48,7 @@ func (c *baseClient) WithUnaryInterceptors(interceptors ...grpc.UnaryClientInter
 	c.unaryInterceptors = interceptors
 }
 
-func (c *baseClient) ConnProvider(provider connProvider) {
+func (c *baseClient) WithConnProvider(provider connProvider) {
 	c.connProvider = provider
 }
 

@@ -8,6 +8,12 @@ import (
 	i "github.com/AgentCoop/peppermint/internal"
 )
 
+type Session interface {
+	Id() i.SessionId
+	Ipc() GrpcServiceLayersIpc
+	Job() job.Job
+}
+
 // ********************************************** Server-side **********************************************************
 // [Unary call, support for client pseudo-streaming]
 // Service Layer										gRPC Layer
@@ -40,7 +46,5 @@ type GrpcServiceLayersIpc interface {
 	Grpc_MakeStreamable(chanIdx uint, stream StreamExtended)
 	Grpc_SendStreamable(chanId int, data interface{}) // For client pseudo-streaming
 	Grpc_WaitForStreamClose(chanIdx uint) error
-
-	SessionId() i.SessionId
 	Job() job.Job
 }
