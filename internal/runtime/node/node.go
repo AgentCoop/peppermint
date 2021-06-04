@@ -40,3 +40,12 @@ func (c *cfg) Tags() []string {
 func (c *cfg) EncKey() []byte {
 	return c.nodeModel.EncKey
 }
+
+func (c *cfg) IsSecure() bool {
+	switch {
+	case c.nodeModel.IsSecure > 0:
+		return true
+	default:
+		return false
+	}
+}

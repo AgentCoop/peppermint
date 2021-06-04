@@ -13,4 +13,6 @@ service Hub {
 
   rpc JoinHello(JoinHello.Request) returns (JoinHello.Response) { }
   rpc Join(Join.Request) returns (Join.Response) {  }
+  rpc ServerStream(Join.Request) returns (stream Join.Response) {  }
+  rpc ClientStream(stream Join.Request) returns (Join.Response) {  }
 }

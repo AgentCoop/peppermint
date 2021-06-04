@@ -5,7 +5,6 @@ import (
 	"github.com/AgentCoop/peppermint/internal/api/peppermint/service/backoffice/hub"
 	c "github.com/AgentCoop/peppermint/internal/grpc/client"
 	middleware "github.com/AgentCoop/peppermint/internal/grpc/middleware/client"
-	md_middleware "github.com/AgentCoop/peppermint/internal/grpc/middleware/client/metadata"
 	"google.golang.org/grpc"
 )
 
@@ -20,20 +19,14 @@ type hubClient struct {
 	grpcHandle hub.HubClient
 }
 
-func (c *hubClient) withMiddlewares() grpc.DialOption {
-	return middleware.WithUnaryClientChain(
-		md_middleware.UnaryClientInterceptor(c),
-	)
-}
-
 func NewClient(baseClient c.BaseClient) *hubClient {
 	hubClient := new(hubClient)
 	hubClient.BaseClient = baseClient
 	hubClient.OnConnectedHook(func(cc grpc.ClientConnInterface) {
 		hubClient.grpcHandle = hub.NewHubClient(cc)
 	})
-	hubClient.WithMiddlewareHook(func() grpc.DialOption {
-		return hubClient.withMiddlewares()
-	})
+	hubClient.WithUnaryInterceptors(
+		middleware.SecureChannelUnaryInterceptor(hubClient),
+	)
 	return hubClient
 }

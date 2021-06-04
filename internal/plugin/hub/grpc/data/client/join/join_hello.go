@@ -19,7 +19,7 @@ func (r *joinHelloRequest) SetSessionId(id g.SessionId) {
 //	panic("implement me")
 //}
 
-func NewJoinHello(pair client.RequestResponsePair, pubKey []byte) *joinHelloRequest {
+func NewJoinHello(pair client.ClientCallDescriptor, pubKey []byte) *joinHelloRequest {
 	r := new(joinHelloRequest)
 	r.pubKey = pubKey
 	r.Request = pair.AssignNewRequest(r)
@@ -46,7 +46,7 @@ type joinHelloResponse struct {
 	hubPubKey []byte
 }
 
-func NewJoinHelloResponse(pair client.RequestResponsePair, original *hub.JoinHello_Response) *joinHelloResponse {
+func NewJoinHelloResponse(pair client.ClientCallDescriptor, original *hub.JoinHello_Response) *joinHelloResponse {
 	r := new(joinHelloResponse)
 	r.original = original
 	r.Populate()

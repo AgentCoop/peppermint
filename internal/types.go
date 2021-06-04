@@ -3,35 +3,32 @@ package internal
 import (
 	"encoding/binary"
 	"math/rand"
-	"unsafe"
 )
 
 type UniqueId uint64
 type NodeId UniqueId
 type SessionId UniqueId
 
-func (id *UniqueId) FromByteArray(arr []byte) {
-	uniqId := binary.BigEndian.Uint64(arr)
-	*id = *(*UniqueId)(unsafe.Pointer(&uniqId))
+func (id UniqueId) FromByteArray(arr []byte) UniqueId {
+	return UniqueId(binary.BigEndian.Uint64(arr))
 }
 
-func (id *UniqueId) FromRand() {
-	uniqId := UniqueId(rand.Uint64())
-	*id = *(*UniqueId)(unsafe.Pointer(&uniqId))
+func (id UniqueId) Rand() UniqueId {
+	return UniqueId(rand.Uint64())
 }
 
-func (u UniqueId) NodeId() uint64 {
-	return uint64(u)
+func (u UniqueId) NodeId() NodeId {
+	return NodeId(u)
 }
 
-func (u UniqueId) SessionId() uint64 {
-	return uint64(u)
+func (u UniqueId) SessionId() SessionId {
+	return SessionId(u)
 }
 
 type SignalChan chan struct{}
 
 var (
-	SignalEvent = struct{}{}
+	NotifyEvent = struct{}{}
 )
 
 type Application interface {

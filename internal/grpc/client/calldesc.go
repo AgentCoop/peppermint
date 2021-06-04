@@ -11,7 +11,7 @@ type reqResPair struct {
 	Response
 }
 
-type RequestResponsePair interface {
+type ClientCallDescriptor interface {
 	context.Context
 	Request
 	Response

@@ -6,7 +6,7 @@ import (
 	job "github.com/AgentCoop/go-work"
 	"github.com/AgentCoop/peppermint/internal/crypto"
 	"github.com/AgentCoop/peppermint/internal/grpc/client"
-	data "github.com/AgentCoop/peppermint/internal/service/hub/grpc/data/client/join"
+	data "github.com/AgentCoop/peppermint/internal/plugin/hub/grpc/data/client/join"
 )
 
 func (ctx *joinCtx) JoinCmdTask(j job.Job) (job.Init, job.Run, job.Finalize) {

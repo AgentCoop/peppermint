@@ -1,7 +1,6 @@
 package runtime
 
 import (
-	"context"
 	job "github.com/AgentCoop/go-work"
 	i "github.com/AgentCoop/peppermint/internal"
 	"github.com/AgentCoop/peppermint/internal/runtime/deps"
@@ -38,28 +37,16 @@ type ServiceEndpoint interface {
 	EncKey() []byte
 }
 
-type Stream interface {
-	Context() context.Context
-	SendMsg(m interface{}) error
-	RecvMsg(m interface{}) error
-}
-
-type StreamInfo interface {
-	EncKey() []byte
-	FullMethod() string
-	MessagesReceived() int
-}
-
 // Orchestrates communication between the gRPC and Service layer
-type GrpcServiceCommunicator interface {
-	GrpcTx(int, interface{})
-	GrpcTxStreamable(int, interface{})
-	GrpcRx(int) interface{}
-	ServiceTx(int, interface{})
-	ServiceRx(int) interface{}
-	Job() job.Job
-	SessionId() i.SessionId
-}
+//type GrpcServiceCommunicator interface {
+//	GrpcTx(int, interface{})
+//	GrpcTxStreamable(int, interface{})
+//	GrpcRx(int) interface{}
+//	ServiceTx(int, interface{})
+//	ServiceRx(int) interface{}
+//	Job() job.Job
+//	SessionId() i.SessionId
+//}
 
 type Service interface {
 	StartTask(j job.Job) (job.Init, job.Run, job.Finalize)

@@ -4,40 +4,39 @@ import (
 	"context"
 	job "github.com/AgentCoop/go-work"
 	i "github.com/AgentCoop/peppermint/internal"
-	"github.com/AgentCoop/peppermint/internal/grpc/codec"
 	"github.com/AgentCoop/peppermint/internal/runtime"
 	"google.golang.org/grpc"
 	"net"
 )
 
-type ReqChan chan RequestResponsePair
+type ReqChan chan ClientCallDescriptor
 type ResChan chan struct{}
-
 type onConnectedHook func(grpc.ClientConnInterface)
-type middlewareHook func() grpc.DialOption
 
 type BaseClient interface {
 	ConnectTask(j job.Job) (job.Init, job.Run, job.Finalize)
 	Connection() grpc.ClientConnInterface
 	OnConnectedHook(onConnectedHook)
-	WithMiddlewareHook(middlewareHook)
+	WithUnaryInterceptors(...grpc.UnaryClientInterceptor)
+	NodeId() i.NodeId
+	IsSecure() bool
+	EncKey() []byte
 	SessionId() i.SessionId
 	SetSessionId(id i.SessionId)
-	EncKey() []byte
 }
 
 type baseClient struct {
-	ctx context.Context
-	encKey []byte
-	conn    grpc.ClientConnInterface
-	opts []grpc.DialOption
-	address net.Addr
-	onConnectedHook onConnectedHook
-	withMiddlewareHook middlewareHook
-	sId i.SessionId
+	ctx               context.Context
+	unaryInterceptors []grpc.UnaryClientInterceptor
+	encKey            []byte
+	conn              grpc.ClientConnInterface
+	opts              []grpc.DialOption
+	address           net.Addr
+	onConnectedHook   onConnectedHook
+	sId               i.SessionId
 }
 
-func NewBaseClient(endpoint runtime.ServiceEndpoint, opts... grpc.DialOption) *baseClient {
+func NewBaseClient(endpoint runtime.ServiceEndpoint, opts ...grpc.DialOption) *baseClient {
 	c := new(baseClient)
 	c.address = endpoint.Address()
 	c.encKey = endpoint.EncKey()
@@ -45,10 +44,14 @@ func NewBaseClient(endpoint runtime.ServiceEndpoint, opts... grpc.DialOption) *b
 	return c
 }
 
-func NewBaseClientWithContext(ctx context.Context, endpoint runtime.ServiceEndpoint, opts... grpc.DialOption) *baseClient {
+func NewBaseClientWithContext(ctx context.Context, endpoint runtime.ServiceEndpoint, opts ...grpc.DialOption) *baseClient {
 	c := NewBaseClient(endpoint, opts...)
 	c.ctx = ctx
 	return c
+}
+
+func (c *baseClient) WithUnaryInterceptors(interceptors ...grpc.UnaryClientInterceptor) {
+	c.unaryInterceptors = interceptors
 }
 
 func (c *baseClient) SessionId() i.SessionId {
@@ -67,33 +70,6 @@ func (c *baseClient) Connection() grpc.ClientConnInterface {
 	return c.conn
 }
 
-func (c *baseClient) OnConnectedHook(hook onConnectedHook)  {
+func (c *baseClient) OnConnectedHook(hook onConnectedHook) {
 	c.onConnectedHook = hook
-}
-
-func (c *baseClient) WithMiddlewareHook(hook middlewareHook) {
-	c.withMiddlewareHook = hook
-}
-
-func (c *baseClient) ConnectTask(j job.Job) (job.Init, job.Run, job.Finalize) {
-	run := func(task job.Task) {
-		var opts = []grpc.DialOption{
-			grpc.WithInsecure(),
-			c.withMiddlewareHook(),
-			grpc.WithDefaultCallOptions(grpc.CallContentSubtype(codec.Name)),
-		}
-		var conn *grpc.ClientConn
-		var err error
-		switch {
-		case c.ctx != nil:
-			conn, err = grpc.DialContext(c.ctx, c.address.String(), opts...)
-		default:
-			conn, err = grpc.Dial(c.address.String(), opts...)
-		}
-		task.Assert(err)
-		c.conn = conn
-		c.onConnectedHook(conn)
-		task.Done()
-	}
-	return nil, run, nil
 }

@@ -18,7 +18,7 @@ type joinRequest struct {
 //	panic("implement me")
 //}
 
-func NewJoin(pair client.RequestResponsePair, secret string) *joinRequest {
+func NewJoin(pair client.ClientCallDescriptor, secret string) *joinRequest {
 	r := new(joinRequest)
 	r.secret = secret
 	r.Request = pair.AssignNewRequest(r)
@@ -44,7 +44,7 @@ type joinResponse struct {
 	original *hub.Join_Response
 }
 
-func NewJoinResponse(pair client.RequestResponsePair, original *hub.Join_Response) *joinResponse {
+func NewJoinResponse(pair client.ClientCallDescriptor, original *hub.Join_Response) *joinResponse {
 	r := new(joinResponse)
 	r.original = original
 	r.Response = pair.AssignNewResponse(r)

@@ -9,4 +9,6 @@ type NodeConfigurator interface {
 	deps.Configurator
 	NodeId() internal.NodeId
 	Tags() []string
+	EncKey() []byte
+	IsSecure() bool
 }

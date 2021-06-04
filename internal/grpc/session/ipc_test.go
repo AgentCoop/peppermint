@@ -1,10 +1,10 @@
-package server_test
+package session_test
 
 import (
 	"errors"
 	job "github.com/AgentCoop/go-work"
-	"github.com/AgentCoop/peppermint/internal/grpc/server"
-	"github.com/AgentCoop/peppermint/internal/runtime"
+	"github.com/AgentCoop/peppermint/internal/grpc"
+	"github.com/AgentCoop/peppermint/internal/grpc/session"
 	"google.golang.org/grpc/status"
 	"testing"
 	"time"
@@ -16,21 +16,21 @@ type dataBag struct {
 }
 
 func TestCommunicator_DataPingPong(t *testing.T) {
-	comm := server.NewCommunicator(time.Minute)
+	comm := session.NewIpc(time.Minute)
 	j := comm.Job()
 	ping, pong := "ping", "pong"
 	j.AddTask(func(j job.Job) (job.Init, job.Run, job.Finalize) {
 		run := func(task job.Task) {
 			expected := ping
-			c := j.GetValue().(runtime.GrpcServiceCommunicator)
-			data := c.ServiceRx(0)
+			c := j.GetValue().(grpc.GrpcServiceLayersIpc)
+			data := c.Svc_Recv(0)
 			task.AssertNotNil(data)
 			v := data.(*dataBag)
 			if v.msg != expected {
 				t.Fatalf("expected %s, got %s", expected, v.msg)
 			}
 			v.msg = pong
-			c.ServiceTx(0, data)
+			c.Svc_Send(0, data)
 			task.Done()
 		}
 		return nil, run, nil
@@ -39,8 +39,8 @@ func TestCommunicator_DataPingPong(t *testing.T) {
 	go func() {
 		data.msg = "ping"
 		expected := "pong"
-		comm.GrpcTx(0, data)
-		rxData := comm.GrpcRx(0)
+		comm.Grpc_Send(0, data)
+		rxData := comm.Grpc_Recv(0)
 		switch rxData.(type) {
 		case error:
 			t.Fatal(rxData)
@@ -54,13 +54,13 @@ func TestCommunicator_DataPingPong(t *testing.T) {
 }
 
 func TestCommunicator_ErrorPropagation(t *testing.T) {
-	comm := server.NewCommunicator(time.Minute)
+	comm := session.NewIpc(time.Minute)
 	j := comm.Job()
 	svcErr := errors.New("service error")
 	j.AddTask(func(j job.Job) (job.Init, job.Run, job.Finalize) {
 		run := func(task job.Task) {
-			c := j.GetValue().(runtime.GrpcServiceCommunicator)
-			_ = c.ServiceRx(0)
+			c := j.GetValue().(grpc.GrpcServiceLayersIpc)
+			_ = c.Svc_Recv(0)
 			task.Assert(svcErr) // trigger some error
 			task.Done()
 		}
@@ -69,8 +69,8 @@ func TestCommunicator_ErrorPropagation(t *testing.T) {
 	j.AddTask(func(j job.Job) (job.Init, job.Run, job.Finalize) {
 		run := func(task job.Task) {
 			time.Sleep(50 * time.Millisecond)
-			c := j.GetValue().(runtime.GrpcServiceCommunicator)
-			data := c.ServiceRx(1)
+			c := j.GetValue().(grpc.GrpcServiceLayersIpc)
+			data := c.Svc_Recv(1)
 			task.AssertNotNil(data)
 			task.Done()
 		}
@@ -78,8 +78,8 @@ func TestCommunicator_ErrorPropagation(t *testing.T) {
 	})
 	data := &dataBag{}
 	go func() {
-		comm.GrpcTx(0, data)
-		rxData := comm.GrpcRx(0)
+		comm.Grpc_Send(0, data)
+		rxData := comm.Grpc_Recv(0)
 		switch v := rxData.(type) {
 		case error:
 			st := status.Convert(rxData.(error))
@@ -105,12 +105,12 @@ type cruncher struct {
 
 func (c *cruncher) StreamableNumCruncher(j job.Job) (job.Init, job.Run, job.Finalize) {
 	run := func(task job.Task) {
-		comm := j.GetValue().(runtime.GrpcServiceCommunicator)
-		data := comm.ServiceRx(c.usechan) // service <- grpc
+		comm := j.GetValue().(grpc.GrpcServiceLayersIpc)
+		data := comm.Svc_Recv(c.usechan) // service <- grpc
 		task.AssertNotNil(data)
 		num := data.(*dataBag).num
 		data.(*dataBag).num = num * num
-		comm.ServiceTx(c.usechan, data) // service -> grpc
+		comm.Svc_Send(c.usechan, data) // service -> grpc
 		c.tick++
 		if c.tick == c.jobsize {
 			task.Done()
@@ -122,7 +122,7 @@ func (c *cruncher) StreamableNumCruncher(j job.Job) (job.Init, job.Run, job.Fina
 }
 
 func TestCommunicator_Streamable(t *testing.T) {
-	comm := server.NewCommunicator(time.Minute)
+	comm := session.NewIpc(time.Minute)
 	N := 20
 	var recvx int
 	j := comm.Job()
@@ -133,8 +133,8 @@ func TestCommunicator_Streamable(t *testing.T) {
 		go func() {
 			data := &dataBag{}
 			data.num = num
-			comm.GrpcTxStreamable(crunch.usechan, data)
-			rxData := comm.GrpcRx(crunch.usechan)
+			comm.Grpc_SendStreamable(crunch.usechan, data)
+			rxData := comm.Grpc_Recv(crunch.usechan)
 			recvx++
 			if rxData.(*dataBag).num != num * num {
 				t.Fatalf("expected %d, got %v", num* num, rxData)
@@ -151,7 +151,7 @@ func TestCommunicator_Streamable(t *testing.T) {
 }
 
 func TestCommunicator_OutOfOrder(t *testing.T) {
-	comm := server.NewOutOfOrderCommunicator(time.Minute)
+	comm := session.NewOutOfOrderIpc(time.Minute)
 	j := comm.Job()
 	crunch := &cruncher{0, 1, 0}
 	crunch2 := &cruncher{0, 1, 1}
@@ -161,8 +161,8 @@ func TestCommunicator_OutOfOrder(t *testing.T) {
 	go func() {
 		data := &dataBag{}
 		data.num = 3
-		comm.GrpcTx(1, data)
-		rxData := comm.GrpcRx(1)
+		comm.Grpc_Send(1, data)
+		rxData := comm.Grpc_Recv(1)
 		if rxData.(*dataBag).num != 9 {
 			t.Fatalf("expected %d, got %v", 9, rxData)
 		}
@@ -171,8 +171,8 @@ func TestCommunicator_OutOfOrder(t *testing.T) {
 		time.Sleep(10 * time.Millisecond)
 		data := &dataBag{}
 		data.num = 2
-		comm.GrpcTx(0, data)
-		rxData := comm.GrpcRx(0)
+		comm.Grpc_Send(0, data)
+		rxData := comm.Grpc_Recv(0)
 		if rxData.(*dataBag).num != 4 {
 			t.Fatalf("expected %d, got %v", 4, rxData)
 		}
