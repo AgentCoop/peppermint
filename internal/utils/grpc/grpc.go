@@ -22,7 +22,7 @@ func SetGrpcSessionId(md *metadata.MD, id i.SessionId) {
 	if id == 0 {
 		return
 	}
-	AddMetaValue(md, grpc.META_FIELD_SESSION_ID, utils.IntToHex(id, 16))
+	AddMetaValue(md, grpc.META_FIELD_SESSION_ID, utils.Conv_IntToHex(id, 16))
 }
 
 func ExtractGrpcSessionId(md *metadata.MD) i.SessionId {
@@ -30,11 +30,7 @@ func ExtractGrpcSessionId(md *metadata.MD) i.SessionId {
 	if len(vals) == 0 {
 		return 0
 	}
-	return i.SessionId(utils.Hex2int(vals[0]))
-}
-
-func RandomGrpcSessionId() i.SessionId {
-	return i.SessionId(utils.RandUint64())
+	return i.SessionId(utils.Conv_HexToInt(vals[0]))
 }
 
 func GetSessDescriptorById(id i.SessionId) (runtime.SessionDesc, error) {

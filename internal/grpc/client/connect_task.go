@@ -23,7 +23,7 @@ func (c *baseClient) ConnectTask(j job.Job) (job.Init, job.Run, job.Finalize) {
 		}
 		task.Assert(err)
 		c.conn = conn
-		c.onConnectedHook(conn)
+		c.connProvider(conn)
 		task.Done()
 	}
 	return nil, run, nil

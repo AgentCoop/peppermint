@@ -1,4 +1,4 @@
-package metadata
+package client
 
 import (
 	"context"
@@ -6,7 +6,7 @@ import (
 	"google.golang.org/grpc"
 )
 
-func UnaryClientInterceptor(c client.BaseClient) grpc.UnaryClientInterceptor {
+func PostUnaryInterceptor(c client.BaseClient) grpc.UnaryClientInterceptor {
 	return func(pair context.Context, method string, req, reply interface{}, cc *grpc.ClientConn, invoker grpc.UnaryInvoker, opts ...grpc.CallOption) error {
 		s := grpc.ServerTransportStreamFromContext(pair)
 		_ = s

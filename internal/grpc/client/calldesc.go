@@ -5,7 +5,7 @@ import (
 	"google.golang.org/grpc/metadata"
 )
 
-type reqResPair struct {
+type calldesc struct {
 	context.Context
 	Request
 	Response
@@ -23,36 +23,32 @@ type ClientCallDescriptor interface {
 	SendHeader()
 }
 
-func NewRequestResponsePair(c BaseClient, ctx context.Context) *reqResPair {
-	return &reqResPair{ctx,NewRequest(c), NewResponse(c)}
-}
-
-func (p *reqResPair) GetContext() context.Context {
+func (p *calldesc) GetContext() context.Context {
 	return p.Context
 }
 
-func (p *reqResPair) GetRequest() Request {
+func (p *calldesc) GetRequest() Request {
 	return p.Request
 }
 
 // Replaces the base request with an extended one
-func (p *reqResPair) AssignNewRequest(new Request) Request {
+func (p *calldesc) AssignNewRequest(new Request) Request {
 	base := p.Request
 	p.Request = new
 	return base
 }
 
-func (p *reqResPair) GetResponse() Response {
+func (p *calldesc) GetResponse() Response {
 	return p.Response
 }
 
 // Replaces the base response with an extended one
-func (p *reqResPair) AssignNewResponse(new Response) Response {
+func (p *calldesc) AssignNewResponse(new Response) Response {
 	base := p.Response
 	p.Response = new
 	return base
 }
 
-func (p *reqResPair) SendHeader() {
+func (p *calldesc) SendHeader() {
 	p.Context = metadata.NewOutgoingContext(p.Context, p.Request.MetaData())
 }

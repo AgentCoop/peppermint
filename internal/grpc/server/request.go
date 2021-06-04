@@ -43,12 +43,12 @@ func NewRequest(ctx context.Context) *request {
 	var vals []string
 	vals = md.Get(grpc.META_FIELD_NODE_ID)
 	if len(vals) == 1 {
-		r.nodeId = i.NodeId(utils.Hex2int(vals[0]))
+		r.nodeId = i.NodeId(utils.Conv_HexToInt(vals[0]))
 	}
 
 	vals = md.Get(grpc.META_FIELD_SESSION_ID)
 	if len(vals) == 1 {
-		r.sessId = i.SessionId(utils.Hex2int(vals[0]))
+		r.sessId = i.SessionId(utils.Conv_HexToInt(vals[0]))
 	}
 	return r
 }

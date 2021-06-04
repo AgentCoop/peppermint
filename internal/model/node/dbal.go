@@ -24,3 +24,9 @@ func CreateNode(id internal.NodeId, tags []string) error {
 	}
 	return db.Create(node).Error
 }
+
+func UpdateNode(encKey []byte) {
+	db := runtime.GlobalRegistry().Db().Handle()
+	node := &Node{EncKey: encKey}
+	db.Save(node)
+}

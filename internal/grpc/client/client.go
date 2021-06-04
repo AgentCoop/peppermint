@@ -4,19 +4,19 @@ import (
 	"context"
 	job "github.com/AgentCoop/go-work"
 	i "github.com/AgentCoop/peppermint/internal"
-	"github.com/AgentCoop/peppermint/internal/runtime"
 	"google.golang.org/grpc"
 	"net"
 )
 
 type ReqChan chan ClientCallDescriptor
 type ResChan chan struct{}
-type onConnectedHook func(grpc.ClientConnInterface)
+type connProvider func(grpc.ClientConnInterface)
 
 type BaseClient interface {
 	ConnectTask(j job.Job) (job.Init, job.Run, job.Finalize)
 	Connection() grpc.ClientConnInterface
-	OnConnectedHook(onConnectedHook)
+	WithConnProvider(connProvider)
+	WithEncKey([]byte)
 	WithUnaryInterceptors(...grpc.UnaryClientInterceptor)
 	NodeId() i.NodeId
 	IsSecure() bool
@@ -27,27 +27,13 @@ type BaseClient interface {
 
 type baseClient struct {
 	ctx               context.Context
+	addr              net.Addr
+	opts              []grpc.DialOption
+	conn              grpc.ClientConnInterface
+	connProvider      connProvider
 	unaryInterceptors []grpc.UnaryClientInterceptor
 	encKey            []byte
-	conn              grpc.ClientConnInterface
-	opts              []grpc.DialOption
-	address           net.Addr
-	onConnectedHook   onConnectedHook
 	sId               i.SessionId
-}
-
-func NewBaseClient(endpoint runtime.ServiceEndpoint, opts ...grpc.DialOption) *baseClient {
-	c := new(baseClient)
-	c.address = endpoint.Address()
-	c.encKey = endpoint.EncKey()
-	c.opts = opts
-	return c
-}
-
-func NewBaseClientWithContext(ctx context.Context, endpoint runtime.ServiceEndpoint, opts ...grpc.DialOption) *baseClient {
-	c := NewBaseClient(endpoint, opts...)
-	c.ctx = ctx
-	return c
 }
 
 func (c *baseClient) IsSecure() bool {
@@ -58,8 +44,16 @@ func (c *baseClient) WithUnaryInterceptors(interceptors ...grpc.UnaryClientInter
 	c.unaryInterceptors = interceptors
 }
 
+func (c *baseClient) ConnProvider(provider connProvider) {
+	c.connProvider = provider
+}
+
 func (c *baseClient) SessionId() i.SessionId {
 	return c.sId
+}
+
+func (c *baseClient) WithEncKey(key []byte) {
+	c.encKey = key
 }
 
 func (c *baseClient) EncKey() []byte {
@@ -72,8 +66,4 @@ func (c *baseClient) SetSessionId(id i.SessionId) {
 
 func (c *baseClient) Connection() grpc.ClientConnInterface {
 	return c.conn
-}
-
-func (c *baseClient) OnConnectedHook(hook onConnectedHook) {
-	c.onConnectedHook = hook
 }
