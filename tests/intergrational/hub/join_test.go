@@ -3,6 +3,7 @@ package hub_test
 import (
 	job "github.com/AgentCoop/go-work"
 	"github.com/AgentCoop/peppermint/internal/app/node"
+	_ "github.com/AgentCoop/peppermint/internal/plugin/hub"
 	"github.com/AgentCoop/peppermint/internal/plugin/hub/grpc/client"
 	"github.com/AgentCoop/peppermint/internal/plugin/hub/grpc/client/join"
 	"net"
@@ -22,10 +23,10 @@ func TestJoinHello(t *testing.T) {
 
 	time.Sleep(100 * time.Millisecond)
 
-	addr, _ := net.ResolveTCPAddr("tcp", "localhost:9991")
+	addr, _ := net.ResolveTCPAddr("tcp", "localhost:9911")
 	hubClient := client.NewClient(addr)
 
-	clientJob := job.NewJob(nil)
+	clientJob := job.NewJob(hubClient)
 	joinCtx := join.NewJoinContext("secret", []string{"my-test-machine", "linux"})
 	clientJob.AddOneshotTask(hubClient.ConnectTask)
 	clientJob.AddTask(joinCtx.JoinTask)

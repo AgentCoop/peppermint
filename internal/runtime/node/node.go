@@ -18,7 +18,8 @@ func NewConfigurator() *cfg {
 
 func (c *cfg) Fetch() error {
 	db := runtime.GlobalRegistry().Db().Handle()
-	return db.First(&c.nodeModel).Error
+	db.FirstOrCreate(&c.nodeModel)
+	return nil
 }
 
 func (c *cfg) MergeCliOptions(parser deps.CliParser) {

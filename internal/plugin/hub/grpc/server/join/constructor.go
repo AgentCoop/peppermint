@@ -7,6 +7,9 @@ import (
 )
 
 func CreateSession() grpc.Session {
+	joinCtx := new(joinContext)
 	sess := session.NewSession(time.Minute)
+	sess.Job().AddTask(joinCtx.JoinHelloTask)
+	sess.Job().Run()
 	return sess
 }

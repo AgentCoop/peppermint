@@ -3,7 +3,6 @@ package server
 import (
 	"github.com/AgentCoop/peppermint/internal/api/peppermint/service/backoffice/hub"
 	middleware "github.com/AgentCoop/peppermint/internal/grpc/middleware/server"
-	md_middleware "github.com/AgentCoop/peppermint/internal/grpc/middleware/server/metadata"
 	"github.com/AgentCoop/peppermint/internal/grpc/server"
 	"net"
 
@@ -20,9 +19,10 @@ type hubServer struct {
 	hub.UnimplementedHubServer
 }
 
-func withUnaryServerMiddlewares(serviceName string) grpc.ServerOption {
-	return middleware.WithUnaryServerChain(
-		md_middleware.UnaryServerInterceptor(serviceName),
+func withUnaryServerMiddlewares(svcName string) grpc.ServerOption {
+	return grpc.ChainUnaryInterceptor(
+		middleware.PreUnaryInterceptor(svcName),
+		middleware.PostUnaryInterceptor(svcName),
 	)
 }
 

@@ -3,12 +3,12 @@ package join
 import (
 	job "github.com/AgentCoop/go-work"
 	"github.com/AgentCoop/peppermint/internal/crypto"
-	utils "github.com/AgentCoop/peppermint/internal/utils/grpc"
+	"github.com/AgentCoop/peppermint/internal/grpc/session"
 )
 
 func (ctx *joinContext) JoinHelloTask(j job.Job) (job.Init, job.Run, job.Finalize) {
 	run := func(task job.Task) {
-		callDesc, ipc := utils.Ipc_CallDesc(j, 0)
+		callDesc, ipc := session.Ipc_CallDesc(j, 0)
 
 		// Extract data from the request
 		req := callDesc.GetRequest()
