@@ -1,28 +1,21 @@
 package client
 
 import (
-	"context"
-	"github.com/AgentCoop/peppermint/internal/utils/grpc"
+	"github.com/AgentCoop/peppermint/internal/utils"
 	"google.golang.org/grpc/metadata"
 )
 
 type ResponseHeader interface {
-	GetHeader() *metadata.MD
-	GetTrailer() *metadata.MD
-}
-
-type ResponseData interface {
-	//Populate()
+	Header() *metadata.MD
+	Trailer() *metadata.MD
 }
 
 type Response interface {
 	ResponseHeader
-	ResponseData
 	Process()
 }
 
 type response struct {
-	context.Context
 	client BaseClient
 	header metadata.MD
 	trailer metadata.MD
@@ -37,13 +30,13 @@ func NewResponse(c BaseClient) Response {
 }
 
 func (r *response) Process() {
-	r.client.SetSessionId(grpc.ExtractGrpcSessionId(&r.header))
+	r.client.SetSessionId(utils.Grpc_ExtractSessionId(&r.header))
 }
 
-func (r *response) GetHeader() *metadata.MD {
+func (r *response) Header() *metadata.MD {
 	return &r.header
 }
 
-func (r *response) GetTrailer() *metadata.MD {
+func (r *response) Trailer() *metadata.MD {
 	return &r.trailer
 }

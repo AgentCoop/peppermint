@@ -13,8 +13,10 @@ type ResChan chan struct{}
 type connProvider func(grpc.ClientConnInterface)
 
 type BaseClient interface {
+	Context() context.Context
 	ConnectTask(j job.Job) (job.Init, job.Run, job.Finalize)
 	Connection() grpc.ClientConnInterface
+	WithContext(ctx context.Context)
 	WithConnProvider(connProvider)
 	WithEncKey([]byte)
 	WithUnaryInterceptors(...grpc.UnaryClientInterceptor)
@@ -36,12 +38,25 @@ type baseClient struct {
 	sId               i.SessionId
 }
 
+func (c *baseClient) Context() context.Context {
+	switch {
+	case c.ctx == nil:
+		return context.Background()
+	default:
+		return c.ctx
+	}
+}
+
 func (c *baseClient) NodeId() i.NodeId {
 	panic("implement me")
 }
 
 func (c *baseClient) IsSecure() bool {
 	return false
+}
+
+func (c *baseClient) WithContext(ctx context.Context) {
+	c.ctx = ctx
 }
 
 func (c *baseClient) WithUnaryInterceptors(interceptors ...grpc.UnaryClientInterceptor) {

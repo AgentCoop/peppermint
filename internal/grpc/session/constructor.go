@@ -3,7 +3,7 @@ package session
 import (
 	job "github.com/AgentCoop/go-work"
 	i "github.com/AgentCoop/peppermint/internal"
-	utils "github.com/AgentCoop/peppermint/internal/utils/grpc"
+	utils2 "github.com/AgentCoop/peppermint/internal/utils"
 	"time"
 )
 
@@ -29,7 +29,7 @@ func NewSession(expireInSecs time.Duration) *sessionDesc {
 func newIpc(callOrder gRpcCallOder) *ipc {
 	c := &ipc{}
 	c.serviceJob = job.NewJob(nil)
-	c.serviceJob.WithErrorWrapper(utils.GrpcErrorWrapper)
+	c.serviceJob.WithErrorWrapper(utils2.GrpcErrorWrapper)
 	c.serviceJob.WithShutdown(c.shutdown)
 	c.callOrder = callOrder
 	return c

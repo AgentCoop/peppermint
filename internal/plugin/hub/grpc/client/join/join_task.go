@@ -35,6 +35,7 @@ func (c *joinContext) JoinTask(j job.Job) (job.Init, job.Run, job.Finalize) {
 			Flags:         nil,
 			JoinSecret:    c.secret,
 		}
+		ctx = context.Background()
 		resJoin, err := hubClient.Join(ctx, reqJoin)
 		task.Assert(err)
 		_ = resJoin

@@ -3,16 +3,19 @@ package server
 import (
 	"context"
 	msg "github.com/AgentCoop/peppermint/internal/api/peppermint/service/backoffice/hub"
-
+	srv "github.com/AgentCoop/peppermint/internal/grpc/server"
+	"github.com/AgentCoop/peppermint/internal/grpc/session"
+	"github.com/AgentCoop/peppermint/internal/plugin/hub/grpc/server/join"
 	//"github.com/AgentCoop/peppermint/internal/service/hub"
 )
 
 func (s *hubServer) Join(ctx context.Context, r *msg.Join_Request) (*msg.Join_Response, error) {
+	callDesc := ctx.(srv.GrpcCallDescriptor)
+	req := join.NewJoin(callDesc, r)
+	id := req.SessionId()
+	desc, _ := session.DescriptorById(id)
+	_ = desc
 	return nil, nil
-	//callDesc := ctx.(srv.GrpcCallDescriptor)
-	//req := join.NewJoin(callDesc, r)
-	//id := req.SessionId()
-	//desc, err := grpc.GetSessDescriptorById(id)
 	//if err != nil  { return nil, err }
 	//
 	//joinJob := desc.Job()
