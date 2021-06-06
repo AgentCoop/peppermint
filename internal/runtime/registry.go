@@ -1,10 +1,7 @@
 package runtime
 
 import (
-	job "github.com/AgentCoop/go-work"
-	i "github.com/AgentCoop/peppermint/internal"
 	"github.com/AgentCoop/peppermint/internal/db"
-	"time"
 )
 
 type parserCmdHook func(interface{})
@@ -33,26 +30,12 @@ func GlobalRegistry() GlobalRegistryInterface {
 	return regMap
 }
 
-type SessionDesc interface {
-	Job() job.Job
-	Expired() bool
-}
-
-type Session interface {
-	New(job job.Job, expireInSecs time.Duration) i.SessionId
-	Lookup(i.SessionId) (SessionDesc, bool)
-	Remove(i.SessionId)
-}
-
 type GlobalRegistryInterface interface {
 	Runtime() Runtime
 	SetRuntime(Runtime)
 
 	Db() db.Db
 	SetDb(db.Db)
-
-	GrpcSession() Session
-	SetGrpcSession(Session)
 
 	RegisterService(*ServiceInfo)
 	Services() []*ServiceInfo
@@ -77,14 +60,6 @@ func (m registryMap) Db() db.Db {
 
 func (m registryMap) SetDb(db db.Db) {
 	m[dbKey][0] = db
-}
-
-func (m registryMap) GrpcSession() Session {
-	return m[grpcSessionKey][0].(Session)
-}
-
-func (m registryMap) SetGrpcSession(s Session) {
-	m[grpcSessionKey][0] = s
 }
 
 func (m registryMap) RegisterService(info *ServiceInfo) {

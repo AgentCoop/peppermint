@@ -1,28 +1,24 @@
 package stream
 
 import (
+	g "github.com/AgentCoop/peppermint/internal/grpc"
 	"google.golang.org/grpc"
 )
 
-func NewClientStream(cs grpc.ClientStream, isSecure bool, encKey []byte) *stream {
-	s := &stream{
-		Stream:   cs,
-		isSecure: isSecure,
-		typ:      ClientStream,
-		encKey:   encKey,
+func NewClientStream(cs grpc.ClientStream, desc g.ClientCallDesc) *clientStream {
+	s := &clientStream{
+		cs:       cs,
+		callDesc: desc,
 	}
 	return s
 }
 
-func NewServerStream(ss grpc.ServerStream, isSecure bool, encKey []byte) *stream {
+func NewServerStream(ss grpc.ServerStream, desc g.ServerCallDesc) *serverStream {
 	fullMethod, _ := grpc.MethodFromServerStream(ss)
-	s := &stream{
-		Stream:   ss,
-		isSecure: isSecure,
-		typ:      ServerStream,
-		encKey:   encKey,
+	s := &serverStream{
+		ss:         ss,
+		callDesc:   desc,
 		fullMethod: fullMethod,
 	}
 	return s
 }
-

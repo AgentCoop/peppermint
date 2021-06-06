@@ -3,7 +3,6 @@ package session
 import (
 	job "github.com/AgentCoop/go-work"
 	i "github.com/AgentCoop/peppermint/internal"
-	"github.com/AgentCoop/peppermint/internal/runtime"
 	"github.com/AgentCoop/peppermint/internal/grpc"
 	"time"
 )
@@ -32,11 +31,6 @@ func (s *sessionDesc) Ipc() grpc.GrpcServiceLayersIpc {
 
 func (s *sessionDesc) Job() job.Job {
 	return s.ipc.serviceJob
-}
-
-func (m sessionMap) Lookup(id i.SessionId) (runtime.SessionDesc, bool) {
-	v, ok := m[id]
-	return v, ok
 }
 
 func (m sessionMap) Remove(id i.SessionId) {

@@ -43,7 +43,7 @@ type GrpcServiceLayersIpc interface {
 
 	Grpc_Recv(chanIdx int) interface{}
 	Grpc_Send(chanIdx int, data interface{})
-	Grpc_MakeStreamable(chanIdx uint, stream StreamExtended)
+	Grpc_MakeStreamable(chanIdx uint, stream Stream)
 	Grpc_SendStreamable(chanId int, data interface{}) // For client pseudo-streaming
 	Grpc_WaitForStreamClose(chanIdx uint) error
 	Job() job.Job

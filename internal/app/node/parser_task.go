@@ -48,13 +48,7 @@ func (app *app) ParserTask(j job.Job) (job.Init, job.Run, job.Finalize) {
 			cmd.DbCreateCmd(db, parser, v.Force)
 
 		case cmd.CMD_NAME_RUN:
-			serviceJob := job.NewJob(nil)
-			regServices := runtime.GlobalRegistry().Services()
-			for _, desc := range regServices {
-				service := desc.Initializer()
-				serviceJob.AddTask(service.StartTask)
-			}
-			<-serviceJob.Run()
+			cmd.RunCmd()
 
 		case cmd.CMD_NAME_JOIN:
 			secret, err := utils.ReadPassword("Enter join secret")

@@ -13,16 +13,19 @@ func (c *proxyConn) writeStreamTask(j job.Job) (job.Init, job.Run, job.Finalize)
 		select {
 		case p := <-c.upstreamChan:
 			task.Assert(p)
-			newPacket := codec.NewRawPacket(p.Payload().([]byte), c.downstream.EncKey())
+			encKey := c.downstream.CallDesc().EncKey()
+			newPacket := codec.NewRawPacket(p.Payload().([]byte), encKey)
 			// Send response header from the backend to the client
-			if c.downstream.MessagesReceived() == 0 {
-				upHeader := c.upstream.Header()
-				c.downstream.WithNewHeader(&upHeader)
+			if c.downstream.ReceivedCount() == 0 {
+				upCallDesc := c.upstream.CallDesc()
+				upHeader := upCallDesc.Header()
+				c.downstream.CallDesc().SetHeader(*upHeader)
 			}
 			c.downstream.Send(newPacket)
 		case p := <-c.downstreamChan:
 			task.Assert(p)
-			newPacket := codec.NewRawPacket(p.Payload().([]byte), c.upstream.EncKey())
+			encKey := c.upstream.CallDesc().EncKey()
+			newPacket := codec.NewRawPacket(p.Payload().([]byte), encKey)
 			c.upstream.Send(newPacket)
 		}
 		task.Tick()

@@ -11,7 +11,7 @@ func (ctx *joinContext) JoinHelloTask(j job.Job) (job.Init, job.Run, job.Finaliz
 		callDesc, ipc := session.Ipc_CallDesc(j, 0)
 
 		// Extract data from the request
-		req := callDesc.GetRequest()
+		req := callDesc.RequestData()
 		dataBag := req.(joinHello_DataBag)
 
 		// Compute encryption key

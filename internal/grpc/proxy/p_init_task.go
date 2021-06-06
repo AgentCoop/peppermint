@@ -12,7 +12,7 @@ func (p *proxyConn) initTask(j job.Job) (job.Init, job.Run, job.Finalize) {
 		upstreamConn := j.GetValue().(*grpc.ClientConn)
 		upstream, err := grpc.NewClientStream(p.downstream.Context(), nil, upstreamConn, fullMethod)
 		task.Assert(err)
-		p.upstream = s.NewClientStream(upstream, p.upClient.IsSecure(), p.upClient.EncKey())
+		p.upstream = s.NewClientStream(upstream, nil)
 	}
 	run := func(task job.Task) {
 		task.Done()

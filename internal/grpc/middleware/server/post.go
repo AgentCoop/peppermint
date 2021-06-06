@@ -2,17 +2,23 @@ package server
 
 import (
 	"context"
-	"github.com/AgentCoop/peppermint/internal/grpc/server"
+	g "github.com/AgentCoop/peppermint/internal/grpc"
 	"google.golang.org/grpc"
 )
 
-func PostUnaryInterceptor(serviceName string) grpc.UnaryServerInterceptor {
+func PostUnaryInterceptor(svcName string) grpc.UnaryServerInterceptor {
 	return func(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (interface{}, error) {
 		resp, err := handler(ctx, req)
-		callDesc := ctx.(server.GrpcCallDescriptor)
-		callDesc.GetResponse().SendHeader()
+		callDesc := ctx.(g.ServerCallDesc)
+		callDesc.Meta().SendHeader(nil)
 		return resp, err
 	}
 }
 
+func PostStreamInterceptor(svcName string) grpc.StreamServerInterceptor {
+	return func(srv interface{}, ss grpc.ServerStream, info *grpc.StreamServerInfo, handler grpc.StreamHandler) error {
+		err := handler(srv, ss)
+		return err
+	}
+}
 

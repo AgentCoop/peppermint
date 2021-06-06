@@ -19,6 +19,3 @@ func NewBaseClientWithContext(ctx context.Context, addr net.Addr, opts ...grpc.D
 	return c
 }
 
-func NewCallDescriptor(c BaseClient, ctx context.Context) *calldesc {
-	return &calldesc{ctx,NewRequest(c), NewResponse(c)}
-}

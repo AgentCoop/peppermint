@@ -6,6 +6,10 @@ import (
 	"time"
 )
 
+type joinContext struct {
+	encKey []byte
+}
+
 func CreateSession() grpc.Session {
 	joinCtx := new(joinContext)
 	sess := session.NewSession(time.Minute)

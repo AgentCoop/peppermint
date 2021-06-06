@@ -12,3 +12,7 @@ type Node struct {
 	EncKey []byte
 	IsSecure uint
 }
+
+type SecurityPolicy interface {
+	E2E_Enabled() bool
+}

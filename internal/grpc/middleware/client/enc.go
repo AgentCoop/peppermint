@@ -2,6 +2,7 @@ package client
 
 import (
 	"context"
+	g "github.com/AgentCoop/peppermint/internal/grpc"
 	"github.com/AgentCoop/peppermint/internal/grpc/client"
 	"github.com/AgentCoop/peppermint/internal/grpc/codec"
 	"google.golang.org/grpc"
@@ -9,8 +10,9 @@ import (
 
 func SecureChannelUnaryInterceptor(c client.BaseClient) grpc.UnaryClientInterceptor {
 	return func(ctx context.Context, method string, req, reply interface{}, cc *grpc.ClientConn, invoker grpc.UnaryInvoker, opts ...grpc.CallOption) error {
-		if c.IsSecure() {
-			req = codec.NewPacket(req, c.EncKey())
+		callDesc := ctx.(g.ClientCallDesc)
+		if callDesc.IsSecure() {
+			req = codec.NewPacket(req, callDesc.EncKey())
 		}
 		err := invoker(ctx, method, req, reply, cc)
 		return err

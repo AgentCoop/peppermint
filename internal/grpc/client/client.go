@@ -8,8 +8,6 @@ import (
 	"net"
 )
 
-type ReqChan chan ClientCallDescriptor
-type ResChan chan struct{}
 type connProvider func(grpc.ClientConnInterface)
 
 type BaseClient interface {

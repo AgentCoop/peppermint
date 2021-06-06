@@ -9,6 +9,7 @@ type Configurator interface {
 
 type NodeConfigurator interface {
 	Configurator
+	E2E_EncryptionEnabled() bool
 	EncKey() []byte
 }
 

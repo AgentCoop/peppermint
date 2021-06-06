@@ -11,8 +11,8 @@ import (
 
 type proxyConn struct {
 	upClient       client.BaseClient
-	downstream     g.ServerStreamExtended
-	upstream       g.ClientStreamExtended
+	downstream     g.ServerStream
+	upstream       g.ClientStream
 	downstreamChan chan codec.Packet
 	upstreamChan   chan codec.Packet
 }
@@ -22,7 +22,7 @@ func NewProxyConnJob(upstreamClient client.BaseClient, downstream grpc.ServerStr
 	//if !ok {
 	//	return nil, status.Error(codes.InvalidArgument, "failed to retrieve gRPC method name")
 	//}
-	down := s.NewServerStream(downstream, false, nil)
+	down := s.NewServerStream(downstream, nil)
 	pconn := &proxyConn{
 		upClient:       upstreamClient,
 		downstream:     down,

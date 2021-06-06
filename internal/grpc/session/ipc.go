@@ -33,13 +33,13 @@ type ipc struct {
 	svcChanMu           [MaxChans]sync.Mutex
 	svcChan             [MaxChans]chan interface{}
 	grpcChan            [MaxChans]chan interface{}
-	streams             [MaxChans]g.StreamExtended
+	streams             [MaxChans]g.Stream
 	serviceJob          job.Job
 	shutdownOnce        sync.Once
 }
 
 func (c *ipc) Svc_StreamSend(chanIdx uint, data interface{}) {
-	err := c.streams[chanIdx].Send(data)
+	err := c.streams[chanIdx].SendMsg(data)
 	if err != nil { c.shutdown(err) }
 }
 
@@ -48,7 +48,7 @@ func (c *ipc) Svc_StreamClose(chanIdx uint) {
 	c.grpcChan[chanIdx] <- nil
 }
 
-func (c *ipc) Grpc_MakeStreamable(chanIdx uint, stream g.StreamExtended) {
+func (c *ipc) Grpc_MakeStreamable(chanIdx uint, stream g.Stream) {
 	c.streams[chanIdx] = stream
 }
 

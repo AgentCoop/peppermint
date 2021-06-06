@@ -8,7 +8,8 @@ import (
 )
 
 type cfg struct {
-	nodeModel node.Node
+	nodeModel      node.Node
+	e2e_EncEnabled bool
 }
 
 func NewConfigurator() *cfg {
@@ -19,6 +20,7 @@ func NewConfigurator() *cfg {
 func (c *cfg) Fetch() error {
 	db := runtime.GlobalRegistry().Db().Handle()
 	db.FirstOrCreate(&c.nodeModel)
+	c.e2e_EncEnabled = c.nodeModel.IsSecure > 0
 	return nil
 }
 
@@ -42,11 +44,6 @@ func (c *cfg) EncKey() []byte {
 	return c.nodeModel.EncKey
 }
 
-func (c *cfg) IsSecure() bool {
-	switch {
-	case c.nodeModel.IsSecure > 0:
-		return true
-	default:
-		return false
-	}
+func (c *cfg) E2E_EncryptionEnabled() bool {
+	return c.e2e_EncEnabled
 }
