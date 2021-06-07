@@ -37,3 +37,9 @@ func ExtractSessionId(md *metadata.MD) i.SessionId {
 	if len(vals) == 0 { return 0 }
 	return i.SessionId(utils.Conv_HexToInt(vals[0]))
 }
+
+func ExtractNodeId(md *metadata.MD) i.NodeId {
+	vals := md.Get(META_FIELD_NODE_ID)
+	if len(vals) == 0 { return 0 }
+	return i.NodeId(utils.Conv_HexToInt(vals[0]))
+}

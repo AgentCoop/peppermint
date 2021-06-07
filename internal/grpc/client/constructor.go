@@ -18,4 +18,3 @@ func NewBaseClientWithContext(ctx context.Context, addr net.Addr, opts ...grpc.D
 	c.ctx = ctx
 	return c
 }
-

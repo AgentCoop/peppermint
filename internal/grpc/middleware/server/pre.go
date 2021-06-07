@@ -11,9 +11,10 @@ import (
 )
 
 func handleMeta(ctx context.Context, svcName string) g.ServerCallDesc {
+	// Assume all calls by default are insecure
+	// The call can be upgraded to a secure one by an inner middleware
 	desc := runtime.GlobalRegistry().LookupService(svcName)
-	secPolicy := calldesc.NewSecurityPolicy(false, nil)
-	callDesc := calldesc.NewServerCallDesc(ctx, desc.Cfg, secPolicy)
+	callDesc := calldesc.NewServerInsecure(ctx, desc.Cfg)
 	callDesc.HandleMeta()
 	return callDesc
 }

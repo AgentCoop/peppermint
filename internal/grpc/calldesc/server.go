@@ -14,17 +14,19 @@ func (s *sCallDesc) ServiceConfigurator() deps.ServiceConfigurator {
 }
 
 func (s *sCallDesc) HandleMeta() {
-	s.meta.sId = grpc.ExtractSessionId(&s.meta.header)
+	s.meta.extractCommonFieldsVals()
 }
 
-func (s *sCallDesc) Meta() *meta {
+func (s *sCallDesc) Meta() grpc.ServerMeta {
 	return &s.meta
 }
 
+func (s *sCallDesc) WithSecPolicy(sec grpc.SecurityPolicy) {
+	s.secPolicy = sec.(secPolicy)
+}
 
-// Security policy
-func (s *sCallDesc) WithEncKey(key []byte) {
-	s.secPolicy.encKey = key
+func (s *sCallDesc) SecPolicy() grpc.SecurityPolicy {
+	return s.secPolicy
 }
 
 //

@@ -14,7 +14,7 @@ func (s *hubServer) Join(ctx context.Context, r *msg.Join_Request) (*msg.Join_Re
 	req := join.NewJoin(r)
 	callDesc.SetRequestData(req)
 
-	id := callDesc.SessionId()
+	id := callDesc.Meta().SessionId()
 	sess, err := session.FindById(id)
 	if err != nil { return nil, err }
 

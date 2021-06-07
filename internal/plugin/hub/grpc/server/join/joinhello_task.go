@@ -19,7 +19,9 @@ func (ctx *joinContext) JoinHelloTask(j job.Job) (job.Init, job.Run, job.Finaliz
 		keyExch := crypto.NewKeyExchange(task)
 		ctx.encKey = keyExch.ComputeKey(pubKey)
 
-		NewJoinHelloResponse(callDesc, keyExch.GetPublicKey())
+		resp := NewJoinHelloResponse(keyExch.GetPublicKey())
+		callDesc.SetResponseData(resp)
+
 		ipc.Svc_Send(0, nil)
 		task.Done()
 	}

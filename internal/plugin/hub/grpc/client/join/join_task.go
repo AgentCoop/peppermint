@@ -5,6 +5,7 @@ import (
 	job "github.com/AgentCoop/go-work"
 	"github.com/AgentCoop/peppermint/internal/api/peppermint/service/backoffice/hub"
 	"github.com/AgentCoop/peppermint/internal/crypto"
+	"github.com/AgentCoop/peppermint/internal/grpc/calldesc"
 	"github.com/AgentCoop/peppermint/internal/model/node"
 	cc "github.com/AgentCoop/peppermint/internal/plugin/hub/grpc/client"
 )
@@ -18,10 +19,12 @@ func (c *joinContext) JoinTask(j job.Job) (job.Init, job.Run, job.Finalize) {
 		keyExch := crypto.NewKeyExchange(task)
 		pubKey := keyExch.GetPublicKey()
 
+		// Encryption key will be received after the call, make it insecure
 		reqHello := &hub.JoinHello_Request{
 			DhPubKey: pubKey,
 		}
-		resHello, err := hubClient.JoinHello(ctx, reqHello)
+		callHelloDesc := calldesc.NewClientInSecure(ctx)
+		resHello, err := hubClient.JoinHello(callHelloDesc, reqHello)
 		task.Assert(err)
 
 		// Set computed encryption key for the client
@@ -36,7 +39,10 @@ func (c *joinContext) JoinTask(j job.Job) (job.Init, job.Run, job.Finalize) {
 			JoinSecret:    c.secret,
 		}
 		ctx = context.Background()
-		resJoin, err := hubClient.Join(ctx, reqJoin)
+		secPolicy := calldesc.NewSecurityPolicy(true, c.encKey)
+		callDesc := calldesc.NewClient(ctx, secPolicy)
+		callDesc.WithSessionFrom(callHelloDesc)
+		resJoin, err := hubClient.Join(callDesc, reqJoin)
 		task.Assert(err)
 		_ = resJoin
 

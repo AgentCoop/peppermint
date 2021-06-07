@@ -1,30 +1,33 @@
 package calldesc
 
 import (
-	"github.com/AgentCoop/peppermint/internal"
 	"github.com/AgentCoop/peppermint/internal/grpc"
 )
 
-func (c cCallDesc) IsSecure() bool {
+func (s *cCallDesc) WithSessionFrom(preceding grpc.ClientCallDesc) {
+	s.meta.copySessionId(preceding.(*cCallDesc))
+}
+
+func (c *cCallDesc) IsSecure() bool {
 	return c.secPolicy.e2e_Enc
 }
 
-func (c cCallDesc) EncKey() []byte {
+func (c *cCallDesc) EncKey() []byte {
 	return c.secPolicy.encKey
 }
 
-func (c cCallDesc) HandleMeta() {
-
+func (c *cCallDesc) HandleMeta() {
+	c.meta.extractCommonFieldsVals()
 }
 
-func (c cCallDesc) Meta() grpc.Meta {
-	panic("implement me")
+func (c *cCallDesc) Meta() grpc.Meta {
+	return &c.meta
 }
 
-func (c cCallDesc) SessionId() internal.SessionId {
-	panic("implement me")
+func (s *cCallDesc) WithSecPolicy(sec grpc.SecurityPolicy) {
+	s.secPolicy = sec.(secPolicy)
 }
 
-func (c cCallDesc) NodeId() internal.NodeId {
-	panic("implement me")
+func (s *cCallDesc) SecPolicy() grpc.SecurityPolicy {
+	return s.secPolicy
 }

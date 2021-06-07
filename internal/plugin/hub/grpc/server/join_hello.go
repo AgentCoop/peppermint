@@ -18,7 +18,7 @@ func (s *hubServer) JoinHello(ctx context.Context, originalReq *msg.JoinHello_Re
 	v, ok := sess.Ipc().Grpc_Recv(0).(error)
 	if ok { return nil, v }
 
-	callDesc.SetSessionId(sess.Id())
+	callDesc.Meta().SetSessionId(sess.Id())
 	res := callDesc.ResponseData()
 	return res.ToGrpc().(*msg.JoinHello_Response), nil
 }

@@ -12,8 +12,9 @@ type joinHello_DataBag interface {
 	NodePubKey() []byte
 }
 
-func NewJoinHello(original *msg.JoinHello_Request) *joinHelloRequest {
+func NewJoinHello(orig *msg.JoinHello_Request) *joinHelloRequest {
 	r := new(joinHelloRequest)
+	r.nodePubKey = orig.GetDhPubKey()
 	return r
 }
 
@@ -27,4 +28,18 @@ func (r *joinHelloRequest) Validate() error {
 
 func (r *joinHelloRequest) NodePubKey() []byte {
 	return r.nodePubKey
+}
+
+type joinHelloResponse struct {
+	resp *msg.JoinHello_Response
+}
+
+func NewJoinHelloResponse(pubKey []byte) joinHelloResponse {
+	r := joinHelloResponse{}
+	r.resp = &msg.JoinHello_Response{DhPubKey: pubKey}
+	return r
+}
+
+func (r joinHelloResponse) ToGrpc() interface{} {
+	return r.resp
 }

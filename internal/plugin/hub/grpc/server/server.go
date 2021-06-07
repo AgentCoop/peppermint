@@ -21,14 +21,14 @@ type hubServer struct {
 	hub.UnimplementedHubServer
 }
 
-func setEncKey(desc g.CallDesc,encKey []byte) {
-	desc.WithEncKey(nil)
+func encryptionLayer(desc g.CallDesc, encKey []byte) {
+	//desc.WithEncKey(nil)
 }
 
 func encUnaryInterceptor() grpc.UnaryServerInterceptor {
 	return func(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (resp interface{}, err error) {
 		callDesc := ctx.(g.ServerCallDesc)
-		setEncKey(callDesc, nil)
+		encryptionLayer(callDesc, nil)
 		r, err := handler(ctx, req)
 		return r, err
 	}

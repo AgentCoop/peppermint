@@ -9,6 +9,8 @@ type joinRequest struct {
 
 func NewJoin(original *msg.Join_Request) *joinRequest {
 	r := new(joinRequest)
+	r.secret = original.GetJoinSecret()
+	r.tags = original.GetTag()
 	return r
 }
 

@@ -19,6 +19,10 @@ func (stream *clientStream) Close() {
 
 func (stream *clientStream) SendMsg(msg interface{}) error {
 	var err error
+	sec := stream.callDesc.SecPolicy()
+	err = encLayer(msg, sec.IsSecure(), sec.EncKey())
+	if err != nil { return nil }
+
 	switch v := msg.(type) {
 	case error:
 		if v == io.EOF {
@@ -40,6 +44,10 @@ func (stream *clientStream) SendMsg(msg interface{}) error {
 
 func (stream *clientStream) RecvMsg(msg interface{}) error {
 	var err error
+	sec := stream.callDesc.SecPolicy()
+	err = encLayer(msg, sec.IsSecure(), sec.EncKey())
+	if err != nil { return nil }
+
 	err = stream.cs.RecvMsg(msg)
 	switch err {
 	case nil:

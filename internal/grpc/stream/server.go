@@ -26,11 +26,12 @@ func (stream *serverStream) Close() {
 
 func (stream *serverStream) SendMsg(msg interface{}) error {
 	var err error
-	err = encLayer(msg, stream.callDesc.IsSecure(), stream.callDesc.EncKey())
+	sec := stream.callDesc.SecPolicy()
+	err = encLayer(msg, sec.IsSecure(), sec.EncKey())
 	if err != nil { return nil }
 
 	if msg == io.EOF && stream.callDesc.Meta().Trailer() != nil {
-		stream.callDesc.SetTrailer(*stream.callDesc.Meta().Trailer())
+		stream.callDesc.Meta().SetTrailer(*stream.callDesc.Meta().Trailer())
 		return nil
 	}
 	if stream.sentx == 0 {
@@ -43,7 +44,8 @@ func (stream *serverStream) SendMsg(msg interface{}) error {
 
 func (stream *serverStream) RecvMsg(msg interface{}) error {
 	var err error
-	err = encLayer(msg, stream.callDesc.IsSecure(), stream.callDesc.EncKey())
+	sec := stream.callDesc.SecPolicy()
+	err = encLayer(msg, sec.IsSecure(), sec.EncKey())
 	if err != nil { return nil }
 
 	err = stream.ss.RecvMsg(msg)

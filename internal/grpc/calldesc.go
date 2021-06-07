@@ -9,22 +9,21 @@ import (
 
 type CallDesc interface {
 	context.Context
-	SecurityPolicy
-	Meta() Meta
+	SecPolicy() SecurityPolicy
+	WithSecPolicy(policy SecurityPolicy)
 	HandleMeta()
-	SessionId() i.SessionId
-	NodeId() i.NodeId
 }
 
 type ClientCallDesc interface {
 	CallDesc
-	//Client() client.BaseClient
+	WithSessionFrom(ClientCallDesc)
+	Meta() Meta
 }
 
 type ServerCallDesc interface {
 	CallDesc
 	Data
-	ServerMeta
+	Meta() ServerMeta
 	ServiceConfigurator() deps.ServiceConfigurator
 }
 
@@ -38,6 +37,8 @@ type Meta interface {
 	SendHeader(metadata.MD) error
 	Header() *metadata.MD
 	Trailer() *metadata.MD
+	SessionId() i.SessionId
+	NodeId() i.NodeId
 }
 
 type RequestData interface {
@@ -56,6 +57,7 @@ type Data interface {
 }
 
 type ServerMeta interface {
+	Meta
 	SetTrailer(metadata.MD)
 	SetSessionId(i.SessionId)
 }

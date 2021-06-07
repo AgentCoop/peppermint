@@ -48,7 +48,7 @@ func (p *packet) Payload() interface{} {
 }
 
 func (codec) Marshal(v interface{}) ([]byte, error) {
-	p, ok := v.(packet)
+	p, ok := v.(*packet)
 	if !ok {
 		return proto.Marshal(v.(proto.Message))
 	}
@@ -96,7 +96,7 @@ func decrypt(in []byte, key []byte) []byte {
 }
 
 func (codec) Unmarshal(data []byte, v interface{}) error {
-	p, ok := v.(packet)
+	p, ok := v.(*packet)
 	if !ok {
 		return proto.Unmarshal(data, v.(proto.Message))
 	}
