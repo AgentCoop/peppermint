@@ -4,6 +4,7 @@ import (
 	job "github.com/AgentCoop/go-work"
 	"github.com/AgentCoop/peppermint/internal/crypto"
 	"github.com/AgentCoop/peppermint/internal/grpc/session"
+	"github.com/AgentCoop/peppermint/internal/plugin/hub/model"
 )
 
 func (ctx *joinContext) JoinHelloTask(j job.Job) (job.Init, job.Run, job.Finalize) {
@@ -22,6 +23,8 @@ func (ctx *joinContext) JoinHelloTask(j job.Job) (job.Init, job.Run, job.Finaliz
 		resp := NewJoinHelloResponse(keyExch.GetPublicKey())
 		callDesc.SetResponseData(resp)
 
+		err := model.SaveJoinRequest(callDesc.Meta().NodeId(), ctx.encKey)
+		task.Assert(err)
 		ipc.Svc_Send(0, nil)
 		task.Done()
 	}

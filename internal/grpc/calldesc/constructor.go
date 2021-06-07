@@ -3,6 +3,7 @@ package calldesc
 import (
 	"context"
 	"github.com/AgentCoop/peppermint/internal/runtime/deps"
+	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
 )
 
@@ -15,6 +16,7 @@ func NewSecurityPolicy(useEnc bool, encKey []byte) secPolicy {
 }
 
 func NewServer(ctx context.Context, cfg deps.Configurator, secPolicy secPolicy) *sCallDesc {
+	stream := grpc.ServerTransportStreamFromContext(ctx)
 	desc := &sCallDesc{}
 	desc.Context = ctx
 	desc.common.typ = ServerCallDesc
@@ -22,6 +24,7 @@ func NewServer(ctx context.Context, cfg deps.Configurator, secPolicy secPolicy) 
 	desc.secPolicy = secPolicy
 	header, _ := metadata.FromIncomingContext(ctx)
 	desc.meta.header = header
+	desc.method = stream.Method()
 	return desc
 }
 

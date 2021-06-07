@@ -4,6 +4,7 @@ import (
 	"crypto/aes"
 	"crypto/cipher"
 	"crypto/rand"
+	"crypto/sha256"
 	"io"
 )
 
@@ -20,6 +21,12 @@ type SymCipher interface {
 }
 
 func NewSymCipher(key []byte, nonce []byte) symCipher {
+	// Normalize key length
+	if len(key) != 32 {
+		normalizedKey := sha256.Sum256(key)
+		key = normalizedKey[:]
+	}
+
 	block, err := aes.NewCipher(key)
 	if err != nil { panic(err) }
 

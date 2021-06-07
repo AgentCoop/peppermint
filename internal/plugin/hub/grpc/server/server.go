@@ -1,11 +1,10 @@
 package server
 
 import (
-	"context"
 	"github.com/AgentCoop/peppermint/internal/api/peppermint/service/backoffice/hub"
-	g "github.com/AgentCoop/peppermint/internal/grpc"
 	middleware "github.com/AgentCoop/peppermint/internal/grpc/middleware/server"
 	"github.com/AgentCoop/peppermint/internal/grpc/server"
+	hub_middleware "github.com/AgentCoop/peppermint/internal/plugin/hub/grpc/middleware/server"
 	"net"
 
 	"google.golang.org/grpc"
@@ -21,23 +20,10 @@ type hubServer struct {
 	hub.UnimplementedHubServer
 }
 
-func encryptionLayer(desc g.CallDesc, encKey []byte) {
-	//desc.WithEncKey(nil)
-}
-
-func encUnaryInterceptor() grpc.UnaryServerInterceptor {
-	return func(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (resp interface{}, err error) {
-		callDesc := ctx.(g.ServerCallDesc)
-		encryptionLayer(callDesc, nil)
-		r, err := handler(ctx, req)
-		return r, err
-	}
-}
-
 func withUnaryServerMiddlewares(svcName string) grpc.ServerOption {
 	return grpc.ChainUnaryInterceptor(
 		middleware.PreUnaryInterceptor(svcName),
-		encUnaryInterceptor(),
+		hub_middleware.EncLayerUnaryInterceptor(),
 		middleware.PostUnaryInterceptor(svcName),
 	)
 }

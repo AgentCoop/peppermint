@@ -5,6 +5,10 @@ import (
 	"github.com/AgentCoop/peppermint/internal/runtime/deps"
 )
 
+func (s *sCallDesc) Method() string {
+	return s.method
+}
+
 //
 // Common interface
 //

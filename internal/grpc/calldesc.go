@@ -24,6 +24,7 @@ type ServerCallDesc interface {
 	CallDesc
 	Data
 	Meta() ServerMeta
+	Method() string
 	ServiceConfigurator() deps.ServiceConfigurator
 }
 

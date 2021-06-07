@@ -37,6 +37,7 @@ type meta struct {
 
 type sCallDesc struct {
 	common
+	method  string
 	reqData grpc.RequestData
 	resData grpc.ResponseData
 	svcCfg  deps.ServiceConfigurator
