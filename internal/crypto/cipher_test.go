@@ -17,10 +17,12 @@ func cipherTask(j job.Job) (job.Init, job.Run, job.Finalize) {
 		original := make([]byte, len(data))
 		copy(original, data)
 
-		encryptor := crypto.NewSymCipher(key, nil, task)
+		encryptor, err := crypto.NewSymCipher(key, nil)
+		task.Assert(err)
 		ciphertext := encryptor.Encrypt(data)
 
-		decryptor := crypto.NewSymCipher(key, encryptor.GetNonce(), task)
+		decryptor, err := crypto.NewSymCipher(key, encryptor.GetNonce())
+		task.Assert(err)
 		plaintext := decryptor.Decrypt(ciphertext)
 
 		T := j.GetValue().(*testing.T)
