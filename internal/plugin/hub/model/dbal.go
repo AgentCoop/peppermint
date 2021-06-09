@@ -5,13 +5,12 @@ import (
 	"github.com/AgentCoop/peppermint/internal/runtime"
 )
 
-func FetchById(id internal.NodeId) *HubJoinedNode {
+func FetchById(id internal.NodeId) (*HubJoinedNode, error) {
 	db := runtime.GlobalRegistry().Db().Handle()
 	found := &HubJoinedNode{}
 	db.Where(&HubJoinedNode{ExternalId: id})
 	err := db.First(found).Error
-	if err != nil { panic(err) }
-	return found
+	return found, err
 }
 
 func SaveJoinRequest(id internal.NodeId, encKey []byte) error {

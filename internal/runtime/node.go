@@ -8,11 +8,11 @@ type Node interface {
 	ServiceEndpointByName(string) ServiceEndpoint
 }
 
-type EncKeyStore interface {
-	Store
+type NodeManager interface {
+	EncKeyStore() InMemoryStore
 }
 
-type NodeManager interface {
+type ServiceNodeManager interface {
+	NodeManager
 	InquiryHub() Node
-	EncKeyStore() EncKeyStore
 }

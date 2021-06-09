@@ -4,7 +4,6 @@ import (
 	job "github.com/AgentCoop/go-work"
 	i "github.com/AgentCoop/peppermint/internal"
 	"github.com/AgentCoop/peppermint/internal/runtime/deps"
-
 	//"github.com/AgentCoop/peppermint/internal/service"
 	"net"
 )
@@ -43,12 +42,18 @@ type ServiceInfo struct {
 }
 
 type runtime struct {
+	nodeMngr NodeManager
 	nodeCfg deps.NodeConfigurator
 	parser deps.CliParser
 }
 
-func NewRuntime(nodeCfg deps.NodeConfigurator, parser deps.CliParser) *runtime {
+func NewRuntime(
+	nodeMngr NodeManager,
+	nodeCfg deps.NodeConfigurator,
+	parser deps.CliParser,
+) *runtime {
 	r := &runtime{
+		nodeMngr: nodeMngr,
 		nodeCfg: nodeCfg,
 		parser: parser,
 	}
@@ -56,8 +61,13 @@ func NewRuntime(nodeCfg deps.NodeConfigurator, parser deps.CliParser) *runtime {
 }
 
 type Runtime interface {
+	NodeManager() NodeManager
 	CliParser() deps.CliParser
 	NodeConfigurator() deps.NodeConfigurator
+}
+
+func (r *runtime) NodeManager() NodeManager {
+	return r.nodeMngr
 }
 
 func (r *runtime) NodeConfigurator() deps.NodeConfigurator {

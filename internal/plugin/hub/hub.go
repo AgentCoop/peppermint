@@ -3,6 +3,7 @@ package hub
 
 import (
 	"github.com/AgentCoop/peppermint/cmd"
+	i "github.com/AgentCoop/peppermint/internal"
 	"github.com/AgentCoop/peppermint/internal/plugin/hub/model"
 	"github.com/AgentCoop/peppermint/internal/runtime"
 	"github.com/AgentCoop/peppermint/internal/runtime/config"
@@ -37,7 +38,18 @@ func (w *hubService) initializer() runtime.Service {
 		Name,
 		w.HubConfigurator.Address(),
 	)
+	w.registerEncKeyStoreFallback()
 	return proxy
+}
+
+func (hub *hubService) registerEncKeyStoreFallback() {
+	rt := runtime.GlobalRegistry().Runtime()
+	rt.NodeManager().EncKeyStore().RegisterFallback(func(key interface{}) (interface{}, error) {
+		nodeId := key.(i.NodeId)
+		node, err := model.FetchById(nodeId);
+		if err != nil { return nil, err }
+		return node.EncKey, nil
+	})
 }
 
 func (hub *hubService) migrateDb(options interface{}) {

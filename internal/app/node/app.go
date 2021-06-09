@@ -10,16 +10,17 @@ import (
 
 type app struct {
 	runtime.Runtime
-	appDir *string
+	appDir     *string
 	dbFilename string
 }
 
 func NewApp(dbFilename string) *app {
 	app := &app{
-		appDir: &cmd.Options.AppDir,
+		appDir:     &cmd.Options.AppDir,
 		dbFilename: dbFilename,
 	}
 	app.Runtime = runtime.NewRuntime(
+		node.NewNodeManager(),
 		node.NewConfigurator(),
 		cliparser.NewParser(&cmd.Options),
 	)
