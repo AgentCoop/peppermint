@@ -7,18 +7,18 @@ import (
 	"github.com/AgentCoop/peppermint/internal/plugin/hub/grpc/server/join"
 )
 
-func (s *hubServer) JoinHello(ctx context.Context, originalReq *msg.JoinHello_Request) (*msg.JoinHello_Response, error) {
+func (s *hubServer) JoinHello(ctx context.Context, origReq *msg.JoinHello_Request) (*msg.JoinHello_Response, error) {
 	sess := join.CreateSession()
-	callDesc := ctx.(grpc.ServerCallDesc)
+	desc := ctx.(grpc.ServerCallDesc)
 
-	data := join.NewJoinHello(originalReq)
-	callDesc.SetRequestData(data)
+	req := join.NewJoinHello(origReq)
+	desc.SetRequestData(req)
 
-	sess.Ipc().Grpc_Send(0, callDesc)
+	sess.Ipc().Grpc_Send(0, desc)
 	v, ok := sess.Ipc().Grpc_Recv(0).(error)
 	if ok { return nil, v }
 
-	callDesc.Meta().SetSessionId(sess.Id())
-	res := callDesc.ResponseData()
-	return res.ToGrpc().(*msg.JoinHello_Response), nil
+	desc.Meta().SetSessionId(sess.Id())
+	resp := desc.ResponseData()
+	return resp.ToGrpc().(*msg.JoinHello_Response), nil
 }

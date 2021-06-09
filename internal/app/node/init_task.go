@@ -2,6 +2,7 @@ package node
 
 import (
 	job "github.com/AgentCoop/go-work"
+	"github.com/AgentCoop/peppermint/cmd"
 	"github.com/AgentCoop/peppermint/internal/db"
 	"github.com/AgentCoop/peppermint/internal/runtime"
 	"github.com/AgentCoop/peppermint/internal/utils"
@@ -47,9 +48,11 @@ func (a *app) InitTask(j job.Job) (job.Init, job.Run, job.Finalize) {
 		task.Assert(err)
 
 		// Fetch node configuration once DB is initialized
-		err = a.NodeConfigurator().Fetch()
-		task.Assert(err)
-
+		cmdName, _ := a.CliParser().CurrentCmd()
+		if cmdName != cmd.CMD_NAME_DB_CREATE {
+			err = a.NodeConfigurator().Fetch()
+			task.Assert(err)
+		}
 		task.Done()
 	}
 	fin := func(task job.Task) {

@@ -29,7 +29,7 @@ func (c *joinContext) JoinTask(j job.Job) (job.Init, job.Run, job.Finalize) {
 
 		// Set computed encryption key for the client
 		c.encKey = keyExch.ComputeKey(resHello.GetDhPubKey())
-		hubClient.WithEncKey(c.encKey)
+		node.UpdateNode(c.encKey)
 
 		// Finish the join procedure
 		reqJoin := &hub.Join_Request{
@@ -40,9 +40,9 @@ func (c *joinContext) JoinTask(j job.Job) (job.Init, job.Run, job.Finalize) {
 		}
 		ctx = context.Background()
 		secPolicy := calldesc.NewSecurityPolicy(true, c.encKey)
-		callDesc := calldesc.NewClient(ctx, secPolicy)
-		callDesc.WithSessionFrom(callHelloDesc)
-		resJoin, err := hubClient.Join(callDesc, reqJoin)
+		desc := calldesc.NewClient(ctx, secPolicy)
+		desc.WithSessionFrom(callHelloDesc)
+		resJoin, err := hubClient.Join(desc, reqJoin)
 		task.Assert(err)
 		_ = resJoin
 

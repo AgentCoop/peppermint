@@ -4,14 +4,21 @@ import (
 	job "github.com/AgentCoop/go-work"
 	"github.com/AgentCoop/peppermint/internal/app/node/cmd"
 	"github.com/AgentCoop/peppermint/internal/runtime"
-	"github.com/AgentCoop/peppermint/internal/runtime/node"
 	"github.com/AgentCoop/peppermint/internal/runtime/cliparser"
+	"github.com/AgentCoop/peppermint/internal/runtime/node"
+	"os"
+)
+
+const (
+	DEV_DB_NAME = "test.db"
+	PROD_DB_NAME = "node.db"
 )
 
 type app struct {
 	runtime.Runtime
 	appDir     *string
 	dbFilename string
+	dbPathname string
 }
 
 func NewApp(dbFilename string) *app {
@@ -29,7 +36,8 @@ func NewApp(dbFilename string) *app {
 }
 
 func AppInitTest() job.Job {
-	app := NewApp("test.db")
+	os.Remove(DEV_DB_NAME)
+	app := NewApp(DEV_DB_NAME)
 
 	dbJob := job.NewJob(nil)
 	dbJob.AddOneshotTask(app.InitTask)

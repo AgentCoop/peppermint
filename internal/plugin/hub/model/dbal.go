@@ -16,19 +16,20 @@ func FetchById(id internal.NodeId) (*HubJoinedNode, error) {
 func SaveJoinRequest(id internal.NodeId, encKey []byte) error {
 	db := runtime.GlobalRegistry().Db().Handle()
 	node := &HubJoinedNode{
-		ExternalId: id,
+		ExternalId:   id,
 		JoinAccepted: 0,
-		EncKey: encKey,
+		EncKey:       encKey,
 	}
 	return db.Save(node).Error
 }
 
-func AcceptJoin(id internal.NodeId, encKey []byte) error {
+func AcceptJoin(id internal.NodeId) error {
 	db := runtime.GlobalRegistry().Db().Handle()
-	db.Model(&HubJoinedNode{})
-	db.Where(&HubJoinedNode{ExternalId: id})
+	n := &HubJoinedNode{}
+	n.ExternalId = id
+	db.Model(n).Where(n)
 	db.Updates(HubJoinedNode{
-		EncKey: encKey,
+		JoinAccepted: 1,
 	})
 	return db.Error
 }

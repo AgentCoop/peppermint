@@ -20,7 +20,7 @@ type SymCipher interface {
 	Decrypt([]byte) []byte
 }
 
-func NewSymCipher(key []byte, nonce []byte) symCipher {
+func NewSymCipher(key []byte, nonce []byte) (*symCipher, error) {
 	// Normalize key length
 	if len(key) != 32 {
 		normalizedKey := sha256.Sum256(key)
@@ -28,20 +28,20 @@ func NewSymCipher(key []byte, nonce []byte) symCipher {
 	}
 
 	block, err := aes.NewCipher(key)
-	if err != nil { panic(err) }
+	if err != nil { return nil, err }
 
 	// gcm or Galois/Counter Mode, is a mode of operation for symmetric key cryptographic block ciphers
 	// - https://en.wikipedia.org/wiki/Galois/Counter_Mode
 	gcm, err := cipher.NewGCM(block)
-	if err != nil { panic(err) }
+	if err != nil { return nil, err }
 
 	if nonce == nil {
 		nonce = make([]byte, gcm.NonceSize())
 		_, err = io.ReadFull(rand.Reader, nonce)
-		if err != nil { panic(err) }
+		if err != nil { return nil, err }
 	}
 
-	return symCipher{block, gcm, nonce}
+	return &symCipher{block, gcm, nonce}, nil
 }
 
 func (c symCipher) GetNonce() []byte {

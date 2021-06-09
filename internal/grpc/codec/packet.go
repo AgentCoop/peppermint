@@ -63,7 +63,7 @@ func (p *packer) typeToByte(typ PayloadType) []byte {
 
 func (p *packer) encrypt(data []byte) []byte {
 	var out bytes.Buffer
-	cipher := crypto.NewSymCipher(p.encKey, nil)
+	cipher, _ := crypto.NewSymCipher(p.encKey, nil)
 	encrypted := cipher.Encrypt(data)
 	nonce := cipher.GetNonce()
 	noncel := []byte{byte(len(nonce))}
@@ -73,13 +73,14 @@ func (p *packer) encrypt(data []byte) []byte {
 	return out.Bytes()
 }
 
-func (p *unpacker) decrypt(data []byte, encKey []byte) []byte {
+func (p *unpacker) decrypt(data []byte, encKey []byte) ([]byte, error) {
 	noncel := byte(data[0:1][0])
 	nonce := data[1:noncel+1]
 	encrypted := data[1+noncel:]
-	cipher := crypto.NewSymCipher(encKey, nonce)
-	decrypted := cipher.Encrypt(encrypted)
-	return decrypted
+	cipher, err := crypto.NewSymCipher(encKey, nonce)
+	if err != nil { return nil, err }
+	decrypted := cipher.Decrypt(encrypted)
+	return decrypted, nil
 }
 
 func (p *packer) nodeIdToByte(dest *bytes.Buffer) {
@@ -123,13 +124,18 @@ func (p *packer) Pack() ([]byte, error) {
 }
 
 func (p *unpacker) Unpack(encKey []byte) ([]byte, error){
+	var (
+		payload []byte
+		err error
+	)
 	switch p.packet.typ {
 	case RawEncryptedPayload:
 		fallthrough
 	case SerializedPayload:
-		p.decrypt(p.packet.payload.([]byte), encKey)
+		payload, err = p.decrypt(p.packet.payload.([]byte), encKey)
+		if err != nil { return nil, err }
 	case RawPayload:
-		return p.packet.payload.([]byte), nil
+		payload = p.packet.payload.([]byte)
 	}
-	return nil, nil
+	return payload, nil
 }

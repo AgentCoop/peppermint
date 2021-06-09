@@ -5,6 +5,12 @@ import (
 	"github.com/AgentCoop/peppermint/internal/runtime"
 )
 
+func CreateTables() {
+	db := runtime.GlobalRegistry().Db().Handle()
+	mig := db.Migrator()
+	mig.CreateTable(&Node{}, &NodeTag{})
+}
+
 func CreateNode(id internal.NodeId, tags []string) error {
 	db := runtime.GlobalRegistry().Db().Handle()
 	mig := db.Migrator()

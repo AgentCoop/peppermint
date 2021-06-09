@@ -21,3 +21,18 @@ func (v *joinRequest) Run() error {
 func (r *joinRequest) Validate() error {
 	return nil
 }
+
+type joinResponse struct {
+	resp *msg.Join_Response
+}
+
+func NewJoinResponse() *joinResponse {
+	r := new(joinResponse)
+	r.resp = &msg.Join_Response{}
+	return r
+}
+
+func (r joinResponse) ToGrpc() interface{} {
+	return r.resp
+}
+

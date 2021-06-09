@@ -25,6 +25,9 @@ func (codec) Marshal(v interface{}) ([]byte, error) {
 }
 
 func (codec) Unmarshal(data []byte, v interface{}) error {
+	if len(data) == 0 {
+		return nil
+	}
 	if !isPacket(data) {
 		return proto.Unmarshal(data, v.(proto.Message))
 	}

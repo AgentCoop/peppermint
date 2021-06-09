@@ -2,6 +2,7 @@
 package hub
 
 import (
+	"fmt"
 	"github.com/AgentCoop/peppermint/cmd"
 	i "github.com/AgentCoop/peppermint/internal"
 	"github.com/AgentCoop/peppermint/internal/plugin/hub/model"
@@ -48,6 +49,7 @@ func (hub *hubService) registerEncKeyStoreFallback() {
 		nodeId := key.(i.NodeId)
 		node, err := model.FetchById(nodeId);
 		if err != nil { return nil, err }
+		fmt.Printf("hub enc key: %x\n", node.EncKey)
 		return node.EncKey, nil
 	})
 }

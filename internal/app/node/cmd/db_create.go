@@ -9,11 +9,10 @@ import (
 )
 
 func DbCreateCmd(db db.Db, parser deps.CliParser, force bool) {
-	h := db.Handle()
-	m := h.Migrator()
-
-	if force { m.DropTable(node.Tables...) }
-	h.Migrator().CreateTable(node.Tables...)
+	//h := db.Handle()
+	//m := h.Migrator()
+	//if force { m.DropTable(node.Tables...) }
+	node.CreateTables()
 
 	// Invoke all registered database migration hooks
 	opts, _ := parser.GetCmdOptions(cmd.CMD_NAME_DB_MIGRATE)

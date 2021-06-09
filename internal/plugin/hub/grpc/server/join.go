@@ -9,19 +9,19 @@ import (
 	//"github.com/AgentCoop/peppermint/internal/service/hub"
 )
 
-func (s *hubServer) Join(ctx context.Context, r *msg.Join_Request) (*msg.Join_Response, error) {
-	callDesc := ctx.(grpc.ServerCallDesc)
-	req := join.NewJoin(r)
-	callDesc.SetRequestData(req)
+func (s *hubServer) Join(ctx context.Context, origReq *msg.Join_Request) (*msg.Join_Response, error) {
+	desc := ctx.(grpc.ServerCallDesc)
+	req := join.NewJoin(origReq)
+	desc.SetRequestData(req)
 
-	id := callDesc.Meta().SessionId()
+	id := desc.Meta().SessionId()
 	sess, err := session.FindById(id)
 	if err != nil { return nil, err }
 
-	sess.Ipc().Grpc_Send(1, callDesc)
+	sess.Ipc().Grpc_Send(1, desc)
 	v, ok := sess.Ipc().Grpc_Recv(1).(error)
 	if ok { return nil, v }
 
-	res := callDesc.ResponseData()
+	res := desc.ResponseData()
 	return res.ToGrpc().(*msg.Join_Response), nil
 }
