@@ -1,11 +1,19 @@
 package runtime
 
-type FallbackHandler func(key interface{}) (interface{}, error)
+type Store_FallbackHandler func(key interface{}) (interface{}, error)
 
 type Store interface {
+	RegisterFallback(handler Store_FallbackHandler)
+}
+
+type Backend interface {
 	Has(key interface{}) bool
 	Get(key interface{}) (interface{}, error)
-	GetFallback(handler FallbackHandler)
 	Set(key interface{}, val interface{})
 	Clear()
+}
+
+type InMemoryStore interface {
+	Store
+	Backend
 }
