@@ -2,6 +2,8 @@ package calldesc
 
 import (
 	"context"
+	g "github.com/AgentCoop/peppermint/internal/grpc"
+	"github.com/AgentCoop/peppermint/internal/runtime"
 	"github.com/AgentCoop/peppermint/internal/runtime/deps"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
@@ -47,5 +49,9 @@ func NewClient(ctx context.Context, secPolicy secPolicy) *cCallDesc {
 	desc.meta.parent = &desc.common
 	desc.meta.header = metadata.New(nil)
 	desc.secPolicy = secPolicy
+	// Assign value to the node ID header
+	rt := runtime.GlobalRegistry().Runtime()
+	cfg := rt.NodeConfigurator()
+	g.SetNodeId(&desc.meta.header, cfg.ExternalId())
 	return desc
 }

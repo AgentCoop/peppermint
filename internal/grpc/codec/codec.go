@@ -1,22 +1,12 @@
 package codec
 
 import (
-	"bytes"
-	"github.com/AgentCoop/peppermint/internal/crypto"
 	"github.com/golang/protobuf/proto"
 	"google.golang.org/grpc/encoding"
 )
 
 // Name is the name registered for the proto compressor.
 const Name = "proto-enc"
-
-type PacketType int
-
-const (
-	Unpacked PacketType = iota
-	SerializedPacket
-	RawPacket
-)
 
 func init() {
 	encoding.RegisterCodec(codec{})
@@ -25,90 +15,30 @@ func init() {
 // codec is a Codec implementation with protobuf. It is the default codec for gRPC.
 type codec struct{}
 
-type packet struct {
-	typ     PacketType
-	payload interface{}
-	encKey  []byte
-}
-
-type Packet interface {
-	Payload() interface{}
-}
-
-func NewPacket(message interface{}, encKey []byte) *packet {
-	return &packet{SerializedPacket, message, encKey}
-}
-
-func NewRawPacket(raw []byte, encKey []byte) *packet {
-	return &packet{RawPacket, raw, encKey}
-}
-
-func (p *packet) Payload() interface{} {
-	return p.payload
-}
-
 func (codec) Marshal(v interface{}) ([]byte, error) {
-	p, ok := v.(*packet)
+	p, ok := v.(*packer)
 	if !ok {
 		return proto.Marshal(v.(proto.Message))
 	}
-	var data []byte
-	var err error
-	switch p.typ {
-	case SerializedPacket:
-		data, err = proto.Marshal(p.payload.(proto.Message))
-		if err != nil {
-			panic(err)
-		}
-	case RawPacket:
-		data = p.payload.([]byte)
-	}
-	return encrypt(data, p.encKey), nil
-}
-
-// Encrypt payload using symmetric cipher.
-// Encrypted payload will be prefixed with a cryptographic nonce preceded by its one-byte length
-func encrypt(in []byte, key []byte) []byte {
-	if key == nil {
-		return in
-	}
-	cipher := crypto.NewSymCipher(key, nil)
-	encrypted := cipher.Encrypt(in)
-	nonce := cipher.GetNonce()
-	noncel := []byte{byte(len(nonce))}
-	var out bytes.Buffer
-	out.Write(noncel)
-	out.Write(nonce)
-	out.Write(encrypted)
-	return out.Bytes()
-}
-
-func decrypt(in []byte, key []byte) []byte {
-	if key == nil {
-		return in
-	}
-	noncel := int(in[0:1][0])
-	nonce := in[1:noncel]
-	encrypted := in[1+noncel:]
-	cipher := crypto.NewSymCipher(key, nonce)
-	decrypted := cipher.Decrypt(encrypted)
-	return decrypted
+	return p.Pack()
 }
 
 func (codec) Unmarshal(data []byte, v interface{}) error {
-	p, ok := v.(*packet)
-	if !ok {
+	if !isPacket(data) {
 		return proto.Unmarshal(data, v.(proto.Message))
 	}
-	var err error
-	switch p.typ {
-	case SerializedPacket:
-		decrypted := decrypt(data, p.encKey)
-		err = proto.Unmarshal(decrypted, p.payload.(proto.Message))
-	case RawPacket:
-		p.payload = decrypt(data, p.encKey)
+	var (
+		payload []byte
+		err error
+		unpacker *unpacker
+	)
+	if unpacker, err = NewUnpacker(data); err != nil {
+		return err
 	}
-	return err
+	if payload, err = unpacker.Unpack( nil); err != nil {
+		return err
+	}
+	return proto.Unmarshal(payload, v.(proto.Message))
 }
 
 func (codec) Name() string {

@@ -31,13 +31,17 @@ func isSecure(callDesc g.ServerCallDesc) (bool, []byte) {
 func decryptMessage(callDesc g.ServerCallDesc, req interface{}) {
 	ok, key := isSecure(callDesc)
 	if !ok { return }
-	req = codec.NewPacket(req, key)
+	//unpacker := codec.NewUnpacker(req, codec.Serialized)
+	//unpacker.Unpack(key, req)
+	a := 1
+	_ = a
+	_ = key
 }
 
 func encryptMessage(callDesc g.ServerCallDesc, resp interface{}) {
 	ok, key := isSecure(callDesc)
 	if !ok { return }
-	resp = codec.NewPacket(resp, key)
+	resp = codec.NewPacker(resp, codec.Serialized, key)
 }
 
 func EncLayerUnaryInterceptor() grpc.UnaryServerInterceptor {

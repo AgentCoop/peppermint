@@ -1,6 +1,9 @@
 package deps
 
-import "net"
+import (
+	"github.com/AgentCoop/peppermint/internal"
+	"net"
+)
 
 type Configurator interface {
 	Fetch() error // fetch configuration data from DB
@@ -9,6 +12,7 @@ type Configurator interface {
 
 type NodeConfigurator interface {
 	Configurator
+	ExternalId() internal.NodeId // :)
 	E2E_EncryptionEnabled() bool
 	EncKey() []byte
 }

@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+import "service/types.proto";
+
+package hub.backoffice.peppermint;
+
+option go_package = "peppermint/service/backoffice/hub";
+
+message NodeInquiry {
+  message Request {
+    fixed64 node_id = 1;
+  }
+  message Response {
+    bytes encKey = 1;
+  }
+}
+

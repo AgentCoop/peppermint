@@ -4,7 +4,6 @@ import (
 	"github.com/AgentCoop/peppermint/internal/api/peppermint/service/backoffice/hub"
 	middleware "github.com/AgentCoop/peppermint/internal/grpc/middleware/server"
 	"github.com/AgentCoop/peppermint/internal/grpc/server"
-	hub_middleware "github.com/AgentCoop/peppermint/internal/plugin/hub/grpc/middleware/server"
 	"net"
 
 	"google.golang.org/grpc"
@@ -23,7 +22,7 @@ type hubServer struct {
 func withUnaryServerMiddlewares(svcName string) grpc.ServerOption {
 	return grpc.ChainUnaryInterceptor(
 		middleware.PreUnaryInterceptor(svcName),
-		hub_middleware.EncLayerUnaryInterceptor(),
+		middleware.EncLayerUnaryInterceptor(),
 		middleware.PostUnaryInterceptor(svcName),
 	)
 }

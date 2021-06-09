@@ -4,11 +4,6 @@ option go_package = "peppermint/service";
 
 package peppermint;
 
-enum StatusCode {
-  Success = 0;
-}
-
-message ResponseHeader {
-  StatusCode status_code = 1;
-  string err_text = 2;
+message EncodedMessage {
+  bytes raw = 1;
 }

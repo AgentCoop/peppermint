@@ -20,6 +20,7 @@ func (app *app) SetupTestDbTask(j job.Job) (job.Init, job.Run, job.Finalize) {
 		db := runtime.GlobalRegistry().Db()
 		parser := app.CliParser()
 		cmd.DbCreateCmd(db, parser, true)
+		cmd.BootstrapCmd("", nil)
 		task.Done()
 	}
 	fin := func(task job.Task) {

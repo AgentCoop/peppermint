@@ -25,6 +25,8 @@ func (u UniqueId) SessionId() SessionId {
 	return SessionId(u)
 }
 
+func (NodeId) Size() int { return 8 }
+
 type SignalChan chan struct{}
 
 var (

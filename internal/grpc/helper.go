@@ -32,6 +32,11 @@ func SetSessionId(md *metadata.MD, id i.SessionId) {
 	md.Append(META_FIELD_SESSION_ID, utils.Conv_IntToHex(id, 16))
 }
 
+func SetNodeId(md *metadata.MD, id i.NodeId) {
+	if id == 0 { return }
+	md.Append(META_FIELD_NODE_ID, utils.Conv_IntToHex(id, 16))
+}
+
 func ExtractSessionId(md *metadata.MD) i.SessionId {
 	vals := md.Get(META_FIELD_SESSION_ID)
 	if len(vals) == 0 { return 0 }

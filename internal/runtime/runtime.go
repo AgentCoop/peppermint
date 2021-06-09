@@ -14,11 +14,6 @@ const (
 	Available NodeStatus = iota + 1
 )
 
-type Node interface {
-	Id() i.NodeId
-	ServiceEndpointByName(string) ServiceEndpoint
-}
-
 type NodePool interface {
 	Add(Node)
 	Remove(i.NodeId)
@@ -36,17 +31,6 @@ type ServiceEndpoint interface {
 	Address() net.Addr
 	EncKey() []byte
 }
-
-// Orchestrates communication between the gRPC and Service layer
-//type GrpcServiceCommunicator interface {
-//	GrpcTx(int, interface{})
-//	GrpcTxStreamable(int, interface{})
-//	GrpcRx(int) interface{}
-//	ServiceTx(int, interface{})
-//	ServiceRx(int) interface{}
-//	Job() job.Job
-//	SessionId() i.SessionId
-//}
 
 type Service interface {
 	StartTask(j job.Job) (job.Init, job.Run, job.Finalize)
