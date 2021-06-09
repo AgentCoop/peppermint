@@ -8,12 +8,18 @@ import (
 	"google.golang.org/grpc"
 )
 
-func SecureChannelUnaryInterceptor(payloadTyp codec.PayloadType) grpc.UnaryClientInterceptor {
+func encryptMessage(desc g.ClientCallDesc, req interface{}) interface{} {
+	if ! desc.SecPolicy().IsSecure() {
+		return req
+	}
+	packer := codec.NewPacker(desc.Meta().NodeId(), req, codec.SerializedPacket, desc.SecPolicy().EncKey())
+	return packer
+}
+
+func SecureChannelUnaryInterceptor() grpc.UnaryClientInterceptor {
 	return func(ctx context.Context, method string, req, reply interface{}, cc *grpc.ClientConn, invoker grpc.UnaryInvoker, opts ...grpc.CallOption) error {
-		callDesc := ctx.(g.ClientCallDesc)
-		if callDesc.SecPolicy().IsSecure() {
-			req = codec.NewPacker(req, payloadTyp, callDesc.SecPolicy().EncKey())
-		}
+		desc := ctx.(g.ClientCallDesc)
+		req = encryptMessage(desc, req)
 		err := invoker(ctx, method, req, reply, cc, opts...)
 		return err
 	}

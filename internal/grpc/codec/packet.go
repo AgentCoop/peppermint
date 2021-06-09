@@ -75,7 +75,7 @@ func (p *packer) encrypt(data []byte) []byte {
 
 func (p *unpacker) decrypt(data []byte, encKey []byte) []byte {
 	noncel := byte(data[0:1][0])
-	nonce := data[1:noncel]
+	nonce := data[1:noncel+1]
 	encrypted := data[1+noncel:]
 	cipher := crypto.NewSymCipher(encKey, nonce)
 	decrypted := cipher.Encrypt(encrypted)
