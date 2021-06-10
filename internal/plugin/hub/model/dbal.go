@@ -25,10 +25,8 @@ func SaveJoinRequest(id internal.NodeId, encKey []byte) error {
 
 func AcceptJoin(id internal.NodeId) error {
 	db := runtime.GlobalRegistry().Db().Handle()
-	n := &HubJoinedNode{}
-	n.ExternalId = id
-	db.Model(n).Where(n)
-	db.Updates(HubJoinedNode{
+	m := &HubJoinedNode{ExternalId: id}
+	db.Model(m).Where(m).Updates(HubJoinedNode{
 		JoinAccepted: 1,
 	})
 	return db.Error

@@ -5,6 +5,14 @@ import (
 	"google.golang.org/grpc"
 )
 
+type Service interface {
+	RegisterEncKeyStoreFallback()
+}
+
+type HubService interface {
+	Service
+}
+
 type WebProxyBalancer interface {
 	ForwardCall(srv interface{}, stream grpc.ServerStream) error
 	SimpleRandom(svcName string, pool runtime.NodePool) runtime.ServiceEndpoint

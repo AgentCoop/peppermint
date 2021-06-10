@@ -2,13 +2,12 @@
 package hub
 
 import (
-	"fmt"
 	"github.com/AgentCoop/peppermint/cmd"
 	i "github.com/AgentCoop/peppermint/internal"
+	grpc "github.com/AgentCoop/peppermint/internal/plugin/hub/grpc/server"
 	"github.com/AgentCoop/peppermint/internal/plugin/hub/model"
 	"github.com/AgentCoop/peppermint/internal/runtime"
 	"github.com/AgentCoop/peppermint/internal/runtime/config"
-	grpc "github.com/AgentCoop/peppermint/internal/plugin/hub/grpc/server"
 )
 
 const (
@@ -39,19 +38,20 @@ func (w *hubService) initializer() runtime.Service {
 		Name,
 		w.HubConfigurator.Address(),
 	)
-	w.registerEncKeyStoreFallback()
+	w.RegisterEncKeyStoreFallback()
 	return proxy
 }
 
-func (hub *hubService) registerEncKeyStoreFallback() {
+func (hub *hubService) encKeyStoreFallback(key interface{}) (interface{}, error) {
+	nodeId := key.(i.NodeId)
+	node, err := model.FetchById(nodeId);
+	if err != nil { return nil, err }
+	return node.EncKey, nil
+}
+
+func (hub *hubService) RegisterEncKeyStoreFallback() {
 	rt := runtime.GlobalRegistry().Runtime()
-	rt.NodeManager().EncKeyStore().RegisterFallback(func(key interface{}) (interface{}, error) {
-		nodeId := key.(i.NodeId)
-		node, err := model.FetchById(nodeId);
-		if err != nil { return nil, err }
-		fmt.Printf("hub enc key: %x\n", node.EncKey)
-		return node.EncKey, nil
-	})
+	rt.NodeManager().EncKeyStore().RegisterFallback(hub.encKeyStoreFallback)
 }
 
 func (hub *hubService) migrateDb(options interface{}) {
