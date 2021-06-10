@@ -3,31 +3,49 @@ package internal
 import (
 	"encoding/binary"
 	"math/rand"
+	"reflect"
 )
+
+type UniqueIdValue interface {
+	FromByteArray([]byte)
+	Rand()
+	Size() int
+}
 
 type UniqueId int64
 type NodeId UniqueId
 type SessionId UniqueId
 
-func (id UniqueId) FromByteArray(arr []byte) UniqueId {
-	u64 := binary.BigEndian.Uint64(arr)
-	return UniqueId(u64>>1)
+var _ UniqueIdValue = new(NodeId)
+var _ UniqueIdValue = new(SessionId)
+
+func (n *NodeId) FromByteArray(arr []byte) {
+	i64 := binary.BigEndian.Uint64(arr)>>1
+	*n = NodeId(i64)
 }
 
-func (id UniqueId) Rand() UniqueId {
-	u64 := rand.Uint64()
-	return UniqueId(u64>>1)
+func (n *NodeId) Rand() {
+	i64 := rand.Uint64() >> 1
+	*n = NodeId(i64)
 }
 
-func (u UniqueId) NodeId() NodeId {
-	return NodeId(u)
+func (n *NodeId) Size() int {
+	return int(reflect.TypeOf(n).Size())
 }
 
-func (u UniqueId) SessionId() SessionId {
-	return SessionId(u)
+func (s *SessionId) FromByteArray(arr []byte) {
+	i64 := binary.BigEndian.Uint64(arr)>>1
+	*s = SessionId(i64)
 }
 
-func (NodeId) Size() int { return 8 }
+func (s *SessionId) Rand() {
+	i64 := rand.Uint64() >> 1
+	*s = SessionId(i64)
+}
+
+func (s *SessionId) Size() int {
+	return int(reflect.TypeOf(s).Size())
+}
 
 type SignalChan chan struct{}
 

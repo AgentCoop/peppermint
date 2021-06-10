@@ -9,7 +9,8 @@ import (
 
 func (m sessionMap) new(expireInSecs time.Duration, callOrder gRpcCallOder) *sessionDesc {
 	now := time.Now().UTC()
-	sId := i.UniqueId(0).Rand().SessionId()
+	var sId i.SessionId
+	sId.Rand()
 	desc := &sessionDesc{
 		id:        sId,
 		ipc:       newIpc(callOrder),
