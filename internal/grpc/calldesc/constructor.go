@@ -17,7 +17,7 @@ func NewSecurityPolicy(useEnc bool, encKey []byte) secPolicy {
 	return p
 }
 
-func NewServer(ctx context.Context, cfg deps.Configurator, secPolicy secPolicy) *sCallDesc {
+func NewServer(ctx context.Context, cfg deps.ServiceConfigurator, secPolicy secPolicy) *sCallDesc {
 	stream := grpc.ServerTransportStreamFromContext(ctx)
 	desc := &sCallDesc{}
 	desc.Context = ctx
@@ -27,10 +27,11 @@ func NewServer(ctx context.Context, cfg deps.Configurator, secPolicy secPolicy) 
 	header, _ := metadata.FromIncomingContext(ctx)
 	desc.meta.header = header
 	desc.method = stream.Method()
+	desc.svcCfg = cfg
 	return desc
 }
 
-func NewServerInsecure(ctx context.Context, cfg deps.Configurator) *sCallDesc {
+func NewServerInsecure(ctx context.Context, cfg deps.ServiceConfigurator) *sCallDesc {
 	secPolicy := secPolicy{e2e_Enc: false}
 	desc := NewServer(ctx, cfg, secPolicy)
 	return desc

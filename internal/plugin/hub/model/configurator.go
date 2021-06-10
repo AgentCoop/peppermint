@@ -1,12 +1,16 @@
-package hub
+package model
 
 import (
-	"github.com/AgentCoop/peppermint/internal/plugin/hub/model"
 	"github.com/AgentCoop/peppermint/internal/runtime"
 	"github.com/AgentCoop/peppermint/internal/runtime/deps"
 	"net"
 	"strconv"
 )
+
+type HubConfigurator interface {
+	deps.ServiceConfigurator
+	Secret() string
+}
 
 type cfg struct {
 	port int
@@ -21,7 +25,7 @@ func NewConfigurator() *cfg {
 
 func (c *cfg) Fetch() error {
 	db := runtime.GlobalRegistry().Db()
-	rec := &model.HubConfig{}
+	rec := &HubConfig{}
 	db.Handle().FirstOrCreate(rec)
 	c.port = rec.Port
 	c.address = rec.Address

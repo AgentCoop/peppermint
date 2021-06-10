@@ -5,16 +5,18 @@ import (
 	"math/rand"
 )
 
-type UniqueId uint64
+type UniqueId int64
 type NodeId UniqueId
 type SessionId UniqueId
 
 func (id UniqueId) FromByteArray(arr []byte) UniqueId {
-	return UniqueId(binary.BigEndian.Uint64(arr))
+	u64 := binary.BigEndian.Uint64(arr)
+	return UniqueId(u64>>1)
 }
 
 func (id UniqueId) Rand() UniqueId {
-	return UniqueId(rand.Uint64())
+	u64 := rand.Uint64()
+	return UniqueId(u64>>1)
 }
 
 func (u UniqueId) NodeId() NodeId {

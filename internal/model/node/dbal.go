@@ -28,7 +28,8 @@ func CreateNode(id internal.NodeId, tags []string) error {
 		ExternalId: id,
 		Tags:       tagModels,
 	}
-	return db.Create(node).Error
+	err := db.Create(node).Error
+	return err
 }
 
 func UpdateNode(encKey []byte) {

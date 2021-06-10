@@ -4,13 +4,13 @@ import msg "github.com/AgentCoop/peppermint/internal/api/peppermint/service/back
 
 type joinRequest struct {
 	secret string
-	tags []string
+	Tags   []string
 }
 
 func NewJoin(original *msg.Join_Request) *joinRequest {
 	r := new(joinRequest)
 	r.secret = original.GetJoinSecret()
-	r.tags = original.GetTag()
+	r.Tags = original.GetTag()
 	return r
 }
 

@@ -20,7 +20,7 @@ type hubService struct {
 
 func init() {
 	hub := &hubService{
-		NewConfigurator(),
+		model.NewConfigurator(),
 	}
 	reg := runtime.GlobalRegistry()
 	serviceInfo := &runtime.ServiceInfo{

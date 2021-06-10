@@ -37,7 +37,7 @@ type Service interface {
 
 type ServiceInfo struct {
 	Name string
-	Cfg deps.Configurator
+	Cfg deps.ServiceConfigurator
 	Initializer func() Service
 }
 
