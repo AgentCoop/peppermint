@@ -8,7 +8,6 @@ import (
 )
 
 func BootstrapCmd(IdFromNic string, tags []string) error {
-	//uniqId := internal.UniqueId(0)
 	var nodeId internal.NodeId
 	switch {
 	case len(IdFromNic) != 0: // Generate node ID from the given network interface

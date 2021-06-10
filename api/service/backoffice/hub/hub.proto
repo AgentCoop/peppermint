@@ -10,15 +10,13 @@ package hub.backoffice.peppermint;
 option go_package = "peppermint/service/backoffice/hub";
 
 service Hub {
-  option (.peppermint.unix_domain_socket) = "foo";
+  option (.peppermint.enforce_e2e_enc) = true;
 
   rpc JoinHello(JoinHello.Request) returns (JoinHello.Response) {
-
+    option (.peppermint.disable_e2e_enc) = true;
   }
 
-  rpc Join(Join.Request) returns (Join.Response) {
-
-  }
+  rpc Join(Join.Request) returns (Join.Response) { }
 
   rpc NodeInquiry(NodeInquiry.Request) returns(NodeInquiry.Response) {
 

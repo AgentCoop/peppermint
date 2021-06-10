@@ -1,11 +1,9 @@
 package server
 
 import (
-	middleware "github.com/AgentCoop/peppermint/internal/grpc/middleware/server"
-	md_middleware "github.com/AgentCoop/peppermint/internal/grpc/middleware/server/metadata"
 	"github.com/AgentCoop/peppermint/internal/grpc/server"
-	"github.com/AgentCoop/peppermint/internal/runtime/config"
 	"github.com/AgentCoop/peppermint/internal/plugin"
+	"github.com/AgentCoop/peppermint/internal/runtime/config"
 	"google.golang.org/grpc"
 	"net"
 	"net/http"
@@ -22,9 +20,10 @@ type webproxy struct {
 }
 
 func withUnaryServerMiddlewares(serviceName string) grpc.ServerOption {
-	return middleware.WithUnaryServerChain(
-		md_middleware.UnaryServerInterceptor(serviceName),
-	)
+	//return middleware.WithUnaryServerChain(
+	//	nil,
+	//)
+	return nil
 }
 
 func (b *webproxy) unknownStreamHandler(srv interface{}, stream grpc.ServerStream) error {

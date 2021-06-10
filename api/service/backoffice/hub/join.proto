@@ -1,14 +1,17 @@
 syntax = "proto3";
 
 import "service/types.proto";
+import "google/protobuf/descriptor.proto";
+import "options.proto";
 
 package hub.backoffice.peppermint;
 
 option go_package = "peppermint/service/backoffice/hub";
 
+
 message JoinHello {
   message Request {
-    bytes dh_pub_key = 1; // Diffie-Hellman public key of a joining node
+    bytes dh_pub_key = 2; // Diffie-Hellman public key of a joining node
   }
   message Response {
     bytes dh_pub_key = 2; // Hub's DH public key

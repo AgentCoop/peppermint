@@ -2,8 +2,8 @@ package server
 
 import (
 	"context"
-	"github.com/AgentCoop/peppermint/internal/grpc/calldesc"
 	g "github.com/AgentCoop/peppermint/internal/grpc"
+	"github.com/AgentCoop/peppermint/internal/grpc/calldesc"
 	"github.com/AgentCoop/peppermint/internal/grpc/stream"
 	"github.com/AgentCoop/peppermint/internal/runtime"
 	"google.golang.org/grpc"

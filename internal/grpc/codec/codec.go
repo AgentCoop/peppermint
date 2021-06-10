@@ -2,8 +2,9 @@ package codec
 
 import (
 	"github.com/AgentCoop/peppermint/internal/runtime"
-	"github.com/golang/protobuf/proto"
+	//"github.com/golang/protobuf/proto"
 	"google.golang.org/grpc/encoding"
+	"google.golang.org/protobuf/proto"
 )
 
 // Name is the name registered for the proto compressor.

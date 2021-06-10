@@ -1,4 +1,4 @@
-syntax="proto3";
+syntax = "proto3";
 
 import "google/protobuf/descriptor.proto";
 
@@ -8,11 +8,21 @@ option go_package = "peppermint";
 
 extend google.protobuf.ServiceOptions {
   int32 port = 90000;
+
   string unix_domain_socket = 90002; // unix:service-path
+
+  // Enforce using end-to-end encryption for all service calls
+  bool enforce_e2e_enc = 90003;
+}
+
+extend google.protobuf.MethodOptions {
+  // Options to toggle on/off end-to-end encryption on method level
+  bool disable_e2e_enc = 90004;
+  bool enable_e2e_enc = 90005;
 }
 
 extend google.protobuf.MessageOptions {
-  int32 foo = 90000;
+  int32 foo = 90010;
 }
 
 extend google.protobuf.EnumValueOptions {
