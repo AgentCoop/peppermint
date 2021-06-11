@@ -10,10 +10,12 @@ package hub.backoffice.peppermint;
 option go_package = "peppermint/service/backoffice/hub";
 
 service Hub {
-  option (.peppermint.enforce_e2e_enc) = true;
+  option (.peppermint.enforce_enc) = true;
+  option (.peppermint.port) = 12001;
 
   rpc JoinHello(JoinHello.Request) returns (JoinHello.Response) {
-    option (.peppermint.disable_e2e_enc) = true;
+    option (.peppermint.disable_enc) = true;
+    option (.peppermint.new_session) = 60;
   }
 
   rpc Join(Join.Request) returns (Join.Response) { }

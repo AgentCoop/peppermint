@@ -5,12 +5,8 @@ import (
 	"google.golang.org/grpc"
 )
 
-type Service interface {
-	RegisterEncKeyStoreFallback()
-}
-
 type HubService interface {
-	Service
+	runtime.Service
 }
 
 type WebProxyBalancer interface {

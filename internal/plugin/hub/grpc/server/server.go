@@ -2,20 +2,22 @@ package server
 
 import (
 	"github.com/AgentCoop/peppermint/internal/api/peppermint/service/backoffice/hub"
+	g "github.com/AgentCoop/peppermint/internal/grpc"
 	middleware "github.com/AgentCoop/peppermint/internal/grpc/middleware/server"
 	"github.com/AgentCoop/peppermint/internal/grpc/server"
+	"github.com/AgentCoop/peppermint/internal/utils"
 	"net"
 
 	"google.golang.org/grpc"
 )
 
 type HubServer interface {
-	server.BaseServer
+	g.BaseServer
 	hub.HubServer
 }
 
 type hubServer struct {
-	server.BaseServer
+	g.BaseServer
 	hub.UnimplementedHubServer
 }
 
@@ -26,9 +28,10 @@ func withUnaryServerMiddlewares(svcName string) grpc.ServerOption {
 	)
 }
 
-func NewServer(name string, address net.Addr) *hubServer {
+func NewServer(fullName string, address net.Addr) *hubServer {
 	s := new(hubServer)
-	s.BaseServer = server.NewBaseServer(name, address, grpc.NewServer(
+	name := utils.Grpc_ExtractServerShortName(fullName)
+	s.BaseServer = server.NewBaseServer(fullName, address, grpc.NewServer(
 		withUnaryServerMiddlewares(name),
 	))
 	s.RegisterServer()
@@ -36,5 +39,6 @@ func NewServer(name string, address net.Addr) *hubServer {
 }
 
 func (h *hubServer) RegisterServer() {
+	//h.Handle().
 	hub.RegisterHubServer(h.Handle(), h)
 }

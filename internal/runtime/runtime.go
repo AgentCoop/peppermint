@@ -1,8 +1,8 @@
 package runtime
 
 import (
-	job "github.com/AgentCoop/go-work"
 	i "github.com/AgentCoop/peppermint/internal"
+	"github.com/AgentCoop/peppermint/internal/grpc"
 	"github.com/AgentCoop/peppermint/internal/runtime/deps"
 	//"github.com/AgentCoop/peppermint/internal/service"
 	"net"
@@ -31,14 +31,10 @@ type ServiceEndpoint interface {
 	EncKey() []byte
 }
 
-type Service interface {
-	StartTask(j job.Job) (job.Init, job.Run, job.Finalize)
-}
-
 type ServiceInfo struct {
 	Name string
 	Cfg deps.ServiceConfigurator
-	Initializer func() Service
+	Initializer func() grpc.BaseServer
 }
 
 type runtime struct {

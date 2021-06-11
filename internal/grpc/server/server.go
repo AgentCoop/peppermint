@@ -7,16 +7,8 @@ import (
 	"net"
 )
 
-type BaseServer interface {
-	Name() string
-	Address() net.Addr
-	Handle() *grpc.Server
-	StartTask(j job.Job) (job.Init, job.Run, job.Finalize)
-	RegisterServer()
-}
-
 type baseServer struct {
-	name string
+	fullName string
 	address net.Addr
 	task job.Task
 	handle *grpc.Server
@@ -31,9 +23,9 @@ func (s *baseServer) RegisterServer() {
 	panic("implement me")
 }
 
-func NewBaseServer(name string, address net.Addr, server *grpc.Server) *baseServer {
+func NewBaseServer(fullName string, address net.Addr, server *grpc.Server) *baseServer {
 	s := new(baseServer)
-	s.name = name
+	s.fullName = fullName
 	s.address = address
 	s.handle = server
 	return s
@@ -43,8 +35,8 @@ func (s *baseServer) Handle() *grpc.Server {
 	return s.handle
 }
 
-func (s *baseServer) Name() string {
-	return s.name
+func (s *baseServer) FullName() string {
+	return s.fullName
 }
 
 func (s *baseServer) StartTask(j job.Job) (job.Init, job.Run, job.Finalize) {

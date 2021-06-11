@@ -4,10 +4,12 @@ package hub
 import (
 	"github.com/AgentCoop/peppermint/cmd"
 	i "github.com/AgentCoop/peppermint/internal"
+	api "github.com/AgentCoop/peppermint/internal/api/peppermint/service/backoffice/hub"
+	g "github.com/AgentCoop/peppermint/internal/grpc"
+	plugin "github.com/AgentCoop/peppermint/internal/plugin"
 	grpc "github.com/AgentCoop/peppermint/internal/plugin/hub/grpc/server"
 	"github.com/AgentCoop/peppermint/internal/plugin/hub/model"
 	"github.com/AgentCoop/peppermint/internal/runtime"
-	"github.com/AgentCoop/peppermint/internal/runtime/config"
 )
 
 const (
@@ -15,13 +17,13 @@ const (
 )
 
 type hubService struct {
+	server plugin.
 	config.HubConfigurator
 }
 
 func init() {
-	hub := &hubService{
-		model.NewConfigurator(),
-	}
+	hub := new(hubService)
+	hub.HubConfigurator = model.NewConfigurator()
 	reg := runtime.GlobalRegistry()
 	serviceInfo := &runtime.ServiceInfo{
 		Name: Name,
@@ -33,13 +35,14 @@ func init() {
 	reg.RegisterParserCmdHook(cmd.CMD_NAME_DB_CREATE, hub.createDd)
 }
 
-func (w *hubService) initializer() runtime.Service {
-	proxy := grpc.NewServer(
-		Name,
+func (w *hubService) initializer() g.BaseServer {
+	srv := grpc.NewServer(
+		api.Hub_ServiceDesc.ServiceName,
 		w.HubConfigurator.Address(),
 	)
+	w.server = srv
 	w.RegisterEncKeyStoreFallback()
-	return proxy
+	return srv
 }
 
 func (hub *hubService) encKeyStoreFallback(key interface{}) (interface{}, error) {

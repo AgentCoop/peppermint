@@ -1,12 +1,12 @@
 package client
 
 import (
+	"context"
 	g "github.com/AgentCoop/peppermint/internal/grpc"
 	"github.com/AgentCoop/peppermint/internal/grpc/calldesc"
 	"github.com/AgentCoop/peppermint/internal/grpc/client"
 	"github.com/AgentCoop/peppermint/internal/runtime"
 	"google.golang.org/grpc"
-	"context"
 )
 
 func prepareCallDescriptor(ctx context.Context, client client.BaseClient) g.ClientCallDesc {
