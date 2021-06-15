@@ -14,9 +14,10 @@ func NewServicePolicy(svcFullName string, svcMethods []string) *svcPolicy {
 	return policy
 }
 
-func NewBaseService(srv grpc.BaseServer, policy grpc.ServicePolicy) *baseService {
+func NewBaseService(srv grpc.BaseServer, ipcSrv grpc.BaseServer, policy grpc.ServicePolicy) *baseService {
 	svc := new(baseService)
 	svc.srv = srv
+	svc.ipcSrv = ipcSrv
 	svc.policy = policy
 	return svc
 }

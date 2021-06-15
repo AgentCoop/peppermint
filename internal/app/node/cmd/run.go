@@ -6,14 +6,20 @@ import (
 )
 
 func RunCmd() error {
-	serviceJob := job.NewJob(nil)
-	regServices := runtime.GlobalRegistry().Services()
-	for _, desc := range regServices {
-		service := desc.Initializer()
-		serviceJob.AddTask(service.StartTask)
+	runtime.GlobalRegistry().InvokeHooks(runtime.OnServiceInitHook)
+	svcJob := job.NewJob(nil)
+	rt := runtime.GlobalRegistry().Runtime()
+	for _, svc := range rt.Services() {
+		uds, tcp := svc.IpcServer(), svc.Server()
+		if uds != nil {
+			svcJob.AddTask(uds.ListenTask)
+		}
+		if tcp != nil {
+			svcJob.AddTask(tcp.ListenTask)
+		}
 	}
-	<-serviceJob.Run()
-	_, err := serviceJob.GetInterruptedBy()
+	<-svcJob.Run()
+	_, err := svcJob.GetInterruptedBy()
 	switch v := err.(type) {
 	case error:
 		return v

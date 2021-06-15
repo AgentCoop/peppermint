@@ -2,6 +2,7 @@ package service
 
 import (
 	"github.com/AgentCoop/peppermint/internal/api/peppermint"
+	"github.com/AgentCoop/peppermint/internal/grpc"
 	"github.com/AgentCoop/peppermint/internal/grpc/protobuf"
 )
 
@@ -35,6 +36,7 @@ func (p *svcPolicy) populate(methods []string) {
 	svcOptions := protobuf.NewSvcLevelOptions()
 	svcOptions.AddItem(peppermint.E_EnforceEnc, &p.sOpts.enforceEnc)
 	svcOptions.AddItem(peppermint.E_Port, &p.sOpts.defaultPort)
+	svcOptions.AddItem(peppermint.E_IpcUnixSocket, &p.sOpts.ipcUnixDomainSocket)
 
 	sm := protobuf.NewMethodLevelOptions(methods)
 	for methodName, _ := range sm {
@@ -63,7 +65,7 @@ func (p *svcPolicy) Ipc_UnixDomainSocket() string {
 	return p.sOpts.ipcUnixDomainSocket
 }
 
-func (p *svcPolicy) FindMethodByName(shortName string) (method, bool) {
+func (p *svcPolicy) FindMethodByName(shortName string) (grpc.Method, bool) {
 	m := method{}
 	for methodName, opts := range p.methods {
 		if methodName == shortName {
@@ -79,7 +81,7 @@ func (m method) Name() string {
 	return m.name
 }
 
-func (m method) CallPolicy() *methodOptions {
+func (m method) CallPolicy() grpc.MethodCallPolicy {
 	return m.opts
 }
 

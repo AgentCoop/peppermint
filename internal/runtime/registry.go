@@ -8,13 +8,25 @@ type parserCmdHook func(interface{})
 type regKey string
 type registryMap map[regKey][]interface{}
 
+type Hook int
+type HookHandler func(...interface{})
+type hookEntry struct {
+	typ     Hook
+	handler HookHandler
+}
+
+const (
+	OnServiceInitHook Hook = iota + 1
+)
+
 var (
-	regMap registryMap
-	runtimeKey  = regKey("runtime")
-	serviceKey = regKey("service")
+	regMap           registryMap
+	runtimeKey       = regKey("runtime")
+	serviceKey       = regKey("service")
 	parserCmdHookKey = regKey("cli-parser-hook")
-	dbKey = regKey("db")
-	grpcSessionKey = regKey("grpc-session")
+	dbKey            = regKey("db")
+	grpcSessionKey   = regKey("grpc-session")
+	hooksKey         = regKey("hooks")
 )
 
 func init() {
@@ -24,6 +36,7 @@ func init() {
 	regMap[parserCmdHookKey] = make([]interface{}, 0)
 	regMap[dbKey] = make([]interface{}, 1)
 	regMap[grpcSessionKey] = make([]interface{}, 1)
+	regMap[hooksKey] = make([]interface{}, 1)
 }
 
 func GlobalRegistry() GlobalRegistryInterface {
@@ -37,9 +50,9 @@ type GlobalRegistryInterface interface {
 	Db() db.Db
 	SetDb(db.Db)
 
-	RegisterService(*ServiceInfo)
-	Services() []*ServiceInfo
-	LookupService(string) *ServiceInfo
+	RegisterHook(Hook, HookHandler)
+	InvokeHooks(Hook, ...interface{})
+
 	ServiceLocator(string) ServiceLocator
 
 	RegisterParserCmdHook(string, parserCmdHook)
@@ -62,28 +75,16 @@ func (m registryMap) SetDb(db db.Db) {
 	m[dbKey][0] = db
 }
 
-func (m registryMap) RegisterService(info *ServiceInfo) {
-	m[serviceKey] = append(m[serviceKey], info)
+func (m registryMap) RegisterHook(typ Hook, handler HookHandler) {
+	m[hooksKey] = append(m[hooksKey], hookEntry{typ, handler})
 }
 
-func (m registryMap) Services() []*ServiceInfo {
-	var out []*ServiceInfo
-	out = make([]*ServiceInfo, 0)
-	for _, v := range m[serviceKey] {
-		vv := v.(*ServiceInfo)
-		out = append(out, vv)
+func (m registryMap) InvokeHooks(typ Hook, args ...interface{}) {
+	for _, entry := range m[hooksKey] {
+		entry := entry.(hookEntry)
+		if entry.typ != typ { continue }
+		entry.handler(args...)
 	}
-	return out
-}
-
-func (m registryMap) LookupService(name string) *ServiceInfo {
-	for _, v := range m[serviceKey] {
-		vv := v.(*ServiceInfo)
-		if vv.Name == name {
-			return vv
-		}
-	}
-	return nil
 }
 
 func (m registryMap) ServiceLocator(svcName string) ServiceLocator {
@@ -92,7 +93,7 @@ func (m registryMap) ServiceLocator(svcName string) ServiceLocator {
 
 type parserCmdHookDesc struct {
 	cmdName string
-	hook parserCmdHook
+	hook    parserCmdHook
 }
 
 func (m registryMap) RegisterParserCmdHook(cmdName string, hook parserCmdHook) {

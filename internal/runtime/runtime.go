@@ -9,6 +9,7 @@ import (
 )
 
 type NodeStatus int
+
 const (
 	Available NodeStatus = iota + 1
 )
@@ -31,16 +32,11 @@ type ServiceEndpoint interface {
 	EncKey() []byte
 }
 
-type ServiceInfo struct {
-	Name string
-	Cfg deps.ServiceConfigurator
-	Initializer func() grpc.BaseServer
-}
-
 type runtime struct {
-	nodeMngr NodeManager
-	nodeCfg deps.NodeConfigurator
-	parser deps.CliParser
+	nodeMngr    NodeManager
+	nodeCfg     deps.NodeConfigurator
+	parser      deps.CliParser
+	svcRegistry map[string]grpc.Service
 }
 
 func NewRuntime(
@@ -50,8 +46,8 @@ func NewRuntime(
 ) *runtime {
 	r := &runtime{
 		nodeMngr: nodeMngr,
-		nodeCfg: nodeCfg,
-		parser: parser,
+		nodeCfg:  nodeCfg,
+		parser:   parser,
 	}
 	return r
 }
@@ -60,6 +56,28 @@ type Runtime interface {
 	NodeManager() NodeManager
 	CliParser() deps.CliParser
 	NodeConfigurator() deps.NodeConfigurator
+	RegisterService(string, grpc.Service)
+	Services() []grpc.Service
+	ServicePolicyByName(string) grpc.ServicePolicy
+}
+
+func (r *runtime) RegisterService(svcName string, svc grpc.Service) {
+	r.svcRegistry[svcName] = svc
+}
+
+func (r *runtime) ServicePolicyByName(svcName string) grpc.ServicePolicy {
+	return r.svcRegistry[svcName].Policy()
+}
+
+func (r *runtime) Services() []grpc.Service {
+	l := len(r.svcRegistry)
+	out := make([]grpc.Service, l)
+	i := 0
+	for _, svc := range r.svcRegistry {
+		out[i] = svc
+		i++
+	}
+	return out
 }
 
 func (r *runtime) NodeManager() NodeManager {

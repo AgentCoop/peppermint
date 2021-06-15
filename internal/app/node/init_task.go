@@ -43,10 +43,9 @@ func (a *app) InitTask(j job.Job) (job.Init, job.Run, job.Finalize) {
 		}
 		err = utils.FS_FileOrDirExists(*a.appDir)
 		task.Assert(err)
-
+		// Init DB
 		err = a.initDb()
 		task.Assert(err)
-
 		// Fetch node configuration once DB is initialized
 		cmdName, _ := a.CliParser().CurrentCmd()
 		if cmdName != cmd.CMD_NAME_DB_CREATE {

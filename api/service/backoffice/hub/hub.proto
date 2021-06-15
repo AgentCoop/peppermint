@@ -12,6 +12,7 @@ option go_package = "peppermint/service/backoffice/hub";
 service Hub {
   option (.peppermint.enforce_enc) = true;
   option (.peppermint.port) = 12001;
+  option (.peppermint.ipc_unix_socket) = "@peppermint.backoffice.hub";
 
   rpc JoinHello(JoinHello.Request) returns (JoinHello.Response) {
     option (.peppermint.m_enforce_enc) = false;

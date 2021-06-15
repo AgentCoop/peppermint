@@ -1,7 +1,6 @@
 package server
 
 import (
-	job "github.com/AgentCoop/go-work"
 	_ "github.com/AgentCoop/peppermint/internal/grpc/codec"
 	"google.golang.org/grpc"
 	"net"
@@ -9,10 +8,9 @@ import (
 
 type baseServer struct {
 	fullName string
-	address net.Addr
-	task job.Task
-	handle *grpc.Server
-	lis net.Listener
+	address  net.Addr
+	handle   *grpc.Server
+	lis      net.Listener
 }
 
 func (s *baseServer) Address() net.Addr {
@@ -39,18 +37,8 @@ func (s *baseServer) FullName() string {
 	return s.fullName
 }
 
-func (s *baseServer) StartTask(j job.Job) (job.Init, job.Run, job.Finalize) {
-	init := func(task job.Task) {
-		s.task = task
-
-		lis, err := net.Listen("tcp", s.address.String())
-		task.Assert(err)
-
-		s.lis = lis
-	}
-	run := func (task job.Task) {
-		s.handle.Serve(s.lis)
-		task.Done()
-	}
-	return init, run, nil
+func (s *baseServer) Methods() []string {
+	info := s.handle.GetServiceInfo()
+	_ = info
+	return nil
 }

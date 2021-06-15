@@ -3,6 +3,7 @@ package grpc
 type Service interface {
 	Name() string
 	Server() BaseServer
+	IpcServer() BaseServer
 	Policy() ServicePolicy
 	RegisterEncKeyStoreFallback()
 }

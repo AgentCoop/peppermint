@@ -37,19 +37,20 @@ func NewServerInsecure(ctx context.Context, cfg deps.ServiceConfigurator) *sCall
 	return desc
 }
 
-func NewClientInSecure(ctx context.Context) *cCallDesc {
-	secPolicy := secPolicy{e2e_Enc: false}
-	desc := NewClient(ctx, secPolicy)
-	return desc
-}
+//func NewClientInSecure(ctx context.Context) *cCallDesc {
+//	secPolicy := secPolicy{e2e_Enc: false}
+//	desc := NewClient(ctx, secPolicy)
+//	return desc
+//}
 
-func NewClient(ctx context.Context, secPolicy secPolicy) *cCallDesc {
+func NewClient(ctx context.Context, secPolicy secPolicy, policy g.MethodCallPolicy) *cCallDesc {
 	desc := &cCallDesc{}
 	desc.common.Context = ctx
 	desc.common.typ = ClientCallDesc
 	desc.meta.parent = &desc.common
 	desc.meta.header = metadata.New(nil)
 	desc.secPolicy = secPolicy
+	desc.policy = policy
 	// Assign value to the node ID header
 	rt := runtime.GlobalRegistry().Runtime()
 	cfg := rt.NodeConfigurator()

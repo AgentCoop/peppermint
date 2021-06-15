@@ -16,6 +16,7 @@ type CallDesc interface {
 
 type ClientCallDesc interface {
 	CallDesc
+	Policy() MethodCallPolicy
 	WithSessionFrom(ClientCallDesc)
 	Meta() Meta
 }

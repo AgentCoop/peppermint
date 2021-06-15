@@ -45,4 +45,10 @@ type sCallDesc struct {
 
 type cCallDesc struct {
 	common
+	policy grpc.MethodCallPolicy
 }
+
+func (s *cCallDesc) Policy() grpc.MethodCallPolicy {
+	panic("implement me")
+}
+
