@@ -44,9 +44,11 @@ func (p *svcPolicy) populate(methods []string) {
 		sm.AddItem(methodName, peppermint.E_Streamable, &mOpt.streamable)
 		sm.AddItem(methodName, peppermint.E_NewSession, &mOpt.newSession)
 	}
-
 	p.desc.FetchServiceCustomOptions(svcOptions, sm)
-	sm.OverrideVal(svcOptions[peppermint.E_EnforceEnc], peppermint.E_MEnforceEnc)
+	// Set up values of method-level options that were not set
+	for _, opts := range sm {
+		opts.OverrideIfNotSet(p.sOpts.enforceEnc, peppermint.E_MEnforceEnc)
+	}
 }
 
 func (p *svcPolicy) EnforceEncryption() bool {
@@ -82,7 +84,7 @@ func (m method) CallPolicy() *methodOptions {
 }
 
 func (m *methodOptions) IsSecure() bool {
-	return false
+	return m.enforceEnc
 }
 
 func (m *methodOptions) IsStreamable() bool {

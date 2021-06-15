@@ -17,6 +17,14 @@ func TestNewServicePolicy(t *testing.T) {
 		t.Fatalf("expected port option %d, got %d", DefaultHubPort, policy.DefaultPort())
 	}
 	if ! policy.EnforceEncryption() {
-		t.Fatalf("expected enforce encryption option to be TRUE, got %v", policy.EnforceEncryption())
+		t.Fatalf("expected false, got %v", policy.EnforceEncryption())
+	}
+	mJoinHello, _ := policy.FindMethodByName(methods[0])
+	if isSec := mJoinHello.CallPolicy().IsSecure(); isSec {
+		t.Fatalf("expected false, got %v", isSec)
+	}
+	mJoin, _ := policy.FindMethodByName(methods[1])
+	if isSec := mJoin.CallPolicy().IsSecure(); !isSec {
+		t.Fatalf("expected true, got %v", isSec)
 	}
 }
