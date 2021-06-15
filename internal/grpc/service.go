@@ -4,7 +4,6 @@ type Service interface {
 	Name() string
 	Server() BaseServer
 	Policy() ServicePolicy
-	Methods() Method
 	RegisterEncKeyStoreFallback()
 }
 
@@ -12,11 +11,11 @@ type ServicePolicy interface {
 	EnforceEncryption() bool
 	DefaultPort() int
 	Ipc_UnixDomainSocket() string
+	FindMethodByName(string) (Method, bool)
 }
 
 type Method interface {
 	Name() string
-	FullName() string
 	CallPolicy() MethodCallPolicy
 }
 

@@ -25,14 +25,12 @@ extend google.protobuf.ServiceOptions {
 }
 
 extend google.protobuf.MethodOptions {
-  // Options to toggle on/off end-to-end encryption on method level
-  bool disable_enc = 60100;
-
-  bool enable_enc = 60101;
+  // Toggle on/off end-to-end encryption on method level
+  bool m_enforce_enc = 60100;
 
   // Specifies whether a call can be invoked multiple times during a session
-  bool streamable = 60102;
+  bool streamable = 60101;
 
   // Open a new session with specified session lifetime in seconds
-  int32 new_session = 60103;
+  int32 new_session = 60102;
 }

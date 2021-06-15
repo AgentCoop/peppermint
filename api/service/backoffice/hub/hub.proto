@@ -14,7 +14,7 @@ service Hub {
   option (.peppermint.port) = 12001;
 
   rpc JoinHello(JoinHello.Request) returns (JoinHello.Response) {
-    option (.peppermint.disable_enc) = true;
+    option (.peppermint.m_enforce_enc) = false;
     option (.peppermint.new_session) = 60;
   }
 
