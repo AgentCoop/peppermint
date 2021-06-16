@@ -7,6 +7,7 @@ import (
 
 type Configurator interface {
 	Fetch() error // fetch configuration data from DB
+	Refresh() error
 	MergeCliOptions(CliParser)
 }
 

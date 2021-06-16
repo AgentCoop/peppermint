@@ -44,16 +44,7 @@ func (a *app) InitTask(j job.Job) (job.Init, job.Run, job.Finalize) {
 		// Init DB
 		err = a.initDb()
 		task.Assert(err)
-		// Load plugable services
-		// ...
-		// Services initialization
-		runtime.GlobalRegistry().InvokeHooks(runtime.ServiceInitHook)
-		// Fetch node configuration once DB is initialized
-		//cmdName, _ := a.CliParser().CurrentCmd()
-		//if cmdName != cmd.CMD_NAME_DB_CREATE {
-		//	err = a.NodeConfigurator().Fetch()
-		//	task.Assert(err)
-		//}
+
 		task.Done()
 	}
 	fin := func(task job.Task) {

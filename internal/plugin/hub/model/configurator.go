@@ -32,6 +32,10 @@ func (c *cfg) Fetch() error {
 	return nil
 }
 
+func (c *cfg) Refresh() error {
+	return c.Fetch()
+}
+
 func (c *cfg) MergeCliOptions(parser runtime.CliParser) {
 	val, isset := parser.OptionValue("hub-port")
 	if isset {

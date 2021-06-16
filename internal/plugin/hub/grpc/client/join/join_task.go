@@ -17,7 +17,6 @@ import (
 func (c *joinContext) JoinTask(j job.Job) (job.Init, job.Run, job.Finalize) {
 	run := func(task job.Task) {
 		rt := runtime.GlobalRegistry().Runtime()
-		//svcPolicy := rt.ServicePolicyByName(hh.Name)
 		ctx := context.Background()
 		hubClient := j.GetValue().(cc.HubClient)
 
@@ -32,8 +31,7 @@ func (c *joinContext) JoinTask(j job.Job) (job.Init, job.Run, job.Finalize) {
 		c.encKey = keyExch.ComputeKey(resHello.GetDhPubKey())
 		err = node.UpdateNodeEncKey(c.encKey)
 		task.Assert(err)
-		// Refresh node config
-		rt.NodeConfigurator().Fetch()
+		rt.NodeConfigurator().Refresh()
 
 		// Finish the join procedure
 		reqJoin := &hub.Join_Request{
@@ -43,14 +41,8 @@ func (c *joinContext) JoinTask(j job.Job) (job.Init, job.Run, job.Finalize) {
 			JoinSecret:    c.secret,
 		}
 		ctx = context.Background()
-		//secPolicy := calldesc.NewSecurityPolicy(true, c.encKey)
-		//desc := calldesc.NewClient(ctx, secPolicy)
-		//desc.WithSessionFrom(resHello.)
-		resJoin, err := hubClient.Join(ctx, reqJoin)
+		_, err = hubClient.Join(ctx, reqJoin)
 		task.Assert(err)
-		_ = resJoin
-
-		// Persist data of the newly joined node
 		task.Done()
 	}
 	return nil, run, nil

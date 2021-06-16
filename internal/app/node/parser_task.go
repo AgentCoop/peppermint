@@ -12,6 +12,8 @@ func (app *app) ParserTask(j job.Job) (job.Init, job.Run, job.Finalize) {
 	init := func(task job.Task) {
 		err := app.NodeConfigurator().Fetch()
 		task.Assert(err)
+		// Services initialization
+		runtime.GlobalRegistry().InvokeHooks(runtime.ServiceInitHook)
 	}
 	run := func(task job.Task) {
 		db := runtime.GlobalRegistry().Db()
