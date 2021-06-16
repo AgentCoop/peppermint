@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	g "github.com/AgentCoop/peppermint/internal/grpc"
-	"github.com/AgentCoop/peppermint/internal/grpc/client"
 	"github.com/AgentCoop/peppermint/internal/grpc/codec"
 	"google.golang.org/grpc"
 )
@@ -27,7 +26,7 @@ func SecureChannelUnaryInterceptor() grpc.UnaryClientInterceptor {
 	}
 }
 
-func SecureChannelStreamInterceptor(c client.BaseClient) grpc.StreamClientInterceptor {
+func SecureChannelStreamInterceptor(c g.BaseClient) grpc.StreamClientInterceptor {
 	return func(ctx context.Context, desc *grpc.StreamDesc, cc *grpc.ClientConn, method string, streamer grpc.Streamer, opts ...grpc.CallOption) (grpc.ClientStream, error) {
 		clientStream, err := streamer(ctx, desc, cc, method, opts...)
 		return clientStream, err

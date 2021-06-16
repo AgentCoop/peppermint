@@ -14,12 +14,15 @@ service Hub {
   option (.peppermint.port) = 12001;
   option (.peppermint.ipc_unix_socket) = "@peppermint.backoffice.hub";
 
+  // Exchanges encryption key between hub service and a joining node, using the Diffie-Hellman key exchange algorithm
   rpc JoinHello(JoinHello.Request) returns (JoinHello.Response) {
     option (.peppermint.m_enforce_enc) = false;
     option (.peppermint.new_session) = 60;
   }
 
-  rpc Join(Join.Request) returns (Join.Response) { }
+  rpc Join(Join.Request) returns (Join.Response) {
+    option (.peppermint.session_sticky) = true;
+  }
 
   rpc NodeInquiry(NodeInquiry.Request) returns(NodeInquiry.Response) {
 

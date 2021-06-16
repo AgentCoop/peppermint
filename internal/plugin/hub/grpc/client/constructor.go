@@ -19,9 +19,9 @@ func NewClient(addr net.Addr, opts ...grpc.DialOption) *hubClient {
 	rt := runtime.GlobalRegistry().Runtime()
 	svcPolicy :=rt.ServicePolicyByName(hh.Name)
 	hubClient.WithUnaryInterceptors(
-		middleware.PreUnaryInterceptor(svcPolicy),
+		middleware.PreUnaryInterceptor(hubClient, svcPolicy),
 		middleware.SecureChannelUnaryInterceptor(),
-		middleware.PostUnaryInterceptor(hubClient),
+		middleware.PostUnaryInterceptor(hubClient, svcPolicy),
 	)
 	return hubClient
 }

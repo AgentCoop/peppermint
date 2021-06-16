@@ -2,38 +2,22 @@ package client
 
 import (
 	"context"
-	job "github.com/AgentCoop/go-work"
 	i "github.com/AgentCoop/peppermint/internal"
+	g "github.com/AgentCoop/peppermint/internal/grpc"
 	"google.golang.org/grpc"
 	"net"
 )
-
-type connProvider func(grpc.ClientConnInterface)
-
-type BaseClient interface {
-	Context() context.Context
-	ConnectTask(j job.Job) (job.Init, job.Run, job.Finalize)
-	Connection() grpc.ClientConnInterface
-	WithContext(ctx context.Context)
-	WithConnProvider(connProvider)
-	WithEncKey([]byte)
-	WithUnaryInterceptors(...grpc.UnaryClientInterceptor)
-	NodeId() i.NodeId
-	IsSecure() bool
-	EncKey() []byte
-	SessionId() i.SessionId
-	SetSessionId(id i.SessionId)
-}
 
 type baseClient struct {
 	ctx               context.Context
 	addr              net.Addr
 	opts              []grpc.DialOption
 	conn              grpc.ClientConnInterface
-	connProvider      connProvider
+	connProvider      g.ConnProvider
 	unaryInterceptors []grpc.UnaryClientInterceptor
 	encKey            []byte
 	sId               i.SessionId
+	lastCall          g.ClientDescriptor
 }
 
 func (c *baseClient) Context() context.Context {
@@ -61,7 +45,7 @@ func (c *baseClient) WithUnaryInterceptors(interceptors ...grpc.UnaryClientInter
 	c.unaryInterceptors = interceptors
 }
 
-func (c *baseClient) WithConnProvider(provider connProvider) {
+func (c *baseClient) WithConnProvider(provider g.ConnProvider) {
 	c.connProvider = provider
 }
 
@@ -83,4 +67,12 @@ func (c *baseClient) SetSessionId(id i.SessionId) {
 
 func (c *baseClient) Connection() grpc.ClientConnInterface {
 	return c.conn
+}
+
+func (c *baseClient) LastCall() g.ClientDescriptor {
+	return c.lastCall
+}
+
+func (c *baseClient) SetLastCall(call g.ClientDescriptor) {
+	c.lastCall = call
 }

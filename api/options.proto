@@ -33,4 +33,7 @@ extend google.protobuf.MethodOptions {
 
   // Open a new session with specified session lifetime in seconds
   int32 new_session = 60102;
+
+  // Stick to the session opened by a preceding call
+  bool session_sticky = 60103;
 }

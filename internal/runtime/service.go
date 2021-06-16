@@ -44,6 +44,7 @@ type Method interface {
 type MethodCallPolicy interface {
 	ServiceGlobalOptions
 	IsStreamable() bool
+	SessionSticky() bool
 	OpenNewSession() int
 	RequiredRoles() []string
 }

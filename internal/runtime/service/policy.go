@@ -18,6 +18,7 @@ type methodsMap map[string]*methodOptions
 type methodOptions struct {
 	enforceEnc    bool
 	streamable    bool
+	sessSticky    bool
 	newSession    int32
 	requiredRoles []string
 }
@@ -50,12 +51,9 @@ func (p *svcPolicy) populate(methods []string) {
 		p.mOptsMap.AddItem(methodName, peppermint.E_MEnforceEnc, &mOpt.enforceEnc)
 		p.mOptsMap.AddItem(methodName, peppermint.E_Streamable, &mOpt.streamable)
 		p.mOptsMap.AddItem(methodName, peppermint.E_NewSession, &mOpt.newSession)
+		p.mOptsMap.AddItem(methodName, peppermint.E_SessionSticky, &mOpt.sessSticky)
 	}
 	p.desc.FetchServiceCustomOptions(p.sOptsMap, p.mOptsMap)
-	// Set up values of method-level options that were not set
-	//for _, opts := range sm {
-	//	opts.OverrideIfNotSet(p.sOpts.enforceEnc, peppermint.E_MEnforceEnc)
-	//}
 }
 
 func (p *svcPolicy) WasSet(ext *protoimpl.ExtensionInfo) bool {
@@ -92,7 +90,7 @@ func (m method) Name() string {
 	return m.name
 }
 
-func (m method) ServicePolicy()  runtime.ServicePolicy {
+func (m method) ServicePolicy() runtime.ServicePolicy {
 	return m.policy
 }
 
@@ -114,6 +112,10 @@ func (m *methodOptions) EnforceEncryption() bool {
 
 func (m *methodOptions) IsStreamable() bool {
 	return m.streamable
+}
+
+func (m *methodOptions) SessionSticky() bool {
+	return m.sessSticky
 }
 
 func (m *methodOptions) OpenNewSession() int {

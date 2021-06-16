@@ -41,7 +41,7 @@ func (codec) Unmarshal(data []byte, v interface{}) error {
 	if err != nil { return err }
 
 	encKey := sk.([]byte)
-	payload, err := unpacker.Unpack( encKey);
+	payload, err := unpacker.Unpack(encKey);
 	if err != nil { return err }
 
 	return proto.Unmarshal(payload, v.(proto.Message))

@@ -8,7 +8,7 @@ import (
 	"google.golang.org/grpc"
 )
 
-func prepareCallDescriptor(ctx context.Context, methodName string, svcPolicy runtime.ServicePolicy) g.ClientDescriptor {
+func prepareCallDescriptor(ctx context.Context, c g.BaseClient, methodName string, svcPolicy runtime.ServicePolicy) g.ClientDescriptor {
 	rt := runtime.GlobalRegistry().Runtime()
 	switch v := ctx.(type) {
 	case g.ClientDescriptor:
@@ -17,15 +17,20 @@ func prepareCallDescriptor(ctx context.Context, methodName string, svcPolicy run
 		cfg := rt.NodeConfigurator()
 		method, _ := svcPolicy.FindMethodByName(methodName)
 		secPolicy := calldesc.NewSecurityPolicyFromMethod(method, cfg)
-		callDesc := calldesc.NewClient(ctx, secPolicy, method.CallPolicy())
-		callDesc.HandleMeta()
-		return callDesc
+		desc := calldesc.NewClient(ctx, secPolicy, method.CallPolicy())
+		if method.CallPolicy().SessionSticky() {
+			lastCall := c.LastCall()
+			if lastCall == nil { panic("lastCall nil") }
+			desc.WithSessionFrom(lastCall)
+		}
+		//desc.HandleMeta()
+		return desc
 	}
 }
 
-func PreUnaryInterceptor(svcPolicy runtime.ServicePolicy) grpc.UnaryClientInterceptor {
+func PreUnaryInterceptor(client g.BaseClient, svcPolicy runtime.ServicePolicy) grpc.UnaryClientInterceptor {
 	return func(ctx context.Context, method string, req, reply interface{}, cc *grpc.ClientConn, invoker grpc.UnaryInvoker, opts ...grpc.CallOption) error {
-		callDesc := prepareCallDescriptor(ctx, method, svcPolicy)
+		callDesc := prepareCallDescriptor(ctx, client, method, svcPolicy)
 		callDesc.Meta().SendHeader(nil)
 		err := invoker(callDesc, method, req, reply, cc, opts...)
 		return err
