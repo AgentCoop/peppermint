@@ -6,6 +6,9 @@ import (
 )
 
 func DbCreateCmd(force bool) {
+	if force {
+		node.DropTables()
+	}
 	node.CreateTables()
-	runtime.GlobalRegistry().InvokeHooks(runtime.CmdCreateDbHook)
+	runtime.GlobalRegistry().InvokeHooks(runtime.CmdCreateDbHook, force)
 }

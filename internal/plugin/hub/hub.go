@@ -73,6 +73,10 @@ func (hub *hubService) migrateDb(options interface{}) {
 }
 
 func (hub *hubService) createDd(args...interface{}) {
+	force := args[0].(bool)
+	if force {
+		model.DropTables()
+	}
 	model.CreateTables()
 }
 

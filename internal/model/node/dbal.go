@@ -17,7 +17,7 @@ func CreateTables() {
 func DropTables() {
 	db := runtime.GlobalRegistry().Db().Handle()
 	mig := db.Migrator()
-	job.Logger(logger.DbKey)("drop node tables...")
+	job.Logger(logger.DbKey)("dropping node tables...")
 	mig.DropTable(tables...)
 }
 

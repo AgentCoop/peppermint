@@ -23,8 +23,8 @@ func CreateTables() {
 func DropTables() {
 	db := runtime.GlobalRegistry().Db().Handle()
 	mig := db.Migrator()
-	job.Logger(logger.DbKey)("droppping Hub tables...")
-	mig.CreateTable(tables...)
+	job.Logger(logger.DbKey)("dropping Hub tables...")
+	mig.DropTable(tables...)
 }
 
 func FetchById(id internal.NodeId) (*HubJoinedNode, error) {

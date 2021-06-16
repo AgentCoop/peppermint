@@ -23,9 +23,11 @@ func NewConfigurator() *cfg {
 }
 
 func (c *cfg) Fetch() error {
-	db := runtime.GlobalRegistry().Db()
-	rec := &HubConfig{}
-	db.Handle().FirstOrCreate(rec)
+	db := runtime.GlobalRegistry().Db().Handle()
+	rec := HubConfig{}
+	err := db.First(&rec).Error
+	if err != nil { return err }
+	//errors.Is(err, gorm.ErrRecordNotFound)
 	c.port = rec.Port
 	c.address = rec.Address
 	c.secret = rec.Secret
