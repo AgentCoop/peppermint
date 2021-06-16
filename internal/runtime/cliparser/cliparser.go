@@ -2,7 +2,6 @@ package cliparser
 
 import (
 	"fmt"
-	"github.com/AgentCoop/peppermint/internal/runtime/deps"
 	"github.com/iancoleman/strcase"
 	"github.com/jessevdk/go-flags"
 	"reflect"
@@ -12,7 +11,7 @@ type CmdHook func(data interface{})
 
 type parser struct {
 	data interface{}
-	cfgs []deps.Configurator
+	//cfgs []deps.Configurator
 	handle *flags.Parser
 }
 
@@ -20,7 +19,7 @@ func NewParser(data interface{}) *parser {
 	p := new(parser)
 	p.data = data
 	p.handle = flags.NewParser(data, flags.IgnoreUnknown)
-	p.cfgs = make([]deps.Configurator, 0)
+	//p.cfgs = make([]deps.Configurator, 0)
 	return p
 }
 
@@ -62,7 +61,7 @@ func (p *parser) GetCmdOptions(cmdName string) (interface{}, error) {
 	r := reflect.ValueOf(p.data)
 	fieldName := strcase.ToCamel(cmdName)
 	cmdOpts := reflect.Indirect(r).FieldByName(fieldName)
-	if ! cmdOpts.CanInterface() {
+	if !cmdOpts.CanInterface() {
 		return nil, fmt.Errorf("cli-parser: failed to retrieve options field %s", fieldName)
 	}
 	return cmdOpts.Interface(), nil

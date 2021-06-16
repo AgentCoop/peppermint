@@ -2,51 +2,58 @@ package calldesc
 
 import (
 	"context"
+	proto "github.com/AgentCoop/peppermint/internal/api/peppermint"
 	g "github.com/AgentCoop/peppermint/internal/grpc"
 	"github.com/AgentCoop/peppermint/internal/runtime"
-	"github.com/AgentCoop/peppermint/internal/runtime/deps"
-	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
 )
 
-func NewSecurityPolicy(useEnc bool, encKey []byte) secPolicy {
-	p := secPolicy{
+func NewSecurityPolicy(useEnc bool, encKey []byte) *secPolicy {
+	p := &secPolicy{
 		encKey:  encKey,
 		e2e_Enc: useEnc,
 	}
 	return p
 }
 
-func NewServer(ctx context.Context, cfg deps.ServiceConfigurator, secPolicy secPolicy) *sCallDesc {
-	stream := grpc.ServerTransportStreamFromContext(ctx)
-	desc := &sCallDesc{}
+func NewSecurityPolicyFromMethod(method runtime.Method, cfg runtime.NodeConfigurator) *secPolicy {
+	var useEnc bool
+	var encKey []byte
+	switch {
+	case method.WasSet(proto.E_MEnforceEnc):
+		useEnc = method.CallPolicy().EnforceEncryption()
+	case method.ServicePolicy().WasSet(proto.E_EnforceEnc):
+		useEnc = method.ServicePolicy().EnforceEncryption()
+	default:
+		if cfg == nil {
+			useEnc = false
+			encKey = nil
+		} else {
+			useEnc = cfg.E2E_EncryptionEnabled()
+			encKey = cfg.EncKey()
+		}
+	}
+	secPolicy := NewSecurityPolicy(useEnc, encKey)
+	return secPolicy
+}
+
+func NewServer(ctx context.Context, cfg runtime.ServiceConfigurator, method runtime.Method, secPolicy *secPolicy) *ServerDescriptor {
+	desc := &ServerDescriptor{}
 	desc.Context = ctx
-	desc.common.typ = ServerCallDesc
+	desc.common.typ = ServerType
 	desc.meta.parent = &desc.common
 	desc.secPolicy = secPolicy
 	header, _ := metadata.FromIncomingContext(ctx)
 	desc.meta.header = header
-	desc.method = stream.Method()
+	desc.method = method
 	desc.svcCfg = cfg
 	return desc
 }
 
-func NewServerInsecure(ctx context.Context, cfg deps.ServiceConfigurator) *sCallDesc {
-	secPolicy := secPolicy{e2e_Enc: false}
-	desc := NewServer(ctx, cfg, secPolicy)
-	return desc
-}
-
-//func NewClientInSecure(ctx context.Context) *cCallDesc {
-//	secPolicy := secPolicy{e2e_Enc: false}
-//	desc := NewClient(ctx, secPolicy)
-//	return desc
-//}
-
-func NewClient(ctx context.Context, secPolicy secPolicy, policy g.MethodCallPolicy) *cCallDesc {
-	desc := &cCallDesc{}
+func NewClient(ctx context.Context, secPolicy *secPolicy, policy runtime.MethodCallPolicy) *ClientDescriptor {
+	desc := &ClientDescriptor{}
 	desc.common.Context = ctx
-	desc.common.typ = ClientCallDesc
+	desc.common.typ = ClientType
 	desc.meta.parent = &desc.common
 	desc.meta.header = metadata.New(nil)
 	desc.secPolicy = secPolicy

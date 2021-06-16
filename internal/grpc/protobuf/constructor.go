@@ -19,15 +19,15 @@ func NewServiceDescriptor(svcFullName string) ServiceDescriptor {
 	return ServiceDescriptor{sd}
 }
 
-func NewMethodLevelOptions(methods []string) methodLevelOptionsMap {
-	opts := make(methodLevelOptionsMap, 0)
+func NewMethodLevelOptions(methods []string) MethodLevelOptionsMap {
+	opts := make(MethodLevelOptionsMap, 0)
 	for _, name := range methods {
 		opts[name] = make(extOptionMap, 0)
 	}
 	return opts
 }
 
-func NewSvcLevelOptions() svcLevelOptionsMap {
-	m := make(svcLevelOptionsMap)
+func NewSvcLevelOptions() SvcLevelOptionsMap {
+	m := make(SvcLevelOptionsMap)
 	return m
 }

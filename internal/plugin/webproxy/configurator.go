@@ -3,7 +3,6 @@ package webproxy
 import (
 	model "github.com/AgentCoop/peppermint/internal/plugin/webproxy/model"
 	"github.com/AgentCoop/peppermint/internal/runtime"
-	"github.com/AgentCoop/peppermint/internal/runtime/deps"
 	"io/ioutil"
 	"net"
 	"strconv"
@@ -28,7 +27,7 @@ func (w *cfg) Fetch() error {
 	return nil
 }
 
-func (w *cfg) MergeCliOptions(parser deps.CliParser) {
+func (w *cfg) MergeCliOptions(parser runtime.CliParser) {
 	val, isset := parser.OptionValue("wp-port")
 	if isset {
 		w.port = val.(int)

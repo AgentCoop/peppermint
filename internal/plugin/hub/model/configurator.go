@@ -2,13 +2,12 @@ package model
 
 import (
 	"github.com/AgentCoop/peppermint/internal/runtime"
-	"github.com/AgentCoop/peppermint/internal/runtime/deps"
 	"net"
 	"strconv"
 )
 
 type HubConfigurator interface {
-	deps.ServiceConfigurator
+	runtime.ServiceConfigurator
 	Secret() string
 }
 
@@ -33,7 +32,7 @@ func (c *cfg) Fetch() error {
 	return nil
 }
 
-func (c *cfg) MergeCliOptions(parser deps.CliParser) {
+func (c *cfg) MergeCliOptions(parser runtime.CliParser) {
 	val, isset := parser.OptionValue("hub-port")
 	if isset {
 		c.port = val.(int)

@@ -36,7 +36,7 @@ func init() {
 	regMap[parserCmdHookKey] = make([]interface{}, 0)
 	regMap[dbKey] = make([]interface{}, 1)
 	regMap[grpcSessionKey] = make([]interface{}, 1)
-	regMap[hooksKey] = make([]interface{}, 1)
+	regMap[hooksKey] = make([]interface{}, 0)
 }
 
 func GlobalRegistry() GlobalRegistryInterface {
@@ -76,12 +76,12 @@ func (m registryMap) SetDb(db db.Db) {
 }
 
 func (m registryMap) RegisterHook(typ Hook, handler HookHandler) {
-	m[hooksKey] = append(m[hooksKey], hookEntry{typ, handler})
+	m[hooksKey] = append(m[hooksKey], &hookEntry{typ, handler})
 }
 
 func (m registryMap) InvokeHooks(typ Hook, args ...interface{}) {
 	for _, entry := range m[hooksKey] {
-		entry := entry.(hookEntry)
+		entry := entry.(*hookEntry)
 		if entry.typ != typ { continue }
 		entry.handler(args...)
 	}

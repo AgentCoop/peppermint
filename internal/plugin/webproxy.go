@@ -1,12 +1,12 @@
-package config
+package plugin
 
 import (
-	"github.com/AgentCoop/peppermint/internal/runtime/deps"
+	"github.com/AgentCoop/peppermint/internal/runtime/configurator"
 	"net"
 )
 
 type WebProxyConfigurator interface {
-	deps.Configurator
+	configurator.Configurator
 	BalancerConfigurator
 	Address() net.Addr
 	ServerName() string

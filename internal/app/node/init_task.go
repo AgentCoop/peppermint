@@ -35,7 +35,6 @@ func (a *app) InitTask(j job.Job) (job.Init, job.Run, job.Finalize) {
 	run := func(task job.Task) {
 		err := a.CliParser().Run()
 		task.Assert(err)
-
 		// Default application directory is the current working directory
 		if len(*a.appDir) == 0 {
 			*a.appDir, err = os.Getwd()
@@ -46,6 +45,10 @@ func (a *app) InitTask(j job.Job) (job.Init, job.Run, job.Finalize) {
 		// Init DB
 		err = a.initDb()
 		task.Assert(err)
+		// Load plugable services
+		// ...
+		// Services initialization
+		runtime.GlobalRegistry().InvokeHooks(runtime.OnServiceInitHook)
 		// Fetch node configuration once DB is initialized
 		cmdName, _ := a.CliParser().CurrentCmd()
 		if cmdName != cmd.CMD_NAME_DB_CREATE {

@@ -1,4 +1,4 @@
-package deps
+package runtime
 
 type CliParser interface {
 	Data() interface{}

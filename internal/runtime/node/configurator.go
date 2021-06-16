@@ -3,7 +3,6 @@ package node
 import (
 	"github.com/AgentCoop/peppermint/internal"
 	"github.com/AgentCoop/peppermint/internal/runtime"
-	"github.com/AgentCoop/peppermint/internal/runtime/deps"
 )
 
 func (c *cfg) Fetch() error {
@@ -13,7 +12,7 @@ func (c *cfg) Fetch() error {
 	return nil
 }
 
-func (c *cfg) MergeCliOptions(parser deps.CliParser) {
+func (c *cfg) MergeCliOptions(parser runtime.CliParser) {
 
 }
 

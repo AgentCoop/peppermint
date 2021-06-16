@@ -9,7 +9,7 @@ import (
 func PostUnaryInterceptor(svcName string) grpc.UnaryServerInterceptor {
 	return func(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (interface{}, error) {
 		resp, err := handler(ctx, req)
-		callDesc := ctx.(g.ServerCallDesc)
+		callDesc := ctx.(g.ServerDescriptor)
 		callDesc.Meta().SendHeader(nil)
 		return resp, err
 	}

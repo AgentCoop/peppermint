@@ -9,7 +9,7 @@ import (
 
 func (s *hubServer) JoinHello(ctx context.Context, origReq *msg.JoinHello_Request) (*msg.JoinHello_Response, error) {
 	sess := join.CreateSession()
-	desc := ctx.(grpc.ServerCallDesc)
+	desc := ctx.(grpc.ServerDescriptor)
 
 	req := join.NewJoinHello(origReq)
 	desc.SetRequestData(req)

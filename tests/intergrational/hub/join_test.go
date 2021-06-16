@@ -24,6 +24,7 @@ func TestJoinHello(t *testing.T) {
 	time.Sleep(100 * time.Millisecond)
 
 	addr, _ := net.ResolveTCPAddr("tcp", "localhost:9911")
+	time.Sleep(time.Millisecond)
 	hubClient := client.NewClient(addr)
 
 	clientJob := job.NewJob(hubClient)

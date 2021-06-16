@@ -8,7 +8,7 @@ import (
 
 type clientStream struct {
 	cs         grpc.ClientStream
-	callDesc   g.ClientCallDesc
+	callDesc   g.ClientDescriptor
 	recvx      int
 	sentx      int
 }

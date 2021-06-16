@@ -5,7 +5,7 @@ import (
 	"google.golang.org/grpc"
 )
 
-func NewClientStream(cs grpc.ClientStream, desc g.ClientCallDesc) *clientStream {
+func NewClientStream(cs grpc.ClientStream, desc g.ClientDescriptor) *clientStream {
 	s := &clientStream{
 		cs:       cs,
 		callDesc: desc,
@@ -13,7 +13,7 @@ func NewClientStream(cs grpc.ClientStream, desc g.ClientCallDesc) *clientStream 
 	return s
 }
 
-func NewServerStream(ss grpc.ServerStream, desc g.ServerCallDesc) *serverStream {
+func NewServerStream(ss grpc.ServerStream, desc g.ServerDescriptor) *serverStream {
 	fullMethod, _ := grpc.MethodFromServerStream(ss)
 	s := &serverStream{
 		ss:         ss,

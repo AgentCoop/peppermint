@@ -2,8 +2,9 @@ package service
 
 import (
 	"github.com/AgentCoop/peppermint/internal/api/peppermint"
-	"github.com/AgentCoop/peppermint/internal/grpc"
 	"github.com/AgentCoop/peppermint/internal/grpc/protobuf"
+	"github.com/AgentCoop/peppermint/internal/runtime"
+	"google.golang.org/protobuf/runtime/protoimpl"
 )
 
 type svcOptions struct {
@@ -24,19 +25,22 @@ type svcPolicy struct {
 	svcFullName string
 	desc        protobuf.ServiceDescriptor
 	sOpts       svcOptions
+	sOptsMap    protobuf.SvcLevelOptionsMap
 	methods     methodsMap
+	mOptsMap    protobuf.MethodLevelOptionsMap
 }
 
 type method struct {
-	name string
-	opts *methodOptions
+	name   string
+	policy *svcPolicy
+	opts   *methodOptions
 }
 
 func (p *svcPolicy) populate(methods []string) {
-	svcOptions := protobuf.NewSvcLevelOptions()
-	svcOptions.AddItem(peppermint.E_EnforceEnc, &p.sOpts.enforceEnc)
-	svcOptions.AddItem(peppermint.E_Port, &p.sOpts.defaultPort)
-	svcOptions.AddItem(peppermint.E_IpcUnixSocket, &p.sOpts.ipcUnixDomainSocket)
+	p.sOptsMap = protobuf.NewSvcLevelOptions()
+	p.sOptsMap.AddItem(peppermint.E_EnforceEnc, &p.sOpts.enforceEnc)
+	p.sOptsMap.AddItem(peppermint.E_Port, &p.sOpts.defaultPort)
+	p.sOptsMap.AddItem(peppermint.E_IpcUnixSocket, &p.sOpts.ipcUnixDomainSocket)
 
 	sm := protobuf.NewMethodLevelOptions(methods)
 	for methodName, _ := range sm {
@@ -46,11 +50,15 @@ func (p *svcPolicy) populate(methods []string) {
 		sm.AddItem(methodName, peppermint.E_Streamable, &mOpt.streamable)
 		sm.AddItem(methodName, peppermint.E_NewSession, &mOpt.newSession)
 	}
-	p.desc.FetchServiceCustomOptions(svcOptions, sm)
+	p.desc.FetchServiceCustomOptions(p.sOptsMap, sm)
 	// Set up values of method-level options that were not set
 	for _, opts := range sm {
 		opts.OverrideIfNotSet(p.sOpts.enforceEnc, peppermint.E_MEnforceEnc)
 	}
+}
+
+func (p *svcPolicy) WasSet(ext *protoimpl.ExtensionInfo) bool {
+	return p.sOptsMap[ext].WasSet()
 }
 
 func (p *svcPolicy) EnforceEncryption() bool {
@@ -65,8 +73,9 @@ func (p *svcPolicy) Ipc_UnixDomainSocket() string {
 	return p.sOpts.ipcUnixDomainSocket
 }
 
-func (p *svcPolicy) FindMethodByName(shortName string) (grpc.Method, bool) {
+func (p *svcPolicy) FindMethodByName(shortName string) (runtime.Method, bool) {
 	m := method{}
+	m.policy = p
 	for methodName, opts := range p.methods {
 		if methodName == shortName {
 			m.name = methodName
@@ -81,11 +90,23 @@ func (m method) Name() string {
 	return m.name
 }
 
-func (m method) CallPolicy() grpc.MethodCallPolicy {
+func (m method) ServicePolicy()  runtime.ServicePolicy {
+	return m.policy
+}
+
+func (m method) CallPolicy() runtime.MethodCallPolicy {
 	return m.opts
 }
 
-func (m *methodOptions) IsSecure() bool {
+func (m method) WasSet(ext *protoimpl.ExtensionInfo) bool {
+	opts := m.policy.mOptsMap[m.name]
+	if _, has := opts[ext]; !has {
+		return false
+	}
+	return opts[ext].WasSet()
+}
+
+func (m *methodOptions) EnforceEncryption() bool {
 	return m.enforceEnc
 }
 

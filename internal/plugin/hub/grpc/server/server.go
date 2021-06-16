@@ -2,9 +2,9 @@ package server
 
 import (
 	"github.com/AgentCoop/peppermint/internal/api/peppermint/service/backoffice/hub"
-	g "github.com/AgentCoop/peppermint/internal/grpc"
 	middleware "github.com/AgentCoop/peppermint/internal/grpc/middleware/server"
 	"github.com/AgentCoop/peppermint/internal/grpc/server"
+	"github.com/AgentCoop/peppermint/internal/runtime"
 	"github.com/AgentCoop/peppermint/internal/utils"
 	"net"
 
@@ -12,12 +12,12 @@ import (
 )
 
 type HubServer interface {
-	g.BaseServer
+	runtime.BaseServer
 	hub.HubServer
 }
 
 type hubServer struct {
-	g.BaseServer
+	runtime.BaseServer
 	hub.UnimplementedHubServer
 }
 

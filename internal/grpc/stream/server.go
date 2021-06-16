@@ -10,7 +10,7 @@ import (
 
 type serverStream struct {
 	ss         grpc.ServerStream
-	callDesc   g.ServerCallDesc
+	callDesc   g.ServerDescriptor
 	recvx      int
 	sentx      int
 	fullMethod string

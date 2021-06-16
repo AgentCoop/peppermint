@@ -8,7 +8,7 @@ import (
 	"google.golang.org/grpc/status"
 )
 
-func Ipc_CallDesc(j job.Job, chanIdx int) (grpc.ServerCallDesc, grpc.GrpcServiceLayersIpc) {
+func Ipc_CallDesc(j job.Job, chanIdx int) (grpc.ServerDescriptor, grpc.GrpcServiceLayersIpc) {
 	v := j.GetValue()
 	s, ok := v.(grpc.Session)
 	if !ok {
@@ -19,7 +19,7 @@ func Ipc_CallDesc(j job.Job, chanIdx int) (grpc.ServerCallDesc, grpc.GrpcService
 	if v == nil {
 		panic(status.Error(codes.Internal, "sys: expected call descriptor, got nil"))
 	}
-	callDesc, ok := v.(grpc.ServerCallDesc)
+	callDesc, ok := v.(grpc.ServerDescriptor)
 	if !ok {
 		panic(status.Errorf(codes.Internal, "sys: expected call descriptor, got %v", v))
 	}

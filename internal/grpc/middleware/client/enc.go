@@ -9,7 +9,7 @@ import (
 	"google.golang.org/grpc"
 )
 
-func encryptMessage(desc g.ClientCallDesc, req interface{}) interface{} {
+func encryptMessage(desc g.ClientDescriptor, req interface{}) interface{} {
 	if ! desc.SecPolicy().IsSecure() {
 		return req
 	}
@@ -20,7 +20,7 @@ func encryptMessage(desc g.ClientCallDesc, req interface{}) interface{} {
 
 func SecureChannelUnaryInterceptor() grpc.UnaryClientInterceptor {
 	return func(ctx context.Context, method string, req, reply interface{}, cc *grpc.ClientConn, invoker grpc.UnaryInvoker, opts ...grpc.CallOption) error {
-		desc := ctx.(g.ClientCallDesc)
+		desc := ctx.(g.ClientDescriptor)
 		req = encryptMessage(desc, req)
 		err := invoker(ctx, method, req, reply, cc, opts...)
 		return err

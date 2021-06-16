@@ -2,10 +2,10 @@ package calldesc
 
 import (
 	"github.com/AgentCoop/peppermint/internal/grpc"
-	"github.com/AgentCoop/peppermint/internal/runtime/deps"
+	"github.com/AgentCoop/peppermint/internal/runtime"
 )
 
-func (s *sCallDesc) Method() string {
+func (s *ServerDescriptor) Method() runtime.Method {
 	return s.method
 }
 
@@ -13,41 +13,41 @@ func (s *sCallDesc) Method() string {
 // Common interface
 //
 
-func (s *sCallDesc) ServiceConfigurator() deps.ServiceConfigurator {
+func (s *ServerDescriptor) ServiceConfigurator() runtime.ServiceConfigurator {
 	return s.svcCfg
 }
 
-func (s *sCallDesc) HandleMeta() {
+func (s *ServerDescriptor) HandleMeta() {
 	s.meta.extractCommonFieldsVals()
 }
 
-func (s *sCallDesc) Meta() grpc.ServerMeta {
+func (s *ServerDescriptor) Meta() grpc.ServerMeta {
 	return &s.meta
 }
 
-func (s *sCallDesc) WithSecPolicy(sec grpc.SecurityPolicy) {
-	s.secPolicy = sec.(secPolicy)
+func (s *ServerDescriptor) WithSecPolicy(sec grpc.SecurityPolicy) {
+	s.secPolicy = sec.(*secPolicy)
 }
 
-func (s *sCallDesc) SecPolicy() grpc.SecurityPolicy {
+func (s *ServerDescriptor) SecPolicy() grpc.SecurityPolicy {
 	return s.secPolicy
 }
 
 //
 // Call data interface
 //
-func (s *sCallDesc) ResponseData() grpc.ResponseData {
+func (s *ServerDescriptor) ResponseData() grpc.ResponseData {
 	return s.resData
 }
 
-func (s *sCallDesc) SetResponseData(data grpc.ResponseData) {
+func (s *ServerDescriptor) SetResponseData(data grpc.ResponseData) {
 	s.resData = data
 }
 
-func (s *sCallDesc) RequestData() grpc.RequestData {
+func (s *ServerDescriptor) RequestData() grpc.RequestData {
 	return s.reqData
 }
 
-func (s *sCallDesc) SetRequestData(data grpc.RequestData) {
+func (s *ServerDescriptor) SetRequestData(data grpc.RequestData) {
 	s.reqData = data
 }

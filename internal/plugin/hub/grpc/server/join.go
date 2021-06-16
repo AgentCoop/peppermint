@@ -10,7 +10,7 @@ import (
 )
 
 func (s *hubServer) Join(ctx context.Context, origReq *msg.Join_Request) (*msg.Join_Response, error) {
-	desc := ctx.(grpc.ServerCallDesc)
+	desc := ctx.(grpc.ServerDescriptor)
 	req := join.NewJoin(origReq)
 	desc.SetRequestData(req)
 

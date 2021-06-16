@@ -6,7 +6,6 @@ import (
 )
 
 func RunCmd() error {
-	runtime.GlobalRegistry().InvokeHooks(runtime.OnServiceInitHook)
 	svcJob := job.NewJob(nil)
 	rt := runtime.GlobalRegistry().Runtime()
 	for _, svc := range rt.Services() {

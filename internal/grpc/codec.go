@@ -2,8 +2,6 @@ package grpc
 
 import i "github.com/AgentCoop/peppermint/internal"
 
-
-
 type CodecPacket interface {
 	NodeId() i.NodeId
 	PayloadType()

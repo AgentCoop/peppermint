@@ -16,3 +16,4 @@ type ServiceNodeManager interface {
 	NodeManager
 	InquiryHub() Node
 }
+

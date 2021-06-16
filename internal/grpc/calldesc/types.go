@@ -4,22 +4,22 @@ import (
 	"context"
 	"github.com/AgentCoop/peppermint/internal"
 	"github.com/AgentCoop/peppermint/internal/grpc"
-	"github.com/AgentCoop/peppermint/internal/runtime/deps"
+	"github.com/AgentCoop/peppermint/internal/runtime"
 	"google.golang.org/grpc/metadata"
 )
 
-type CallDescType int
+type DescriptorType int
 
 const (
-	ServerCallDesc CallDescType = iota
-	ClientCallDesc
+	ServerType DescriptorType = iota
+	ClientType
 )
 
 type common struct {
 	context.Context
-	typ       CallDescType
+	typ       DescriptorType
 	meta      meta
-	secPolicy secPolicy
+	secPolicy *secPolicy
 }
 
 type secPolicy struct {
@@ -35,20 +35,24 @@ type meta struct {
 	nodeId  internal.NodeId
 }
 
-type sCallDesc struct {
+type ServerDescriptor struct {
 	common
-	method  string
+	svcCfg  runtime.ServiceConfigurator
+	method  runtime.Method
 	reqData grpc.RequestData
 	resData grpc.ResponseData
-	svcCfg  deps.ServiceConfigurator
 }
 
-type cCallDesc struct {
+func (s *ServerDescriptor) Policy() runtime.MethodCallPolicy {
+	panic("implement me")
+}
+
+type ClientDescriptor struct {
 	common
-	policy grpc.MethodCallPolicy
+	policy runtime.MethodCallPolicy
 }
 
-func (s *cCallDesc) Policy() grpc.MethodCallPolicy {
+func (s *ClientDescriptor) Policy() runtime.MethodCallPolicy {
 	panic("implement me")
 }
 

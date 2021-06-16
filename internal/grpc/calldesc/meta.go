@@ -7,7 +7,7 @@ import (
 	"google.golang.org/grpc/metadata"
 )
 
-func (m *meta) copySessionId(preceding *cCallDesc) {
+func (m *meta) copySessionId(preceding *ClientDescriptor) {
 	m.SetSessionId(preceding.meta.SessionId())
 }
 
@@ -35,10 +35,10 @@ func (m *meta) SetHeader(newMd metadata.MD) {
 
 func (m *meta) SendHeader(metadata.MD) error {
 	switch m.parent.typ {
-	case ServerCallDesc:
+	case ServerType:
 		err := grpc.SendHeader(m.parent.Context, m.header)
 		return err
-	case ClientCallDesc:
+	case ClientType:
 		m.parent.Context = metadata.NewOutgoingContext(m.parent.Context, m.header)
 		err := grpc.SendHeader(m.parent.Context, m.header)
 		return err

@@ -4,30 +4,30 @@ import (
 	"github.com/AgentCoop/peppermint/internal/grpc"
 )
 
-func (s *cCallDesc) WithSessionFrom(preceding grpc.ClientCallDesc) {
-	s.meta.copySessionId(preceding.(*cCallDesc))
+func (s *ClientDescriptor) WithSessionFrom(preceding grpc.ClientDescriptor) {
+	s.meta.copySessionId(preceding.(*ClientDescriptor))
 }
 
-func (c *cCallDesc) IsSecure() bool {
+func (c *ClientDescriptor) IsSecure() bool {
 	return c.secPolicy.e2e_Enc
 }
 
-func (c *cCallDesc) EncKey() []byte {
+func (c *ClientDescriptor) EncKey() []byte {
 	return c.secPolicy.encKey
 }
 
-func (c *cCallDesc) HandleMeta() {
+func (c *ClientDescriptor) HandleMeta() {
 	c.meta.extractCommonFieldsVals()
 }
 
-func (c *cCallDesc) Meta() grpc.Meta {
+func (c *ClientDescriptor) Meta() grpc.Meta {
 	return &c.meta
 }
 
-func (s *cCallDesc) WithSecPolicy(sec grpc.SecurityPolicy) {
-	s.secPolicy = sec.(secPolicy)
+func (s *ClientDescriptor) WithSecPolicy(sec grpc.SecurityPolicy) {
+	s.secPolicy = sec.(*secPolicy)
 }
 
-func (s *cCallDesc) SecPolicy() grpc.SecurityPolicy {
+func (s *ClientDescriptor) SecPolicy() grpc.SecurityPolicy {
 	return s.secPolicy
 }

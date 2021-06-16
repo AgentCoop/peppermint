@@ -15,12 +15,12 @@ type Stream interface {
 
 type ClientStream interface {
 	Stream
-	CallDesc() ClientCallDesc
+	CallDesc() ClientDescriptor
 }
 
 type ServerStream interface {
 	Stream
-	CallDesc() ServerCallDesc
+	CallDesc() ServerDescriptor
 	FullMethod() string
 }
 

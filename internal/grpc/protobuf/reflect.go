@@ -17,16 +17,24 @@ type optValue struct {
 	val   interface{}
 }
 
-type (
-	extOptionMap          map[*protoimpl.ExtensionInfo]*optValue
-	svcLevelOptionsMap    extOptionMap
-	methodLevelOptionsMap map[string]extOptionMap
-)
-
 func (o *optValue) setValue(v interface{}) {
 	o.isSet = true
 	reflect.ValueOf(o.val).Elem().Set(reflect.ValueOf(v))
 }
+
+func (o *optValue) WasSet() bool {
+	return o.isSet
+}
+
+func (o *optValue) Value() interface{} {
+	return o.val
+}
+
+type (
+	extOptionMap          map[*protoimpl.ExtensionInfo]*optValue
+	SvcLevelOptionsMap    extOptionMap
+	MethodLevelOptionsMap map[string]extOptionMap
+)
 
 func (o extOptionMap) OverrideIfNotSet(v interface{}, targetExt *protoimpl.ExtensionInfo) {
 	for ext, val := range o {
@@ -36,15 +44,15 @@ func (o extOptionMap) OverrideIfNotSet(v interface{}, targetExt *protoimpl.Exten
 	}
 }
 
-func (m svcLevelOptionsMap) AddItem(ext *protoimpl.ExtensionInfo, v interface{}) {
+func (m SvcLevelOptionsMap) AddItem(ext *protoimpl.ExtensionInfo, v interface{}) {
 	m[ext] = &optValue{false, v}
 }
 
-func (m methodLevelOptionsMap) AddItem(methodName string, ext *protoimpl.ExtensionInfo, v interface{}) {
+func (m MethodLevelOptionsMap) AddItem(methodName string, ext *protoimpl.ExtensionInfo, v interface{}) {
 	m[methodName][ext] = &optValue{false, v}
 }
 
-func (d ServiceDescriptor) FetchServiceCustomOptions(svcOpts svcLevelOptionsMap, methodOpts methodLevelOptionsMap) {
+func (d ServiceDescriptor) FetchServiceCustomOptions(svcOpts SvcLevelOptionsMap, methodOpts MethodLevelOptionsMap) {
 	m := d.Options()
 	for ext, _ := range svcOpts {
 		opt := svcOpts[ext]

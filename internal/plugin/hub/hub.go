@@ -5,8 +5,7 @@ import (
 	"github.com/AgentCoop/peppermint/cmd"
 	i "github.com/AgentCoop/peppermint/internal"
 	api "github.com/AgentCoop/peppermint/internal/api/peppermint/service/backoffice/hub"
-	g "github.com/AgentCoop/peppermint/internal/grpc"
-	"github.com/AgentCoop/peppermint/internal/grpc/service"
+	"github.com/AgentCoop/peppermint/internal/runtime/service"
 	"net"
 
 	//plugin "github.com/AgentCoop/peppermint/internal/plugin"
@@ -21,8 +20,7 @@ var (
 )
 
 type hubService struct {
-	g.Service
-	model.HubConfigurator
+	runtime.Service
 }
 
 func init() {
@@ -35,23 +33,22 @@ func init() {
 	reg.RegisterParserCmdHook(cmd.CMD_NAME_DB_CREATE, hub.createDd)
 }
 
-func (hub *hubService) Init() (g.Service, error) {
+func (hub *hubService) Init() (runtime.Service, error) {
 	rt := runtime.GlobalRegistry().Runtime()
-	var ipcSrv g.BaseServer
-	srv := grpc.NewServer(
-		Name,
-		hub.HubConfigurator.Address(),
-	)
+	var ipcSrv runtime.BaseServer
+	// Configurator
+	cfg := model.NewConfigurator()
+	cfg.Fetch()
+	cfg.MergeCliOptions(rt.CliParser())
+	// Create network server and service policy
+	srv := grpc.NewServer(Name, cfg.Address())
 	policy := service.NewServicePolicy(srv.FullName(), srv.Methods())
+	// IPC server
 	if len(policy.Ipc_UnixDomainSocket()) > 0 {
 		unixAddr, _ := net.ResolveUnixAddr("unix", policy.Ipc_UnixDomainSocket())
 		ipcSrv = grpc.NewServer(Name, unixAddr)
 	}
-	// Configurator
-	hub.HubConfigurator = model.NewConfigurator()
-	hub.HubConfigurator.Fetch()
-	hub.HubConfigurator.MergeCliOptions(rt.CliParser())
-	hub.Service = service.NewBaseService(srv, ipcSrv, policy)
+	hub.Service = service.NewBaseService(srv, ipcSrv, cfg, policy)
 	hub.RegisterEncKeyStoreFallback()
 	rt.RegisterService(Name, hub)
 	return hub, nil
