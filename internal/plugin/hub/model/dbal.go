@@ -1,7 +1,9 @@
 package model
 
 import (
+	job "github.com/AgentCoop/go-work"
 	"github.com/AgentCoop/peppermint/internal"
+	"github.com/AgentCoop/peppermint/internal/logger"
 	"github.com/AgentCoop/peppermint/internal/runtime"
 )
 
@@ -14,7 +16,14 @@ var (
 func CreateTables() {
 	db := runtime.GlobalRegistry().Db().Handle()
 	mig := db.Migrator()
-	mig.DropTable(tables...)
+	job.Logger(logger.DbKey)("creating Hub tables...")
+	mig.CreateTable(tables...)
+}
+
+func DropTables() {
+	db := runtime.GlobalRegistry().Db().Handle()
+	mig := db.Migrator()
+	job.Logger(logger.DbKey)("droppping Hub tables...")
 	mig.CreateTable(tables...)
 }
 

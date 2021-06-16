@@ -1,21 +1,31 @@
 package node
 
 import (
+	job "github.com/AgentCoop/go-work"
 	"github.com/AgentCoop/peppermint/internal"
+	"github.com/AgentCoop/peppermint/internal/logger"
 	"github.com/AgentCoop/peppermint/internal/runtime"
 )
 
 func CreateTables() {
 	db := runtime.GlobalRegistry().Db().Handle()
 	mig := db.Migrator()
-	mig.CreateTable(&Node{}, &NodeTag{})
+	job.Logger(logger.DbKey)("creating node tables...")
+	mig.CreateTable(tables...)
+}
+
+func DropTables() {
+	db := runtime.GlobalRegistry().Db().Handle()
+	mig := db.Migrator()
+	job.Logger(logger.DbKey)("drop node tables...")
+	mig.DropTable(tables...)
 }
 
 func CreateNode(id internal.NodeId, tags []string) error {
 	db := runtime.GlobalRegistry().Db().Handle()
 	mig := db.Migrator()
-	mig.DropTable(Tables...)
-	mig.CreateTable(Tables...)
+	mig.DropTable(tables...)
+	mig.CreateTable(tables...)
 
 	tagModels := make([]NodeTag, len(tags))
 	for i, tagName := range tags {

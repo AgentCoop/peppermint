@@ -1,5 +1,5 @@
 package node
 
-var Tables = []interface{} {
+var tables = []interface{} {
 	&Node{}, &NodeTag{},
 }

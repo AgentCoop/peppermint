@@ -42,7 +42,7 @@ func (app *app) ParserTask(j job.Job) (job.Init, job.Run, job.Finalize) {
 			opts, err := parser.GetCmdOptions(cmdName)
 			task.Assert(err)
 			v := opts.(cmd.DbCreate)
-			cmd.DbCreateCmd(db, parser, v.Force)
+			cmd.DbCreateCmd(v.Force)
 
 		case cmd.CMD_NAME_RUN:
 			cmd.RunCmd()
