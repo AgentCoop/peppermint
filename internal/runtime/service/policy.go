@@ -4,6 +4,7 @@ import (
 	"github.com/AgentCoop/peppermint/internal/api/peppermint"
 	"github.com/AgentCoop/peppermint/internal/grpc/protobuf"
 	"github.com/AgentCoop/peppermint/internal/runtime"
+	"github.com/AgentCoop/peppermint/internal/utils"
 	"google.golang.org/protobuf/runtime/protoimpl"
 )
 
@@ -24,10 +25,10 @@ type methodOptions struct {
 type svcPolicy struct {
 	svcFullName string
 	desc        protobuf.ServiceDescriptor
-	sOpts       svcOptions
 	sOptsMap    protobuf.SvcLevelOptionsMap
-	methods     methodsMap
 	mOptsMap    protobuf.MethodLevelOptionsMap
+	sOpts       svcOptions
+	methods     methodsMap
 }
 
 type method struct {
@@ -42,19 +43,19 @@ func (p *svcPolicy) populate(methods []string) {
 	p.sOptsMap.AddItem(peppermint.E_Port, &p.sOpts.defaultPort)
 	p.sOptsMap.AddItem(peppermint.E_IpcUnixSocket, &p.sOpts.ipcUnixDomainSocket)
 
-	sm := protobuf.NewMethodLevelOptions(methods)
-	for methodName, _ := range sm {
+	p.mOptsMap = protobuf.NewMethodLevelOptions(methods)
+	for methodName, _ := range p.mOptsMap {
 		mOpt := &methodOptions{}
 		p.methods[methodName] = mOpt
-		sm.AddItem(methodName, peppermint.E_MEnforceEnc, &mOpt.enforceEnc)
-		sm.AddItem(methodName, peppermint.E_Streamable, &mOpt.streamable)
-		sm.AddItem(methodName, peppermint.E_NewSession, &mOpt.newSession)
+		p.mOptsMap.AddItem(methodName, peppermint.E_MEnforceEnc, &mOpt.enforceEnc)
+		p.mOptsMap.AddItem(methodName, peppermint.E_Streamable, &mOpt.streamable)
+		p.mOptsMap.AddItem(methodName, peppermint.E_NewSession, &mOpt.newSession)
 	}
-	p.desc.FetchServiceCustomOptions(p.sOptsMap, sm)
+	p.desc.FetchServiceCustomOptions(p.sOptsMap, p.mOptsMap)
 	// Set up values of method-level options that were not set
-	for _, opts := range sm {
-		opts.OverrideIfNotSet(p.sOpts.enforceEnc, peppermint.E_MEnforceEnc)
-	}
+	//for _, opts := range sm {
+	//	opts.OverrideIfNotSet(p.sOpts.enforceEnc, peppermint.E_MEnforceEnc)
+	//}
 }
 
 func (p *svcPolicy) WasSet(ext *protoimpl.ExtensionInfo) bool {
@@ -73,11 +74,12 @@ func (p *svcPolicy) Ipc_UnixDomainSocket() string {
 	return p.sOpts.ipcUnixDomainSocket
 }
 
-func (p *svcPolicy) FindMethodByName(shortName string) (runtime.Method, bool) {
+func (p *svcPolicy) FindMethodByName(name string) (runtime.Method, bool) {
+	name = utils.Conv_FromLongToShortMethod(name)
 	m := method{}
 	m.policy = p
 	for methodName, opts := range p.methods {
-		if methodName == shortName {
+		if methodName == name {
 			m.name = methodName
 			m.opts = opts
 			return m, true

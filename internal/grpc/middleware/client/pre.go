@@ -2,7 +2,6 @@ package client
 
 import (
 	"context"
-	proto "github.com/AgentCoop/peppermint/internal/api/peppermint"
 	g "github.com/AgentCoop/peppermint/internal/grpc"
 	"github.com/AgentCoop/peppermint/internal/grpc/calldesc"
 	"github.com/AgentCoop/peppermint/internal/runtime"
@@ -17,16 +16,7 @@ func prepareCallDescriptor(ctx context.Context, methodName string, svcPolicy run
 	default:
 		cfg := rt.NodeConfigurator()
 		method, _ := svcPolicy.FindMethodByName(methodName)
-		var useEnc bool
-		switch {
-		case method.WasSet(proto.E_MEnforceEnc):
-			useEnc = method.CallPolicy().EnforceEncryption()
-		case svcPolicy.WasSet(proto.E_EnforceEnc):
-			useEnc = svcPolicy.EnforceEncryption()
-		default:
-			useEnc = cfg.E2E_EncryptionEnabled()
-		}
-		secPolicy := calldesc.NewSecurityPolicy(useEnc, cfg.EncKey())
+		secPolicy := calldesc.NewSecurityPolicyFromMethod(method, cfg)
 		callDesc := calldesc.NewClient(ctx, secPolicy, method.CallPolicy())
 		callDesc.HandleMeta()
 		return callDesc

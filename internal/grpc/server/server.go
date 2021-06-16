@@ -38,7 +38,14 @@ func (s *baseServer) FullName() string {
 }
 
 func (s *baseServer) Methods() []string {
-	info := s.handle.GetServiceInfo()
-	_ = info
+	for name, serviceInfo := range s.handle.GetServiceInfo() {
+		if name == s.fullName {
+			out := make([]string, len(serviceInfo.Methods))
+			for i := 0; i < len(serviceInfo.Methods); i++ {
+				out[i] = serviceInfo.Methods[i].Name
+			}
+			return out
+		}
+	}
 	return nil
 }

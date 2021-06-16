@@ -8,7 +8,7 @@ import (
 func NewServicePolicy(svcFullName string, svcMethods []string) *svcPolicy {
 	policy := new(svcPolicy)
 	policy.svcFullName = svcFullName
-	policy.methods = make(methodsMap, len(svcMethods))
+	policy.methods = make(methodsMap, 0)
 	policy.desc = protobuf.NewServiceDescriptor(svcFullName)
 	policy.populate(svcMethods)
 	return policy

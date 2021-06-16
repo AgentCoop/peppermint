@@ -23,3 +23,11 @@ func Conv_HexToInt(hexStr string) uint64 {
 	if err != nil { panic(ErrConv_HexToInt) }
 	return uint64(result)
 }
+
+func Conv_FromLongToShortMethod(name string) string {
+	if name[0] != '/' {
+		return name
+	}
+	parts := strings.Split(name, "/")
+	return parts[len(parts)-1]
+}
