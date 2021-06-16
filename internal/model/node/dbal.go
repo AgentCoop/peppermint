@@ -34,8 +34,9 @@ func CreateNode(id internal.NodeId, tags []string) error {
 
 func UpdateNodeEncKey(encKey []byte) error {
 	db := runtime.GlobalRegistry().Db().Handle()
-	node := Node{EncKey: encKey}
+	node := Node{}
 	db.First(&node)
-	err := db.Updates(&node).Error
+	node.EncKey = encKey
+	err := db.Save(&node).Error
 	return err
 }

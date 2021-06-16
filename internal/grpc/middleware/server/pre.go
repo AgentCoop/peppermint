@@ -16,10 +16,10 @@ func handleMeta(ctx context.Context, svcName string, methodName string) g.Server
 	cfg := svc.Configurator()
 	svcPolicy := svc.Policy()
 	method, _ := svcPolicy.FindMethodByName(methodName)
-	secPolicy := calldesc.NewSecurityPolicyFromMethod(method, nil)
-	callDesc := calldesc.NewServer(ctx, cfg, method, secPolicy)
-	callDesc.HandleMeta()
-	return callDesc
+	//secPolicy := calldesc.NewSecurityPolicyFromMethod(method, nil)
+	desc := calldesc.NewServer(ctx, cfg, method, nil)
+	desc.HandleMeta()
+	return desc
 }
 
 func PreUnaryInterceptor(svcName string) grpc.UnaryServerInterceptor {

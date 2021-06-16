@@ -1,10 +1,10 @@
 package node
 
-import (
-	"github.com/AgentCoop/peppermint/internal/model/node"
-)
+import "github.com/AgentCoop/peppermint/internal"
 
-type cfg struct {
-	nodeModel      node.Node
-	e2e_EncEnabled bool
+type node struct {
+	externalId internal.NodeId
+	encEnabled bool
+	tags       []string
+	encKey     []byte
 }

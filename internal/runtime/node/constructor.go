@@ -8,8 +8,8 @@ func NewNodeManager() *manager {
 	return m
 }
 
-func NewConfigurator() *cfg {
-	cfg := new(cfg)
+func NewConfigurator() *node {
+	cfg := new(node)
 	return cfg
 }
 

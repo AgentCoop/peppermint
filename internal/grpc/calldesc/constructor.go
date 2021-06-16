@@ -22,16 +22,13 @@ func NewSecurityPolicyFromMethod(method runtime.Method, cfg runtime.NodeConfigur
 	switch {
 	case method.WasSet(proto.E_MEnforceEnc):
 		useEnc = method.CallPolicy().EnforceEncryption()
+		encKey = cfg.EncKey()
 	case method.ServicePolicy().WasSet(proto.E_EnforceEnc):
 		useEnc = method.ServicePolicy().EnforceEncryption()
+		encKey = cfg.EncKey()
 	default:
-		if cfg == nil {
-			useEnc = false
-			encKey = nil
-		} else {
-			useEnc = cfg.E2E_EncryptionEnabled()
-			encKey = cfg.EncKey()
-		}
+		useEnc = cfg.E2E_EncryptionEnabled()
+		encKey = cfg.EncKey()
 	}
 	secPolicy := NewSecurityPolicy(useEnc, encKey)
 	return secPolicy
