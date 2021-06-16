@@ -2,7 +2,6 @@
 package hub
 
 import (
-	"github.com/AgentCoop/peppermint/cmd"
 	i "github.com/AgentCoop/peppermint/internal"
 	api "github.com/AgentCoop/peppermint/internal/api/peppermint/service/backoffice/hub"
 	"github.com/AgentCoop/peppermint/internal/runtime/service"
@@ -26,11 +25,12 @@ type hubService struct {
 func init() {
 	hub := new(hubService)
 	reg := runtime.GlobalRegistry()
-	reg.RegisterHook(runtime.OnServiceInitHook, func(args...interface{}) {
+	reg.RegisterHook(runtime.ServiceInitHook, func(args...interface{}) {
 		hub.Init()
 	})
-	reg.RegisterParserCmdHook(cmd.CMD_NAME_DB_MIGRATE, hub.migrateDb)
-	reg.RegisterParserCmdHook(cmd.CMD_NAME_DB_CREATE, hub.createDd)
+	reg.RegisterHook(runtime.CmdCreateDbHook, func(args...interface{}) {
+		hub.createDd(args...)
+	})
 }
 
 func (hub *hubService) Init() (runtime.Service, error) {
@@ -72,10 +72,7 @@ func (hub *hubService) migrateDb(options interface{}) {
 	//h.AutoMigrate(&model.HubConfig{}, &model.HubJoinedNode{}, &model.HubNodeTag{})
 }
 
-func (hub *hubService) createDd(options interface{}) {
-	//db := runtime.GlobalRegistry().Db()
-	//h := db.Handle()
-	//h.Migrator().DropTable(model.Tables...)
-	//h.Migrator().CreateTable(model.Tables...)
+func (hub *hubService) createDd(args...interface{}) {
+	model.CreateTables()
 }
 

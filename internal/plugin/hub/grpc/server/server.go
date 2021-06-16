@@ -5,9 +5,7 @@ import (
 	middleware "github.com/AgentCoop/peppermint/internal/grpc/middleware/server"
 	"github.com/AgentCoop/peppermint/internal/grpc/server"
 	"github.com/AgentCoop/peppermint/internal/runtime"
-	"github.com/AgentCoop/peppermint/internal/utils"
 	"net"
-
 	"google.golang.org/grpc"
 )
 
@@ -28,11 +26,10 @@ func withUnaryServerMiddlewares(svcName string) grpc.ServerOption {
 	)
 }
 
-func NewServer(fullName string, address net.Addr) *hubServer {
+func NewServer(svcName string, address net.Addr) *hubServer {
 	s := new(hubServer)
-	name := utils.Grpc_ExtractServerShortName(fullName)
-	s.BaseServer = server.NewBaseServer(fullName, address, grpc.NewServer(
-		withUnaryServerMiddlewares(name),
+	s.BaseServer = server.NewBaseServer(svcName, address, grpc.NewServer(
+		withUnaryServerMiddlewares(svcName),
 	))
 	s.RegisterServer()
 	return s

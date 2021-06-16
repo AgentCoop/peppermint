@@ -48,7 +48,7 @@ func (a *app) InitTask(j job.Job) (job.Init, job.Run, job.Finalize) {
 		// Load plugable services
 		// ...
 		// Services initialization
-		runtime.GlobalRegistry().InvokeHooks(runtime.OnServiceInitHook)
+		runtime.GlobalRegistry().InvokeHooks(runtime.ServiceInitHook)
 		// Fetch node configuration once DB is initialized
 		cmdName, _ := a.CliParser().CurrentCmd()
 		if cmdName != cmd.CMD_NAME_DB_CREATE {

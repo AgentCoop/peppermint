@@ -16,7 +16,9 @@ type hookEntry struct {
 }
 
 const (
-	OnServiceInitHook Hook = iota + 1
+	ServiceInitHook Hook = iota + 1
+	CmdCreateDbHook
+	CmdMigrateDbHook
 )
 
 var (

@@ -5,6 +5,19 @@ import (
 	"github.com/AgentCoop/peppermint/internal/runtime"
 )
 
+var (
+	tables = []interface{} {
+		&HubConfig{}, &HubJoinedNode{}, &HubNodeTag{},
+	}
+)
+
+func CreateTables() {
+	db := runtime.GlobalRegistry().Db().Handle()
+	mig := db.Migrator()
+	mig.DropTable(tables...)
+	mig.CreateTable(tables...)
+}
+
 func FetchById(id internal.NodeId) (*HubJoinedNode, error) {
 	db := runtime.GlobalRegistry().Db().Handle()
 	found := &HubJoinedNode{}
