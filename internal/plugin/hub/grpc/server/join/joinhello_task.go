@@ -22,12 +22,17 @@ func (ctx *joinContext) JoinHelloTask(j job.Job) (job.Init, job.Run, job.Finaliz
 		req := desc.RequestData()
 		dataBag := req.(joinHello_DataBag)
 		pubKey := dataBag.NodePubKey()
-		keyExch := crypto.NewKeyExchange(task)
-		ctx.encKey = keyExch.ComputeKey(pubKey)
+
+		keyExch, err := crypto.NewKeyExchange()
+		task.Assert(err)
+
+		ctx.encKey, err = keyExch.ComputeKey(pubKey)
+		task.Assert(err)
+
 		resp := NewJoinHelloResponse(keyExch.GetPublicKey())
 		desc.SetResponseData(resp)
 
-		err := model.SaveJoinRequest(nodeId, ctx.encKey)
+		err = model.SaveJoinRequest(nodeId, ctx.encKey)
 		task.Assert(err)
 		ipc.Svc_Send(0, nil)
 		task.Done()

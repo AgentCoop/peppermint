@@ -24,16 +24,21 @@ func (c *joinContext) JoinTask(j job.Job) (job.Init, job.Run, job.Finalize) {
 
 		// Generate a DH public key and exchange it with the hub server
 		info("exchanging public keys with hub server...")
-		keyExch := crypto.NewKeyExchange(task)
+		keyExch, err := crypto.NewKeyExchange()
+		task.Assert(err)
+
 		pubKey := keyExch.GetPublicKey()
 		reqHello := &hub.JoinHello_Request{DhPubKey: pubKey}
 		resHello, err := hubClient.JoinHello(ctx, reqHello)
 		task.Assert(err)
 
 		// Set computed encryption key for the client
-		c.encKey = keyExch.ComputeKey(resHello.GetDhPubKey())
+		c.encKey, err = keyExch.ComputeKey(resHello.GetDhPubKey())
+		task.Assert(err)
+
 		err = node.UpdateNodeEncKey(c.encKey)
 		task.Assert(err)
+
 		info("computed encryption key %x...%x", c.encKey[0:1], c.encKey[len(c.encKey)-1:])
 		rt.NodeConfigurator().Refresh()
 
@@ -47,6 +52,7 @@ func (c *joinContext) JoinTask(j job.Job) (job.Init, job.Run, job.Finalize) {
 		ctx = context.Background()
 		_, err = hubClient.Join(ctx, reqJoin)
 		task.Assert(err)
+
 		info("join accepted")
 		task.Done()
 	}

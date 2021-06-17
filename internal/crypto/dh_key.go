@@ -1,7 +1,6 @@
 package crypto
 
 import (
-	job "github.com/AgentCoop/go-work"
 	"github.com/monnand/dhkx"
 )
 
@@ -11,30 +10,29 @@ type DhKeyExchange interface {
 }
 
 type dhKeyCtx struct {
-	task    job.Task
 	g       *dhkx.DHGroup
 	privKey *dhkx.DHKey
 }
 
-func NewKeyExchange(task job.Task) *dhKeyCtx {
-	ctx := &dhKeyCtx{task: task}
+func NewKeyExchange() (*dhKeyCtx, error) {
+	ctx := &dhKeyCtx{}
 	g, err := dhkx.GetGroup(0) // Default group
-	task.Assert(err)
+	if err != nil { return nil, err }
 	ctx.g = g
 
 	priv, err := g.GeneratePrivateKey(nil) // Use default random generator
-	task.Assert(err)
+	if err != nil { return nil, err }
 	ctx.privKey = priv
-	return ctx
+	return ctx, nil
 }
 
 func (c *dhKeyCtx) GetPublicKey() []byte {
 	return c.privKey.Bytes()
 }
 
-func (c *dhKeyCtx) ComputeKey(pubKey []byte) []byte {
+func (c *dhKeyCtx) ComputeKey(pubKey []byte) ([]byte, error) {
 	pkey := dhkx.NewPublicKey(pubKey)
 	key, err := c.g.ComputeKey(pkey, c.privKey)
-	c.task.Assert(err)
-	return key.Bytes()
+	if err != nil { return nil, err }
+	return key.Bytes(), nil
 }

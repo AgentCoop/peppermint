@@ -11,15 +11,20 @@ import (
 func keyExchangeTask(j job.Job) (job.Init, job.Run, job.Finalize) {
 	run := func(task job.Task) {
 		// Alice's side
-		dhKeyAlice := crypto.NewKeyExchange(task)
+		dhKeyAlice, err := crypto.NewKeyExchange()
+		task.Assert(err)
+
 		alicePubKey := dhKeyAlice.GetPublicKey()
-
 		// Bob's side
-		dhKeyBob := crypto.NewKeyExchange(task)
-		bobPubKey := dhKeyBob.GetPublicKey()
+		dhKeyBob, err := crypto.NewKeyExchange()
+		task.Assert(err)
 
-		aliceKey := dhKeyAlice.ComputeKey(bobPubKey)
-		bobKey := dhKeyBob.ComputeKey(alicePubKey)
+		bobPubKey := dhKeyBob.GetPublicKey()
+		aliceKey, err := dhKeyAlice.ComputeKey(bobPubKey)
+		task.Assert(err)
+
+		bobKey, err := dhKeyBob.ComputeKey(alicePubKey)
+		task.Assert(err)
 
 		T := task.GetJob().GetValue().(*testing.T)
 		if bytes.Compare(aliceKey, bobKey) != 0 {
