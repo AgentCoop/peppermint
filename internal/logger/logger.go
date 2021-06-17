@@ -8,7 +8,7 @@ var (
 	Debug = loggerKey("debug")
 )
 
-// 🖴 ⚙ 🛠 🛈 ℹ
+// 🖴 ⚙ 🛠 🛈 ℹ 💻
 func init() {
 	RegisterStdoutLogger(Debug, color.FgHiBlack, "🛠", true)
 }
