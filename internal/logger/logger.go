@@ -1,23 +1,14 @@
 package logger
 
-import (
-	"fmt"
-	job "github.com/AgentCoop/go-work"
-)
+import "github.com/fatih/color"
 
 type loggerKey string
 
 var (
-	DbKey = loggerKey("db")
+	Debug = loggerKey("debug")
 )
 
+// 🖴 ⚙ 🛠 🛈 ℹ
 func init() {
-	job.RegisterLogger(DbKey, func(args...interface{}) {
-		fmtStr := "[ 🖴 ] → " + args[0].(string)
-		if len(args) == 1 {
-			fmt.Println(fmtStr)
-		} else {
-			fmt.Printf(fmtStr, args[1:]...)
-		}
-	}, true)
+	RegisterStdoutLogger(Debug, color.FgHiBlack, "🛠", true)
 }

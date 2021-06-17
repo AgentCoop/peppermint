@@ -13,7 +13,7 @@ func (app *app) ParserTask(j job.Job) (job.Init, job.Run, job.Finalize) {
 		parser := app.CliParser()
 		cmdName, _ := parser.CurrentCmd()
 		switch cmdName {
-		case cmd.CMD_NAME_DB_CREATE:
+		case cmd.CMD_NAME_DB_CREATE, cmd.CMD_NAME_BOOTSTRAP:
 		default:
 			err := app.NodeConfigurator().Fetch()
 			task.Assert(err)

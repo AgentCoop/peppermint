@@ -3,6 +3,7 @@ package join
 import (
 	job "github.com/AgentCoop/go-work"
 	"github.com/AgentCoop/peppermint/internal/grpc/session"
+	"github.com/AgentCoop/peppermint/internal/plugin/hub/logger"
 	"github.com/AgentCoop/peppermint/internal/plugin/hub/model"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -25,11 +26,12 @@ func (ctx *joinContext) JoinTask(j job.Job) (job.Init, job.Run, job.Finalize) {
 		invalidCreds := cfg.Secret() != req.secret
 		task.AssertTrue(invalidCreds, errInvalidCreds)
 
-		resp := NewJoinResponse()
-		desc.SetResponseData(resp)
-
 		err := model.AcceptJoin(nodeId)
 		task.Assert(err)
+		job.Logger(logger.InfoKey)("node #%x join accepted", nodeId)
+
+		resp := NewJoinResponse()
+		desc.SetResponseData(resp)
 		ipc.Svc_Send(1, nil)
 		task.Done()
 	}

@@ -16,14 +16,14 @@ var (
 func CreateTables() {
 	db := runtime.GlobalRegistry().Db().Handle()
 	mig := db.Migrator()
-	job.Logger(logger.DbKey)("creating Hub tables...")
+	job.Logger(logger.Debug)("creating Hub tables...")
 	mig.CreateTable(tables...)
 }
 
 func DropTables() {
 	db := runtime.GlobalRegistry().Db().Handle()
 	mig := db.Migrator()
-	job.Logger(logger.DbKey)("dropping Hub tables...")
+	job.Logger(logger.Debug)("dropping Hub tables...")
 	mig.DropTable(tables...)
 }
 

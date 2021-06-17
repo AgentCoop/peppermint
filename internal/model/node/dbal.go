@@ -10,14 +10,14 @@ import (
 func CreateTables() {
 	db := runtime.GlobalRegistry().Db().Handle()
 	mig := db.Migrator()
-	job.Logger(logger.DbKey)("creating node tables...")
+	job.Logger(logger.Debug)("creating node tables...")
 	mig.CreateTable(tables...)
 }
 
 func DropTables() {
 	db := runtime.GlobalRegistry().Db().Handle()
 	mig := db.Migrator()
-	job.Logger(logger.DbKey)("dropping node tables...")
+	job.Logger(logger.Debug)("dropping node tables...")
 	mig.DropTable(tables...)
 }
 
