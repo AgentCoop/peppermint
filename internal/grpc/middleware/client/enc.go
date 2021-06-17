@@ -2,7 +2,6 @@ package client
 
 import (
 	"context"
-	"fmt"
 	g "github.com/AgentCoop/peppermint/internal/grpc"
 	"github.com/AgentCoop/peppermint/internal/grpc/codec"
 	"google.golang.org/grpc"
@@ -12,7 +11,6 @@ func encryptMessage(desc g.ClientDescriptor, req interface{}) interface{} {
 	if ! desc.SecPolicy().IsSecure() {
 		return req
 	}
-	fmt.Printf("client enc key: %x\n", desc.SecPolicy().EncKey())
 	packer := codec.NewPacker(desc.Meta().NodeId(), req, codec.SerializedPacket, desc.SecPolicy().EncKey())
 	return packer
 }

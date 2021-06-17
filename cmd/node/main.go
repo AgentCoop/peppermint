@@ -6,8 +6,6 @@ import (
 	"github.com/AgentCoop/peppermint/internal/logger"
 	_ "github.com/AgentCoop/peppermint/internal/plugin/hub"
 	"github.com/AgentCoop/peppermint/internal/utils"
-
-	//_ "github.com/AgentCoop/peppermint/internal/plugin/webproxy"
 	"os"
 )
 
@@ -19,7 +17,8 @@ func main() {
 	appJob := node.AppInit(DbFilename)
 	<-appJob.Run()
 
-	_, err := appJob.GetInterruptedBy()
-	job.Logger(logger.Error)("%s", utils.Conv_InterfaceToError(err).Error())
-	os.Exit(1)
+	if _, err := appJob.GetInterruptedBy(); err != nil {
+		job.Logger(logger.Error)("%s", utils.Conv_InterfaceToError(err).Error())
+		os.Exit(1)
+	}
 }

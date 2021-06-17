@@ -5,6 +5,7 @@ import (
 	job "github.com/AgentCoop/go-work"
 	"github.com/AgentCoop/peppermint/internal/api/peppermint/service/backoffice/hub"
 	"github.com/AgentCoop/peppermint/internal/crypto"
+	"github.com/AgentCoop/peppermint/internal/logger"
 	"github.com/AgentCoop/peppermint/internal/runtime"
 
 	//"github.com/AgentCoop/peppermint/internal/grpc/calldesc"
@@ -16,11 +17,13 @@ import (
 
 func (c *joinContext) JoinTask(j job.Job) (job.Init, job.Run, job.Finalize) {
 	run := func(task job.Task) {
+		info := job.Logger(logger.Info)
 		rt := runtime.GlobalRegistry().Runtime()
 		ctx := context.Background()
 		hubClient := j.GetValue().(cc.HubClient)
 
 		// Generate a DH public key and exchange it with the hub server
+		info("exchanging public keys with hub server...")
 		keyExch := crypto.NewKeyExchange(task)
 		pubKey := keyExch.GetPublicKey()
 		reqHello := &hub.JoinHello_Request{DhPubKey: pubKey}
@@ -31,6 +34,7 @@ func (c *joinContext) JoinTask(j job.Job) (job.Init, job.Run, job.Finalize) {
 		c.encKey = keyExch.ComputeKey(resHello.GetDhPubKey())
 		err = node.UpdateNodeEncKey(c.encKey)
 		task.Assert(err)
+		info("computed encryption key %x...%x", c.encKey[0:1], c.encKey[len(c.encKey)-1:])
 		rt.NodeConfigurator().Refresh()
 
 		// Finish the join procedure
@@ -43,6 +47,7 @@ func (c *joinContext) JoinTask(j job.Job) (job.Init, job.Run, job.Finalize) {
 		ctx = context.Background()
 		_, err = hubClient.Join(ctx, reqJoin)
 		task.Assert(err)
+		info("join accepted")
 		task.Done()
 	}
 	return nil, run, nil

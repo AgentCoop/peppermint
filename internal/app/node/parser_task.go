@@ -56,6 +56,7 @@ func (app *app) ParserTask(j job.Job) (job.Init, job.Run, job.Finalize) {
 		case cmd.CMD_NAME_JOIN:
 			secret, err := utils.ReadPassword("Enter join secret")
 			task.Assert(err)
+			fmt.Println("")
 			opts, err := parser.GetCmdOptions(cmdName)
 			task.Assert(err)
 			v := opts.(cmd.Join)
