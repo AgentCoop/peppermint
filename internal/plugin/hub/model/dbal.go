@@ -35,6 +35,13 @@ func FetchById(id internal.NodeId) (*HubJoinedNode, error) {
 	return found, err
 }
 
+func HasJoined(id internal.NodeId) bool {
+	db := runtime.GlobalRegistry().Db().Handle()
+	node := HubJoinedNode{ExternalId: id, JoinAccepted: 1}
+	result := db.Where(&node).First(&node)
+	return result.RowsAffected > 0
+}
+
 func SaveJoinRequest(id internal.NodeId, encKey []byte) error {
 	db := runtime.GlobalRegistry().Db().Handle()
 	node := &HubJoinedNode{
