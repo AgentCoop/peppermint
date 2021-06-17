@@ -5,13 +5,9 @@ import (
 	"github.com/AgentCoop/peppermint/internal/grpc/session"
 	"github.com/AgentCoop/peppermint/internal/plugin/hub/logger"
 	"github.com/AgentCoop/peppermint/internal/plugin/hub/model"
-	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/status"
 )
 
-var (
-	errInvalidCreds = status.Error(codes.PermissionDenied, "invalid join credentials provided")
-)
+
 
 func (ctx *joinContext) JoinTask(j job.Job) (job.Init, job.Run, job.Finalize) {
 	init := func(task job.Task) {
