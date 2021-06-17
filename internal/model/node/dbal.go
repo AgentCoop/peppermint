@@ -21,6 +21,13 @@ func DropTables() {
 	mig.DropTable(tables...)
 }
 
+func Migrate() {
+	db := runtime.GlobalRegistry().Db().Handle()
+	mig := db.Migrator()
+	job.Logger(logger.Debug)("migrating node tables...")
+	mig.AutoMigrate(tables...)
+}
+
 func CreateNode(id internal.NodeId, tags []string) error {
 	db := runtime.GlobalRegistry().Db().Handle()
 	mig := db.Migrator()

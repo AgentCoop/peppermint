@@ -22,7 +22,6 @@ func (app *app) ParserTask(j job.Job) (job.Init, job.Run, job.Finalize) {
 		runtime.GlobalRegistry().InvokeHooks(runtime.ServiceInitHook)
 	}
 	run := func(task job.Task) {
-		db := runtime.GlobalRegistry().Db()
 		parser := app.CliParser()
 		cmdName, _ := parser.CurrentCmd()
 		switch cmdName {
@@ -39,10 +38,10 @@ func (app *app) ParserTask(j job.Job) (job.Init, job.Run, job.Finalize) {
 			cmd.ShowVersion(verbose)
 
 		case cmd.CMD_NAME_DB_MIGRATE:
-			opts, err := parser.GetCmdOptions(cmdName)
-			task.Assert(err)
-			v := opts.(cmd.DbMigrate)
-			cmd.DbMigrateCmd(db, parser, v.Drop)
+			// opts, err := parser.GetCmdOptions(cmdName)
+			// task.Assert(err)
+			// v := opts.(cmd.DbMigrate)
+			cmd.DbMigrateCmd()
 
 		case cmd.CMD_NAME_DB_CREATE:
 			opts, err := parser.GetCmdOptions(cmdName)
