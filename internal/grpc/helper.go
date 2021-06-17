@@ -12,11 +12,13 @@ func ErrorWrapper(err interface{}) interface{} {
 	var text string
 	switch v := err.(type) {
 	case error:
-		text = err.(error).Error()
+		_, ok := status.FromError(v)
+		if ok { // return as is
+			return v
+		}
+		text = v.Error()
 	case string:
 		text = v
-	case status.Status:
-		return v
 	default:
 		text = "Unknown system error"
 	}

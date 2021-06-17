@@ -18,15 +18,12 @@ func (ctx *joinContext) JoinHelloTask(j job.Job) (job.Init, job.Run, job.Finaliz
 			j.Cancel(status.Error(codes.PermissionDenied, "already joined, disjoin first"))
 			return
 		}
-		// Extract data from the request
+		// Compute encryption key and return hub's public key
 		req := desc.RequestData()
 		dataBag := req.(joinHello_DataBag)
-
-		// Compute encryption key
 		pubKey := dataBag.NodePubKey()
 		keyExch := crypto.NewKeyExchange(task)
 		ctx.encKey = keyExch.ComputeKey(pubKey)
-
 		resp := NewJoinHelloResponse(keyExch.GetPublicKey())
 		desc.SetResponseData(resp)
 
