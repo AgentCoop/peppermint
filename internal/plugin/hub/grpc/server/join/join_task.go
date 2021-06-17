@@ -28,7 +28,7 @@ func (ctx *joinContext) JoinTask(j job.Job) (job.Init, job.Run, job.Finalize) {
 
 		err := model.AcceptJoin(nodeId)
 		task.Assert(err)
-		job.Logger(logger.InfoKey)("node #%x join accepted", nodeId)
+		job.Logger(logger.Info)("node #%x join accepted", nodeId)
 
 		resp := NewJoinResponse()
 		desc.SetResponseData(resp)

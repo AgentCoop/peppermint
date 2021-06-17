@@ -1,6 +1,7 @@
 package server
 
 import (
+	job "github.com/AgentCoop/go-work"
 	_ "github.com/AgentCoop/peppermint/internal/grpc/codec"
 	"google.golang.org/grpc"
 	"net"
@@ -11,10 +12,15 @@ type baseServer struct {
 	address  net.Addr
 	handle   *grpc.Server
 	lis      net.Listener
+	logger   job.LogHandler
 }
 
 func (s *baseServer) Address() net.Addr {
 	return s.address
+}
+
+func (s *baseServer) WithStdoutLogger(handler job.LogHandler) {
+	s.logger = handler
 }
 
 func (s *baseServer) RegisterServer() {

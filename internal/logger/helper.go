@@ -16,7 +16,7 @@ func RegisterStdoutLogger(key interface{}, prewordColor color.Attribute, utfIcon
 		if len(args) == 1 {
 			fmt.Println(fmtStr)
 		} else {
-			fmt.Printf(fmtStr, args[1:]...)
+			fmt.Printf(fmtStr + "\n", args[1:]...)
 		}
 	}, on)
 }

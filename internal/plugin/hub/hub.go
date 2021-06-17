@@ -2,8 +2,10 @@
 package hub
 
 import (
+	job "github.com/AgentCoop/go-work"
 	i "github.com/AgentCoop/peppermint/internal"
 	api "github.com/AgentCoop/peppermint/internal/api/peppermint/service/backoffice/hub"
+	"github.com/AgentCoop/peppermint/internal/plugin/hub/logger"
 	"github.com/AgentCoop/peppermint/internal/runtime/service"
 	"net"
 
@@ -40,13 +42,17 @@ func (hub *hubService) Init() (runtime.Service, error) {
 	cfg := model.NewConfigurator()
 	cfg.Fetch()
 	cfg.MergeCliOptions(rt.CliParser())
+
 	// Create network server and service policy
 	srv := grpc.NewServer(Name, cfg.Address())
+	srv.WithStdoutLogger(job.Logger(logger.Info))
 	policy := service.NewServicePolicy(srv.FullName(), srv.Methods())
+
 	// IPC server
 	if len(policy.Ipc_UnixDomainSocket()) > 0 {
 		unixAddr, _ := net.ResolveUnixAddr("unix", policy.Ipc_UnixDomainSocket())
 		ipcSrv = grpc.NewServer(Name, unixAddr)
+		ipcSrv.WithStdoutLogger(job.Logger(logger.Info))
 	}
 	hub.Service = service.NewBaseService(srv, ipcSrv, cfg, policy)
 	hub.RegisterEncKeyStoreFallback()

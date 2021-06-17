@@ -8,12 +8,12 @@ import (
 type HubLoggerKey string
 
 var (
-	InfoKey = HubLoggerKey("hub-info")
-	WarnKey = HubLoggerKey("hub-warn")
+	Info = HubLoggerKey("hub-info")
+	Warn = HubLoggerKey("hub-warn")
 )
 
 func init() {
 	pic := "🖧"
-	logger.RegisterStdoutLogger(InfoKey, color.FgGreen, pic, true)
-	logger.RegisterStdoutLogger(WarnKey, color.FgHiRed, pic, true)
+	logger.RegisterStdoutLogger(Info, color.FgGreen, pic, true)
+	logger.RegisterStdoutLogger(Warn, color.FgHiRed, pic, true)
 }

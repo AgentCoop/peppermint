@@ -2,17 +2,22 @@ package server
 
 import (
 	job "github.com/AgentCoop/go-work"
+	"github.com/AgentCoop/peppermint/internal/utils"
 	"net"
 )
 
-func (s *baseServer) ListenTask(j job.Job) (job.Init, job.Run, job.Finalize) {
+func (srv *baseServer) ListenTask(j job.Job) (job.Init, job.Run, job.Finalize) {
 	init := func(task job.Task) {
-		lis, err := net.Listen(s.address.Network(), s.address.String())
+		lis, err := net.Listen(srv.address.Network(), srv.address.String())
 		task.Assert(err)
-		s.lis = lis
+		srv.lis = lis
 	}
 	run := func (task job.Task) {
-		s.handle.Serve(s.lis)
+		if srv.logger != nil {
+			srvName := utils.Str_SplitAndLast(srv.fullName, ".")
+			srv.logger("%s started to serve requests on %s", srvName, srv.address.String())
+		}
+		srv.handle.Serve(srv.lis)
 		task.Done()
 	}
 	return init, run, nil

@@ -13,4 +13,5 @@ type BaseServer interface {
 	Handle() *grpc.Server
 	ListenTask(j job.Job) (job.Init, job.Run, job.Finalize)
 	RegisterServer()
+	WithStdoutLogger(handler job.LogHandler)
 }
