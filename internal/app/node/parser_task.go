@@ -50,7 +50,8 @@ func (app *app) ParserTask(j job.Job) (job.Init, job.Run, job.Finalize) {
 			cmd.DbCreateCmd(v.Force)
 
 		case cmd.CMD_NAME_RUN:
-			cmd.RunCmd()
+			err := cmd.RunCmd()
+			task.Assert(err)
 
 		case cmd.CMD_NAME_JOIN:
 			secret, err := utils.ReadPassword("Enter join secret")
@@ -58,7 +59,8 @@ func (app *app) ParserTask(j job.Job) (job.Init, job.Run, job.Finalize) {
 			opts, err := parser.GetCmdOptions(cmdName)
 			task.Assert(err)
 			v := opts.(cmd.Join)
-			cmd.JoinCmd(secret, v.Tags, v.Hub)
+			err = cmd.JoinCmd(secret, v.Tags, v.Hub)
+			task.Assert(err)
 		default:
 			fmt.Printf("no command\n")
 		}

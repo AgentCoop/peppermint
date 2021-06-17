@@ -1,10 +1,10 @@
 package cmd
 
 import (
-	"errors"
 	job "github.com/AgentCoop/go-work"
 	"github.com/AgentCoop/peppermint/internal/plugin/hub/grpc/client"
 	"github.com/AgentCoop/peppermint/internal/plugin/hub/grpc/client/join"
+	"github.com/AgentCoop/peppermint/internal/utils"
 	"net"
 )
 
@@ -20,8 +20,8 @@ func JoinCmd(secret string, tags []string, hubAddr string) error {
 	clientJob.AddTask(joinCtx.JoinTask)
 	<-clientJob.Run()
 
-	_, jobErr := clientJob.GetInterruptedBy()
-	if jobErr != nil { return errors.New("@todo") }
-
+	if _, err := clientJob.GetInterruptedBy(); err != nil {
+		return utils.Conv_InterfaceToError(err)
+	}
 	return nil
 }

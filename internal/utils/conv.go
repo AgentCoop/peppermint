@@ -3,6 +3,8 @@ package utils
 import (
 	"errors"
 	"fmt"
+	"google.golang.org/grpc/status"
+	"reflect"
 	"strconv"
 	"strings"
 )
@@ -30,4 +32,17 @@ func Conv_FromLongToShortMethod(name string) string {
 	}
 	parts := strings.Split(name, "/")
 	return parts[len(parts)-1]
+}
+
+func Conv_InterfaceToError(v interface{}) error {
+	switch t := v.(type) {
+	case *status.Status:
+		return t.Err()
+	case error:
+		return t
+	case string:
+		return errors.New(t)
+	default:
+		return fmt.Errorf("unknown error %s", reflect.TypeOf(v).Name())
+	}
 }
