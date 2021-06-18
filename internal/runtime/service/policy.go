@@ -33,9 +33,10 @@ type svcPolicy struct {
 }
 
 type method struct {
-	name   string
-	policy *svcPolicy
-	opts   *methodOptions
+	name     string
+	fullName string
+	policy   *svcPolicy
+	opts     *methodOptions
 }
 
 func (p *svcPolicy) populate(methods []string) {
@@ -88,6 +89,10 @@ func (p *svcPolicy) FindMethodByName(name string) (runtime.Method, bool) {
 
 func (m method) Name() string {
 	return m.name
+}
+
+func (m method) FullName() string {
+	return  "/" + m.policy.svcFullName + "/" + m.name
 }
 
 func (m method) ServicePolicy() runtime.ServicePolicy {

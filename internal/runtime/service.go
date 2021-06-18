@@ -37,6 +37,7 @@ type ServicePolicy interface {
 type Method interface {
 	ProtoReflect
 	Name() string
+	FullName() string
 	ServicePolicy() ServicePolicy
 	CallPolicy() MethodCallPolicy
 }
