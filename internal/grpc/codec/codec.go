@@ -17,7 +17,7 @@ func init() {
 type codec struct{}
 
 func (codec) Marshal(v interface{}) ([]byte, error) {
-	p, ok := v.(*packer)
+	p, ok := v.(*packet)
 	if !ok {
 		return proto.Marshal(v.(proto.Message))
 	}
@@ -25,10 +25,15 @@ func (codec) Marshal(v interface{}) ([]byte, error) {
 }
 
 func (codec) Unmarshal(data []byte, v interface{}) error {
-	packer := NewPacker(0, data, nil)
-	err := packer.Parse()
-	if err != nil { return err }
-	return packer.Unpack(v)
+	p, ok := v.(*packet)
+	if !ok {
+		p = new(packet)
+		err := p.Parse(data)
+		if err != nil { return err }
+		return p.Unpack(v)
+	} else {
+		return p.Parse(data)
+	}
 }
 
 func (codec) Name() string {

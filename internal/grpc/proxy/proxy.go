@@ -1,22 +1,24 @@
 package proxy
 
 import (
+	"github.com/AgentCoop/peppermint/internal"
 	g "github.com/AgentCoop/peppermint/internal/grpc"
 	"google.golang.org/grpc"
 )
 
 type proxyStream struct {
 	stream       interface{}
+	nodeId       internal.NodeId
 	encKey       []byte
 	sentx, recvx int
 }
 
 type proxyConn struct {
-	stripDown  bool // Unpack usptream packeted data if any
+	methodName string
 	upstream   *proxyStream
 	downstream *proxyStream
-	downChan   chan g.CodecPacker
-	upChan     chan g.CodecUnpacker
+	downChan   chan g.CodecPacket
+	upChan     chan g.CodecPacket
 	upCallOpts []grpc.CallOption
 }
 

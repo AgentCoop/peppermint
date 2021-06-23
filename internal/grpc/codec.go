@@ -1,28 +1,17 @@
 package grpc
 
-import (
-	i "github.com/AgentCoop/peppermint/internal"
-	"github.com/AgentCoop/peppermint/internal/grpc/codec"
+
+type PacketFlags uint8
+
+const (
+	EncryptedFlag PacketFlags = 1 << iota
+	PassthroughFlag
 )
 
 type CodecPacket interface {
-	NodeId() i.NodeId
-	PayloadType() codec.PayloadType
-	Payload() interface{}
-	Marshal() ([]byte, error)
-	Unmarshal(interface{}) error
-}
-
-//type Codec interface {
-//	GetPacket() CodecPacket
-//}
-
-type CodecPacker interface {
-	CodecPacket
+	WithFlags(flags...PacketFlags)
+	HasFlag(flag PacketFlags) bool
+	Payload() ([]byte, error)
 	Pack() ([]byte, error)
-}
-
-type CodecUnpacker interface {
-	CodecPacket
-	Unpack(v interface{}, encKey []byte) error
+	Unpack(v interface{}) error
 }

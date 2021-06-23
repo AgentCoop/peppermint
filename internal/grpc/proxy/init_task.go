@@ -1,14 +1,13 @@
 package proxy
 
 import (
+	"context"
 	job "github.com/AgentCoop/go-work"
-	s "github.com/AgentCoop/peppermint/internal/grpc/stream"
 	"google.golang.org/grpc"
 )
 
 func (p *proxyConn) initTask(j job.Job) (job.Init, job.Run, job.Finalize) {
 	init := func(task job.Task) {
-		desc := p.downstream.CallDesc()
 		upstreamConn := j.GetValue().(*grpc.ClientConn)
 		streamDesc := &grpc.StreamDesc{
 			StreamName:    "",
@@ -17,14 +16,18 @@ func (p *proxyConn) initTask(j job.Job) (job.Init, job.Run, job.Finalize) {
 			ClientStreams: false,
 		}
 		cs, err := grpc.NewClientStream(
-			p.downstream.Context(),
+			context.Background(),
 			streamDesc,
 			upstreamConn,
-			desc.Method().FullName(),
+			p.methodName,
 			p.upCallOpts...,
 		)
 		task.Assert(err)
-		p.upstream = s.NewClientStream(cs, nil)
+		p.upstream = &proxyStream{
+			stream: cs,
+			nodeId: 0,
+			encKey: nil,
+		}
 	}
 	run := func(task job.Task) {
 		task.Done()

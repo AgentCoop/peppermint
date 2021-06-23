@@ -5,7 +5,7 @@ import (
 	g "github.com/AgentCoop/peppermint/internal/grpc"
 )
 
-func NewProxyLink(upstream g.ClientStream, downstream g.ServerStream) (job.Job, *proxyConn) {
+func NewProxyLink(upstream *proxyStream, downstream *proxyStream) (job.Job, *proxyConn) {
 	pconn := &proxyConn{
 		upstream:   upstream,
 		downstream: downstream,
@@ -19,7 +19,7 @@ func NewProxyLink(upstream g.ClientStream, downstream g.ServerStream) (job.Job, 
 	return pjob, pconn
 }
 
-func NewProxyLinkFromUpClient(upClient g.BaseClient, downstream g.ServerStream) (job.Job, *proxyConn) {
+func NewProxyLinkFromUpClient(upClient g.BaseClient, downstream *proxyStream) (job.Job, *proxyConn) {
 	pjob, pconn := NewProxyLink(nil, downstream)
 	pjob.AddOneshotTask(upClient.ConnectTask)
 	pjob.AddTask(pconn.initTask)

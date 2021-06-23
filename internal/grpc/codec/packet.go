@@ -5,6 +5,7 @@ import (
 	"encoding/binary"
 	"errors"
 	i "github.com/AgentCoop/peppermint/internal"
+	g "github.com/AgentCoop/peppermint/internal/grpc"
 	"github.com/AgentCoop/peppermint/internal/runtime"
 	"google.golang.org/protobuf/proto"
 )
@@ -17,30 +18,16 @@ var (
 	ErrEmptyEncKey  = errors.New("codec: empty encryption key")
 )
 
-type PacketKind int
-type PacketType int
-type PayloadType int
-
-const (
-	Packable PacketKind = iota
-	Passthrough
-)
-
 type packet struct {
-	encryptedFlag byte
-	payload       interface{}
-	nodeId        i.NodeId
-	nonce         []byte
+	flags   g.PacketFlags
+	payload interface{}
+	nodeId  i.NodeId
+	nonce   []byte
+	encKey  []byte
 }
 
-type packer struct {
-	packet packet
-	encKey []byte
-	kind   PacketKind
-}
-
-func (p *packer) probe() bool {
-	data := p.packet.payload.([]byte)
+func (p *packet) probe() bool {
+	data := p.payload.([]byte)
 	switch {
 	case len(data) <= MagicWordLen:
 		return false
@@ -51,62 +38,90 @@ func (p *packer) probe() bool {
 	}
 }
 
-func (p *packer) Parse() error {
-	if !p.probe() { return nil }
-	data := p.packet.payload.([]byte)
+func (p *packet) Parse(data []byte) error {
+	p.payload = data
+	if !p.probe() || p.flags&g.PassthroughFlag != 0 {
+		return nil
+	}
 	node := data[MagicWordLen : MagicWordLen+8]
 	data = data[2*MagicWordLen:]
-	encFlag := data[0:1][0]
+	p.flags = g.PacketFlags(data[0:1][0])
 	data = data[1:]
 	nodeReader := bytes.NewReader(node)
-	err := binary.Read(nodeReader, binary.BigEndian, &p.packet.nodeId)
-	if err != nil {	return err }
-	p.packet.payload = data
-	p.packet.encryptedFlag = encFlag
+	err := binary.Read(nodeReader, binary.BigEndian, &p.nodeId)
+	if err != nil {
+		return err
+	}
+	p.payload = data
 	return nil
 }
 
-func (p *packet) Payload() interface{} {
-	return p.payload
+func (p *packet) Payload() ([]byte, error) {
+	data := p.payload.([]byte)
+	switch {
+	case p.flags&g.EncryptedFlag != 0:
+		return p.decrypt(data)
+	default:
+		return data, nil
+	}
 }
 
-func (p *packer) Pack() ([]byte, error) {
-	if p.kind == Passthrough {
-		return p.packet.payload.([]byte), nil
+func (p *packet) writeFlags(dest *bytes.Buffer, flags g.PacketFlags) {
+	dest.Write([]byte{byte(flags)})
+}
+
+func (p *packet) Pack() ([]byte, error) {
+	if p.flags&g.PassthroughFlag != 0 {
+		return p.payload.([]byte), nil
 	}
 	var out bytes.Buffer
+	var flags g.PacketFlags
 	// Write packet magic word and node ID
 	out.Write(packetMagicWord[:])
-	binary.Write(&out, binary.BigEndian, p.packet.nodeId)
+	binary.Write(&out, binary.BigEndian, p.nodeId)
 	// Marshal message
-	data, err := proto.Marshal(p.packet.payload.(proto.Message))
+	data, err := proto.Marshal(p.payload.(proto.Message))
 	if len(p.encKey) == 0 {
+		p.writeFlags(&out, flags)
 		return data, err
 	}
-	out.Write([]byte{p.packet.encryptedFlag})
-	encrypted := encrypt(data, p.encKey)
+	flags |= g.EncryptedFlag
+	p.writeFlags(&out, flags)
+	encrypted := p.encrypt(data)
 	out.Write(encrypted)
 	return out.Bytes(), nil
 }
 
-func (p *packer) Unpack(v interface{}) error {
+func (p *packet) HasFlag(flag g.PacketFlags) bool {
+	return p.flags&flag != 0
+}
+
+func (p *packet) WithFlags(flags...g.PacketFlags) {
+	for _, flag := range flags {
+		p.flags |= flag
+	}
+}
+
+func (p *packet) Unpack(v interface{}) error {
 	switch {
-	case p.kind == Passthrough: // Do nothing, leave it as it is
-		return nil
-	case p.packet.nodeId == 0: // Data are not encrypted
-		data := p.packet.payload.([]byte)
+	case p.nodeId == 0: // Data are not encrypted
+		data := p.payload.([]byte)
 		return proto.Unmarshal(data, v.(proto.Message))
 	default:
 		// Find encryption key
-		nodeId := p.packet.nodeId
+		nodeId := p.nodeId
 		rt := runtime.GlobalRegistry().Runtime()
 		keyStore := rt.NodeManager().EncKeyStore()
 		sk, err := keyStore.Get(nodeId)
-		if err != nil { return err }
-		encKey := sk.([]byte)
+		if err != nil {
+			return err
+		}
+		p.encKey = sk.([]byte)
 		// Decrypt data
-		payload, err := decrypt(p.packet.payload.([]byte), encKey)
-		if err != nil { return err }
+		payload, err := p.decrypt(p.payload.([]byte))
+		if err != nil {
+			return err
+		}
 		return proto.Unmarshal(payload, v.(proto.Message))
 	}
 }

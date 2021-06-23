@@ -4,18 +4,15 @@ import (
 	i "github.com/AgentCoop/peppermint/internal"
 )
 
-func NewPacker(nodeId i.NodeId, payload interface{}, encKey []byte) *packer {
-	p := &packer{}
-	p.packet.payload = payload
-	p.packet.nodeId = nodeId
-	p.kind = Packable
+func NewPacket(nodeId i.NodeId, payload interface{}, encKey []byte) *packet {
+	p := &packet{}
+	p.payload = payload
+	p.nodeId = nodeId
 	p.encKey = encKey
 	return p
 }
 
-func NewPassthroughPacker(payload []byte) *packer {
-	p := &packer{}
-	p.packet.payload = payload
-	p.kind = Passthrough
+func NewPassthroughPacker() *packet {
+	p := &packet{}
 	return p
 }
