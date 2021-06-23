@@ -1,7 +1,6 @@
 package codec
 
 import (
-	"github.com/AgentCoop/peppermint/internal/runtime"
 	//"github.com/golang/protobuf/proto"
 	"google.golang.org/grpc/encoding"
 	"google.golang.org/protobuf/proto"
@@ -26,25 +25,10 @@ func (codec) Marshal(v interface{}) ([]byte, error) {
 }
 
 func (codec) Unmarshal(data []byte, v interface{}) error {
-	if len(data) == 0 {
-		return nil
-	}
-	if !isPacket(data) {
-		return proto.Unmarshal(data, v.(proto.Message))
-	}
-	unpacker, err := NewUnpacker(data);
+	packer := NewPacker(0, data, nil)
+	err := packer.Parse()
 	if err != nil { return err }
-
-	rt := runtime.GlobalRegistry().Runtime()
-	keyStore := rt.NodeManager().EncKeyStore()
-	sk, err := keyStore.Get(unpacker.packet.nodeId);
-	if err != nil { return err }
-
-	encKey := sk.([]byte)
-	payload, err := unpacker.Unpack(encKey);
-	if err != nil { return err }
-
-	return proto.Unmarshal(payload, v.(proto.Message))
+	return packer.Unpack(v)
 }
 
 func (codec) Name() string {

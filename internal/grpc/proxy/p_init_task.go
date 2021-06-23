@@ -8,11 +8,23 @@ import (
 
 func (p *proxyConn) initTask(j job.Job) (job.Init, job.Run, job.Finalize) {
 	init := func(task job.Task) {
-		fullMethod := p.downstream.FullMethod()
+		desc := p.downstream.CallDesc()
 		upstreamConn := j.GetValue().(*grpc.ClientConn)
-		upstream, err := grpc.NewClientStream(p.downstream.Context(), nil, upstreamConn, fullMethod)
+		streamDesc := &grpc.StreamDesc{
+			StreamName:    "",
+			Handler:       nil,
+			ServerStreams: false,
+			ClientStreams: false,
+		}
+		cs, err := grpc.NewClientStream(
+			p.downstream.Context(),
+			streamDesc,
+			upstreamConn,
+			desc.Method().FullName(),
+			p.upCallOpts...,
+		)
 		task.Assert(err)
-		p.upstream = s.NewClientStream(upstream, nil)
+		p.upstream = s.NewClientStream(cs, nil)
 	}
 	run := func(task job.Task) {
 		task.Done()

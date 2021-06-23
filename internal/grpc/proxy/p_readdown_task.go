@@ -12,7 +12,7 @@ func (c *proxyConn) readDownstreamTask(j job.Job) (job.Init, job.Run, job.Finali
 	}
 	run := func(task job.Task) {
 		var err error
-		encKey := c.downstream.CallDesc().EncKey()
+		desc := c.downstream.CallDesc()
 		recvRaw := codec.NewRawPacket(nil, encKey)
 		err = c.downstream.Recv(recvRaw)
 		task.Assert(err)
@@ -20,7 +20,7 @@ func (c *proxyConn) readDownstreamTask(j job.Job) (job.Init, job.Run, job.Finali
 			task.Done()
 			return
 		}
-		c.downstreamChan <- recvRaw
+		c.downChan <- recvRaw
 		task.Tick()
 	}
 	fin := func(task job.Task) {

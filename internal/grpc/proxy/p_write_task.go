@@ -3,6 +3,7 @@ package proxy
 import (
 	job "github.com/AgentCoop/go-work"
 	"github.com/AgentCoop/peppermint/internal/grpc/codec"
+	"google.golang.org/grpc"
 )
 
 func (c *proxyConn) writeStreamTask(j job.Job) (job.Init, job.Run, job.Finalize) {
@@ -11,18 +12,22 @@ func (c *proxyConn) writeStreamTask(j job.Job) (job.Init, job.Run, job.Finalize)
 	}
 	run := func(task job.Task) {
 		select {
-		case p := <-c.upstreamChan:
+		case unpacker := <-c.upChan:
+			nodeId := unpacker.NodeId()
+			ss := c.downstream.stream.(grpc.ServerStream)
 			task.Assert(p)
 			encKey := c.downstream.CallDesc().EncKey()
-			newPacket := codec.NewRawPacket(p.Payload().([]byte), encKey)
+			packer := codec.NewPacker(nodeId, unpacker.Payload(), unpacker.PayloadType(), c.downstream.encKey)
 			// Send response header from the backend to the client
-			if c.downstream.ReceivedCount() == 0 {
-				upCallDesc := c.upstream.CallDesc()
-				upHeader := upCallDesc.Header()
-				c.downstream.CallDesc().SetHeader(*upHeader)
+			if c.downstream.recvx == 0 {
+				//upCallDesc := c.upstream.CallDesc()
+				//upHeader := upCallDesc.Header()
+				//c.downstream.CallDesc().SetHeader(*upHeader)
+				//ss.S
 			}
-			c.downstream.Send(newPacket)
-		case p := <-c.downstreamChan:
+			ss.SendMsg(packer)
+			//c.downstream.Send(newPacket)
+		case p := <-c.downChan:
 			task.Assert(p)
 			encKey := c.upstream.CallDesc().EncKey()
 			newPacket := codec.NewRawPacket(p.Payload().([]byte), encKey)

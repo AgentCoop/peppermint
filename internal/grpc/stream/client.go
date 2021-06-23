@@ -1,6 +1,7 @@
 package stream
 
 import (
+	"context"
 	g "github.com/AgentCoop/peppermint/internal/grpc"
 	"google.golang.org/grpc"
 	"io"
@@ -11,6 +12,14 @@ type clientStream struct {
 	callDesc   g.ClientDescriptor
 	recvx      int
 	sentx      int
+}
+
+func (stream *clientStream) Context() context.Context {
+	panic("implement me")
+}
+
+func (stream *clientStream) CallDesc() g.ClientDescriptor {
+	panic("implement me")
 }
 
 func (stream *clientStream) Close() {

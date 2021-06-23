@@ -59,5 +59,6 @@ func NewClient(ctx context.Context, secPolicy *secPolicy, policy runtime.MethodC
 	rt := runtime.GlobalRegistry().Runtime()
 	cfg := rt.NodeConfigurator()
 	g.SetNodeId(&desc.meta.header, cfg.ExternalId())
+	desc.meta.nodeId = cfg.ExternalId()
 	return desc
 }

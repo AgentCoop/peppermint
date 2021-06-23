@@ -8,6 +8,7 @@ import (
 )
 
 func (m *meta) copySessionId(preceding *ClientDescriptor) {
+	m.sId = preceding.meta.SessionId()
 	m.SetSessionId(preceding.meta.SessionId())
 }
 

@@ -12,14 +12,16 @@ func (c *proxyConn) readUpstreamTask(j job.Job) (job.Init, job.Run, job.Finalize
 	}
 	run := func(task job.Task) {
 		var err error
-		recvRaw := codec.NewRawPacket(nil, c.upstream.CallDesc().EncKey())
-		err = c.upstream.Recv(recvRaw)
+		desc := c.upstream.CallDesc()
+		nodeId := desc.Meta().NodeId()
+		packet := codec.NewPacket(nodeId, codec.RawPacket, desc.SecPolicy().EncKey())
+		err = c.upstream.RecvMsg(packet)
 		task.Assert(err)
 		if err == io.EOF {
 			task.Done()
 			return
 		}
-		c.upstreamChan <- recvRaw
+		c.upChan <- packet
 		task.Tick()
 	}
 	fin := func(task job.Task) {

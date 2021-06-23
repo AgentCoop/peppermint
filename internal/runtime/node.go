@@ -10,6 +10,7 @@ type Node interface {
 
 type NodeManager interface {
 	EncKeyStore() InMemoryStore
+//	FindEncKeyByNodeId(id i.NodeId) []byte
 }
 
 type ServiceNodeManager interface {

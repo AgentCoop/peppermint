@@ -5,7 +5,7 @@ import (
 	"encoding/binary"
 	"errors"
 	i "github.com/AgentCoop/peppermint/internal"
-	"github.com/AgentCoop/peppermint/internal/crypto"
+	"github.com/AgentCoop/peppermint/internal/runtime"
 	"google.golang.org/protobuf/proto"
 )
 
@@ -18,25 +18,19 @@ var (
 )
 
 type PacketKind int
+type PacketType int
 type PayloadType int
 
 const (
-	SerializedPacket PacketKind = iota
-	RawPacket
-)
-
-// Type of payload depends on the packet kind and provided encryption key
-const (
-	SerializedPayload PayloadType = iota + 1
-	RawPayload
-	RawEncryptedPayload
+	Packable PacketKind = iota
+	Passthrough
 )
 
 type packet struct {
-	typ     PayloadType
-	payload interface{}
-	nodeId  i.NodeId
-	nonce   []byte
+	encryptedFlag byte
+	payload       interface{}
+	nodeId        i.NodeId
+	nonce         []byte
 }
 
 type packer struct {
@@ -45,97 +39,74 @@ type packer struct {
 	kind   PacketKind
 }
 
-type unpacker struct {
-	packet packet
+func (p *packer) probe() bool {
+	data := p.packet.payload.([]byte)
+	switch {
+	case len(data) <= MagicWordLen:
+		return false
+	case bytes.Compare(packetMagicWord[:], data[0:MagicWordLen]) == 0:
+		return true
+	default:
+		return false
+	}
 }
 
-func isPacket(data []byte) bool {
-	return bytes.Compare(packetMagicWord[:], data[0:MagicWordLen]) == 0
+func (p *packer) Parse() error {
+	if !p.probe() { return nil }
+	data := p.packet.payload.([]byte)
+	node := data[MagicWordLen : MagicWordLen+8]
+	data = data[2*MagicWordLen:]
+	encFlag := data[0:1][0]
+	data = data[1:]
+	nodeReader := bytes.NewReader(node)
+	err := binary.Read(nodeReader, binary.BigEndian, &p.packet.nodeId)
+	if err != nil {	return err }
+	p.packet.payload = data
+	p.packet.encryptedFlag = encFlag
+	return nil
 }
 
 func (p *packet) Payload() interface{} {
 	return p.payload
 }
 
-func (p *packer) typeToByte(typ PayloadType) []byte {
-	return []byte{byte(typ)}
-}
-
-func (p *packer) encrypt(data []byte) []byte {
-	var out bytes.Buffer
-	cipher, _ := crypto.NewSymCipher(p.encKey, nil)
-	encrypted := cipher.Encrypt(data)
-	nonce := cipher.GetNonce()
-	noncel := []byte{byte(len(nonce))}
-	out.Write(noncel)
-	out.Write(nonce)
-	out.Write(encrypted)
-	return out.Bytes()
-}
-
-func (p *unpacker) decrypt(data []byte, encKey []byte) ([]byte, error) {
-	noncel := byte(data[0:1][0])
-	nonce := data[1:noncel+1]
-	encrypted := data[1+noncel:]
-	cipher, err := crypto.NewSymCipher(encKey, nonce)
-	if err != nil { return nil, err }
-	decrypted := cipher.Decrypt(encrypted)
-	return decrypted, nil
-}
-
-func (p *packer) nodeIdToByte(dest *bytes.Buffer) {
-	binary.Write(dest, binary.BigEndian, p.packet.nodeId)
-}
-
 func (p *packer) Pack() ([]byte, error) {
+	if p.kind == Passthrough {
+		return p.packet.payload.([]byte), nil
+	}
 	var out bytes.Buffer
 	// Write packet magic word and node ID
 	out.Write(packetMagicWord[:])
-	p.nodeIdToByte(&out)
-
-	switch p.kind {
-	case RawPacket:
-		payload := p.packet.payload.([]byte)
-		if len(p.encKey) == 0 {
-			out.Write(p.typeToByte(RawPayload))
-			out.Write(p.packet.payload.([]byte))
-			return out.Bytes(), nil
-		} else {
-			out.Write(p.typeToByte(RawEncryptedPayload))
-			encrypted := p.encrypt(payload)
-			out.Write(encrypted)
-			return out.Bytes(), nil
-		}
-	case SerializedPacket:
-		if len(p.encKey) == 0 {
-			return nil, ErrEmptyEncKey
-		}
-		data, err := proto.Marshal(p.packet.payload.(proto.Message))
-		if err != nil {
-			return nil, err
-		}
-		out.Write(p.typeToByte(SerializedPayload))
-		encrypted := p.encrypt(data)
-		out.Write(encrypted)
-		return out.Bytes(), nil
-	default:
-		return nil, nil
+	binary.Write(&out, binary.BigEndian, p.packet.nodeId)
+	// Marshal message
+	data, err := proto.Marshal(p.packet.payload.(proto.Message))
+	if len(p.encKey) == 0 {
+		return data, err
 	}
+	out.Write([]byte{p.packet.encryptedFlag})
+	encrypted := encrypt(data, p.encKey)
+	out.Write(encrypted)
+	return out.Bytes(), nil
 }
 
-func (p *unpacker) Unpack(encKey []byte) ([]byte, error){
-	var (
-		payload []byte
-		err error
-	)
-	switch p.packet.typ {
-	case RawEncryptedPayload:
-		fallthrough
-	case SerializedPayload:
-		payload, err = p.decrypt(p.packet.payload.([]byte), encKey)
-		if err != nil { return nil, err }
-	case RawPayload:
-		payload = p.packet.payload.([]byte)
+func (p *packer) Unpack(v interface{}) error {
+	switch {
+	case p.kind == Passthrough: // Do nothing, leave it as it is
+		return nil
+	case p.packet.nodeId == 0: // Data are not encrypted
+		data := p.packet.payload.([]byte)
+		return proto.Unmarshal(data, v.(proto.Message))
+	default:
+		// Find encryption key
+		nodeId := p.packet.nodeId
+		rt := runtime.GlobalRegistry().Runtime()
+		keyStore := rt.NodeManager().EncKeyStore()
+		sk, err := keyStore.Get(nodeId)
+		if err != nil { return err }
+		encKey := sk.([]byte)
+		// Decrypt data
+		payload, err := decrypt(p.packet.payload.([]byte), encKey)
+		if err != nil { return err }
+		return proto.Unmarshal(payload, v.(proto.Message))
 	}
-	return payload, nil
 }
