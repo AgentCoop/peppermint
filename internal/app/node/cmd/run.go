@@ -11,10 +11,10 @@ func RunCmd() error {
 	for _, svc := range rt.Services() {
 		uds, tcp := svc.IpcServer(), svc.Server()
 		if uds != nil {
-			svcJob.AddTask(uds.ListenTask)
+			svcJob.AddTask(uds.StartTask)
 		}
 		if tcp != nil {
-			svcJob.AddTask(tcp.ListenTask)
+			svcJob.AddTask(tcp.StartTask)
 		}
 	}
 	<-svcJob.Run()

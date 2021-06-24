@@ -6,7 +6,7 @@ import (
 	"net"
 )
 
-func (srv *baseServer) ListenTask(j job.Job) (job.Init, job.Run, job.Finalize) {
+func (srv *baseServer) StartTask(j job.Job) (job.Init, job.Run, job.Finalize) {
 	init := func(task job.Task) {
 		lis, err := net.Listen(srv.address.Network(), srv.address.String())
 		task.Assert(err)

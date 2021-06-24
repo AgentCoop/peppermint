@@ -11,7 +11,7 @@ type BaseServer interface {
 	Methods() []string
 	Address() net.Addr
 	Handle() *grpc.Server
-	ListenTask(j job.Job) (job.Init, job.Run, job.Finalize)
+	StartTask(j job.Job) (job.Init, job.Run, job.Finalize)
 	RegisterServer()
 	WithStdoutLogger(handler job.LogHandler)
 }
