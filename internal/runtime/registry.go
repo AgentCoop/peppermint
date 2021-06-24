@@ -2,6 +2,7 @@ package runtime
 
 import (
 	"github.com/AgentCoop/peppermint/internal/db"
+	rt "github.com/AgentCoop/peppermint/pkg/runtime"
 )
 
 type parserCmdHook func(interface{})
@@ -46,8 +47,8 @@ func GlobalRegistry() GlobalRegistryInterface {
 }
 
 type GlobalRegistryInterface interface {
-	Runtime() Runtime
-	SetRuntime(Runtime)
+	Runtime() rt.Runtime
+	SetRuntime(rt.Runtime)
 
 	Db() db.Db
 	SetDb(db.Db)
@@ -61,11 +62,11 @@ type GlobalRegistryInterface interface {
 	LookupParserCmdHook(string) []parserCmdHook
 }
 
-func (m registryMap) Runtime() Runtime {
-	return m[runtimeKey][0].(Runtime)
+func (m registryMap) Runtime() rt.Runtime {
+	return m[runtimeKey][0].(rt.Runtime)
 }
 
-func (m registryMap) SetRuntime(r Runtime) {
+func (m registryMap) SetRuntime(r rt.Runtime) {
 	m[runtimeKey][0] = r
 }
 

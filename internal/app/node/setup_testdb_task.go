@@ -5,7 +5,7 @@ import (
 	cmd "github.com/AgentCoop/peppermint/internal/app/node/cmd"
 )
 
-func (app *app) SetupTestDbTask(j job.Job) (job.Init, job.Run, job.Finalize) {
+func (app *nodeApp) SetupTestDbTask(j job.Job) (job.Init, job.Run, job.Finalize) {
 	init := func(task job.Task) {
 
 	}
@@ -19,5 +19,3 @@ func (app *app) SetupTestDbTask(j job.Job) (job.Init, job.Run, job.Finalize) {
 	}
 	return init, run, fin
 }
-
-

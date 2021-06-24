@@ -2,10 +2,11 @@ package webproxy
 
 import (
 	"github.com/AgentCoop/peppermint/cmd"
+	"github.com/AgentCoop/peppermint/internal/runtime"
 	"github.com/AgentCoop/peppermint/internal/service"
 	g "github.com/AgentCoop/peppermint/internal/service/webproxy/grpc/server"
 	model "github.com/AgentCoop/peppermint/internal/service/webproxy/model"
-	"github.com/AgentCoop/peppermint/internal/runtime"
+	service2 "github.com/AgentCoop/peppermint/pkg/service"
 )
 
 const (
@@ -31,7 +32,7 @@ func init() {
 	reg.RegisterParserCmdHook(cmd.CMD_NAME_DB_MIGRATE, proxy.migrateDb)
 }
 
-func (w *webProxy) initializer() runtime.Service {
+func (w *webProxy) initializer() service2.Service {
 	proxy := g.NewServer(
 		Name,
 		w.WebProxyConfigurator.Address(),

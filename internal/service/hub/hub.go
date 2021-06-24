@@ -5,14 +5,13 @@ import (
 	job "github.com/AgentCoop/go-work"
 	i "github.com/AgentCoop/peppermint/internal"
 	api "github.com/AgentCoop/peppermint/internal/api/peppermint/service/backoffice/hub"
-	"github.com/AgentCoop/peppermint/internal/service/hub/logger"
 	"github.com/AgentCoop/peppermint/internal/runtime/service"
+	"github.com/AgentCoop/peppermint/internal/service/hub/logger"
+	grpc2 "github.com/AgentCoop/peppermint/pkg/grpc"
+	service2 "github.com/AgentCoop/peppermint/pkg/service"
 	"net"
-
-	//plugin "github.com/AgentCoop/peppermint/internal/plugin"
 	grpc "github.com/AgentCoop/peppermint/internal/service/hub/grpc/server"
 	"github.com/AgentCoop/peppermint/internal/service/hub/model"
-	//"github.com/AgentCoop/peppermint/internal/plugin/webproxy/model"
 	"github.com/AgentCoop/peppermint/internal/runtime"
 )
 
@@ -21,7 +20,7 @@ var (
 )
 
 type hubService struct {
-	runtime.Service
+	service2.Service
 }
 
 func init() {
@@ -35,9 +34,9 @@ func init() {
 	})
 }
 
-func (hub *hubService) Init() (runtime.Service, error) {
+func (hub *hubService) Init() (service2.Service, error) {
 	rt := runtime.GlobalRegistry().Runtime()
-	var ipcSrv runtime.BaseServer
+	var ipcSrv grpc2.BaseServer
 	// Configurator
 	cfg := model.NewConfigurator()
 	cfg.Fetch()
@@ -69,7 +68,7 @@ func (hub *hubService) encKeyStoreFallback(key interface{}) (interface{}, error)
 
 func (hub *hubService) RegisterEncKeyStoreFallback() {
 	rt := runtime.GlobalRegistry().Runtime()
-	rt.NodeManager().EncKeyStore().RegisterFallback(hub.encKeyStoreFallback)
+	rt.EncKeyStore().RegisterFallback(hub.encKeyStoreFallback)
 }
 
 func (hub *hubService) migrateDb(options interface{}) {

@@ -25,8 +25,10 @@ func NewParser(data interface{}) *parser {
 
 func (p *parser) Run() error {
 	_, err := p.handle.Parse()
-	if err != nil { panic(err) }
-	return err
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 func (p *parser) OptionValue(longName string) (interface{}, bool) {

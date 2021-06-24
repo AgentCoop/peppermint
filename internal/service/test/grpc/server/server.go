@@ -1,17 +1,17 @@
 package server
 
 import (
-	api "github.com/AgentCoop/peppermint/internal/api/peppermint/service/frontoffice/test"
 	"github.com/AgentCoop/peppermint/internal/api/peppermint/service/backoffice/hub"
+	api "github.com/AgentCoop/peppermint/internal/api/peppermint/service/frontoffice/test"
 	middleware "github.com/AgentCoop/peppermint/internal/grpc/middleware/server"
 	"github.com/AgentCoop/peppermint/internal/grpc/server"
-	"github.com/AgentCoop/peppermint/internal/runtime"
+	grpc2 "github.com/AgentCoop/peppermint/pkg/grpc"
 	"google.golang.org/grpc"
 	"net"
 )
 
 type testServer struct {
-	runtime.BaseServer
+	grpc2.BaseServer
 	api.TestServer
 	hub.UnimplementedHubServer
 }

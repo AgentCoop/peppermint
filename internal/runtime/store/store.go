@@ -1,11 +1,13 @@
 package store
 
-import "github.com/AgentCoop/peppermint/internal/runtime"
+import (
+	runtime2 "github.com/AgentCoop/peppermint/pkg/runtime"
+)
 
 type store struct {
-	fallback runtime.Store_FallbackHandler
+	fallback runtime2.Store_FallbackHandler
 }
 
-func (s *store) RegisterFallback(fn runtime.Store_FallbackHandler) {
+func (s *store) RegisterFallback(fn runtime2.Store_FallbackHandler) {
 	s.fallback = fn
 }

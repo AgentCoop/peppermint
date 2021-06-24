@@ -1,14 +1,23 @@
-package runtime
+package service
 
-import "google.golang.org/protobuf/runtime/protoimpl"
+import (
+	"github.com/AgentCoop/peppermint/pkg/grpc"
+	"github.com/AgentCoop/peppermint/pkg/node"
+	"google.golang.org/protobuf/runtime/protoimpl"
+	"net"
+)
 
 type Service interface {
 	Name() string
-	Server() BaseServer
-	IpcServer() BaseServer
+	Server() grpc.BaseServer
+	IpcServer() grpc.BaseServer
 	Policy() ServicePolicy
 	Configurator() ServiceConfigurator
-	//RegisterEncKeyStoreFallback()
+}
+
+type ServiceConfigurator interface {
+	node.Configurator
+	Address() net.Addr
 }
 
 type ProtoReflect interface {

@@ -5,6 +5,8 @@ import (
 	proto "github.com/AgentCoop/peppermint/internal/api/peppermint"
 	g "github.com/AgentCoop/peppermint/internal/grpc"
 	"github.com/AgentCoop/peppermint/internal/runtime"
+	"github.com/AgentCoop/peppermint/pkg/node"
+	"github.com/AgentCoop/peppermint/pkg/service"
 	"google.golang.org/grpc/metadata"
 )
 
@@ -16,7 +18,7 @@ func NewSecurityPolicy(useEnc bool, encKey []byte) *secPolicy {
 	return p
 }
 
-func NewSecurityPolicyFromMethod(method runtime.Method, cfg runtime.NodeConfigurator) *secPolicy {
+func NewSecurityPolicyFromMethod(method service.Method, cfg node.NodeConfigurator) *secPolicy {
 	var useEnc bool
 	var encKey []byte
 	switch {
@@ -34,7 +36,7 @@ func NewSecurityPolicyFromMethod(method runtime.Method, cfg runtime.NodeConfigur
 	return secPolicy
 }
 
-func NewServer(ctx context.Context, cfg runtime.ServiceConfigurator, method runtime.Method, secPolicy *secPolicy) *ServerDescriptor {
+func NewServer(ctx context.Context, cfg service.ServiceConfigurator, method service.Method, secPolicy *secPolicy) *ServerDescriptor {
 	desc := &ServerDescriptor{}
 	desc.Context = ctx
 	desc.common.typ = ServerType
@@ -47,7 +49,7 @@ func NewServer(ctx context.Context, cfg runtime.ServiceConfigurator, method runt
 	return desc
 }
 
-func NewClient(ctx context.Context, secPolicy *secPolicy, policy runtime.MethodCallPolicy) *ClientDescriptor {
+func NewClient(ctx context.Context, secPolicy *secPolicy, policy service.MethodCallPolicy) *ClientDescriptor {
 	desc := &ClientDescriptor{}
 	desc.common.Context = ctx
 	desc.common.typ = ClientType

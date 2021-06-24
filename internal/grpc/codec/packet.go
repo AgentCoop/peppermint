@@ -111,7 +111,7 @@ func (p *packet) Unpack(v interface{}) error {
 		// Find encryption key
 		nodeId := p.nodeId
 		rt := runtime.GlobalRegistry().Runtime()
-		keyStore := rt.NodeManager().EncKeyStore()
+		keyStore := rt.EncKeyStore()
 		sk, err := keyStore.Get(nodeId)
 		if err != nil {
 			return err

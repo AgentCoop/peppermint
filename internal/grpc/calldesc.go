@@ -3,13 +3,13 @@ package grpc
 import (
 	"context"
 	i "github.com/AgentCoop/peppermint/internal"
-	"github.com/AgentCoop/peppermint/internal/runtime"
+	"github.com/AgentCoop/peppermint/pkg/service"
 	"google.golang.org/grpc/metadata"
 )
 
 type CallDescriptor interface {
 	context.Context
-	Policy() runtime.MethodCallPolicy
+	Policy() service.MethodCallPolicy
 	SecPolicy() SecurityPolicy
 	WithSecPolicy(policy SecurityPolicy)
 	HandleMeta()
@@ -25,8 +25,8 @@ type ServerDescriptor interface {
 	CallDescriptor
 	Data
 	Meta() ServerMeta
-	Method() runtime.Method
-	ServiceConfigurator() runtime.ServiceConfigurator
+	Method() service.Method
+	ServiceConfigurator() service.ServiceConfigurator
 }
 
 type SecurityPolicy interface {

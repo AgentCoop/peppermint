@@ -3,11 +3,12 @@ package balancer
 import (
 	job "github.com/AgentCoop/go-work"
 	api "github.com/AgentCoop/peppermint/internal/api/peppermint/service/backoffice/balancer"
+	"github.com/AgentCoop/peppermint/internal/runtime"
+	"github.com/AgentCoop/peppermint/internal/runtime/service"
 	g "github.com/AgentCoop/peppermint/internal/service/balancer/grpc/server"
 	"github.com/AgentCoop/peppermint/internal/service/balancer/logger"
 	"github.com/AgentCoop/peppermint/internal/service/balancer/model"
-	"github.com/AgentCoop/peppermint/internal/runtime"
-	"github.com/AgentCoop/peppermint/internal/runtime/service"
+	service2 "github.com/AgentCoop/peppermint/pkg/service"
 )
 
 var (
@@ -15,7 +16,7 @@ var (
 )
 
 type lbService struct {
-	runtime.Service
+	service2.Service
 }
 
 func init() {
@@ -29,7 +30,7 @@ func init() {
 	})
 }
 
-func (lb *lbService) Init() (runtime.Service, error) {
+func (lb *lbService) Init() (service2.Service, error) {
 	rt := runtime.GlobalRegistry().Runtime()
 	// Configurator
 	cfg := model.NewConfigurator()

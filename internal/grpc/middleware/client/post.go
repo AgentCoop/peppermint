@@ -3,11 +3,11 @@ package client
 import (
 	"context"
 	g "github.com/AgentCoop/peppermint/internal/grpc"
-	"github.com/AgentCoop/peppermint/internal/runtime"
+	"github.com/AgentCoop/peppermint/pkg/service"
 	"google.golang.org/grpc"
 )
 
-func PostUnaryInterceptor(c g.BaseClient, policy runtime.ServicePolicy) grpc.UnaryClientInterceptor {
+func PostUnaryInterceptor(c g.BaseClient, policy service.ServicePolicy) grpc.UnaryClientInterceptor {
 	return func(ctx context.Context, method string, req, reply interface{}, cc *grpc.ClientConn, invoker grpc.UnaryInvoker, opts ...grpc.CallOption) error {
 		desc := ctx.(g.ClientDescriptor)
 		opts = append(opts,

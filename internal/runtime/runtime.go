@@ -2,6 +2,10 @@ package runtime
 
 import (
 	i "github.com/AgentCoop/peppermint/internal"
+	"github.com/AgentCoop/peppermint/pkg"
+	"github.com/AgentCoop/peppermint/pkg/node"
+	rt "github.com/AgentCoop/peppermint/pkg/runtime"
+	"github.com/AgentCoop/peppermint/pkg/service"
 	"net"
 )
 
@@ -12,9 +16,9 @@ const (
 )
 
 type NodePool interface {
-	Add(Node)
+	Add(node.Node)
 	Remove(i.NodeId)
-	FindById(i.NodeId) Node
+	FindById(i.NodeId) node.Node
 	FilterByStatus(NodeStatus) NodePool
 	Len() int
 }
@@ -30,47 +34,32 @@ type ServiceEndpoint interface {
 }
 
 type runtime struct {
-	nodeMngr    NodeManager
-	nodeCfg     NodeConfigurator
-	parser      CliParser
-	svcRegistry map[string]Service
+	nodeMngr    node.NodeManager
+	nodeCfg     node.NodeConfigurator
+	parser      pkg.CliParser
+	svcRegistry map[string]service.Service
+	encKeyStore rt.InMemoryStore
 }
 
-func NewRuntime(nodeMngr NodeManager, nodeCfg NodeConfigurator, parser CliParser) *runtime {
-	r := &runtime{
-		nodeMngr: nodeMngr,
-		nodeCfg:  nodeCfg,
-		parser:   parser,
-	}
-	r.svcRegistry = make(map[string]Service, 0)
-	return r
-}
-
-type Runtime interface {
-	NodeManager() NodeManager
-	CliParser() CliParser
-	NodeConfigurator() NodeConfigurator
-	RegisterService(string, Service)
-	Services() []Service
-	ServicePolicyByName(string) ServicePolicy
-	ServiceByName(string) Service
-}
-
-func (r *runtime) RegisterService(svcName string, svc Service) {
+func (r *runtime) RegisterService(svcName string, svc service.Service) {
 	r.svcRegistry[svcName] = svc
 }
 
-func (r *runtime) ServiceByName(svcName string) Service {
+func (r *runtime) ServiceByName(svcName string) service.Service {
 	return r.svcRegistry[svcName]
 }
 
-func (r *runtime) ServicePolicyByName(svcName string) ServicePolicy {
-	return r.ServiceByName(svcName).Policy()
+func (r *runtime) ServicePolicyByName(svcName string) service.ServicePolicy {
+	svc := r.ServiceByName(svcName)
+	if svc == nil {
+		return nil
+	}
+	return svc.Policy()
 }
 
-func (r *runtime) Services() []Service {
+func (r *runtime) Services() []service.Service {
 	l := len(r.svcRegistry)
-	out := make([]Service, l)
+	out := make([]service.Service, l)
 	i := 0
 	for _, svc := range r.svcRegistry {
 		out[i] = svc
@@ -79,14 +68,18 @@ func (r *runtime) Services() []Service {
 	return out
 }
 
-func (r *runtime) NodeManager() NodeManager {
+func (r *runtime) NodeManager() node.NodeManager {
 	return r.nodeMngr
 }
 
-func (r *runtime) NodeConfigurator() NodeConfigurator {
+func (r *runtime) NodeConfigurator() node.NodeConfigurator {
 	return r.nodeCfg
 }
 
-func (r *runtime) CliParser() CliParser {
+func (r *runtime) CliParser() pkg.CliParser {
 	return r.parser
+}
+
+func (m *runtime) EncKeyStore() rt.InMemoryStore {
+	return m.encKeyStore
 }

@@ -4,7 +4,7 @@ import (
 	"context"
 	"github.com/AgentCoop/peppermint/internal"
 	"github.com/AgentCoop/peppermint/internal/grpc"
-	"github.com/AgentCoop/peppermint/internal/runtime"
+	"github.com/AgentCoop/peppermint/pkg/service"
 	"google.golang.org/grpc/metadata"
 )
 
@@ -37,22 +37,22 @@ type meta struct {
 
 type ServerDescriptor struct {
 	common
-	svcCfg  runtime.ServiceConfigurator
-	method  runtime.Method
+	svcCfg  service.ServiceConfigurator
+	method  service.Method
 	reqData grpc.RequestData
 	resData grpc.ResponseData
 }
 
-func (s *ServerDescriptor) Policy() runtime.MethodCallPolicy {
+func (s *ServerDescriptor) Policy() service.MethodCallPolicy {
 	panic("implement me")
 }
 
 type ClientDescriptor struct {
 	common
-	policy runtime.MethodCallPolicy
+	policy service.MethodCallPolicy
 }
 
-func (s *ClientDescriptor) Policy() runtime.MethodCallPolicy {
+func (s *ClientDescriptor) Policy() service.MethodCallPolicy {
 	panic("implement me")
 }
 

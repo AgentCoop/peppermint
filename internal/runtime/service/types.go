@@ -1,12 +1,13 @@
 package service
 
 import (
-	"github.com/AgentCoop/peppermint/internal/runtime"
+	"github.com/AgentCoop/peppermint/pkg/grpc"
+	"github.com/AgentCoop/peppermint/pkg/service"
 )
 
 type serviceInfo struct {
 	shortName   string
-	cfg         runtime.ServiceConfigurator
+	cfg         service.ServiceConfigurator
 	policy      *svcPolicy
-	initializer func() runtime.BaseServer
+	initializer func() grpc.BaseServer
 }

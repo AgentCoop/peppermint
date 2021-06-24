@@ -3,8 +3,8 @@ package service
 import (
 	"github.com/AgentCoop/peppermint/internal/api/peppermint"
 	"github.com/AgentCoop/peppermint/internal/grpc/protobuf"
-	"github.com/AgentCoop/peppermint/internal/runtime"
 	"github.com/AgentCoop/peppermint/internal/utils"
+	"github.com/AgentCoop/peppermint/pkg/service"
 	"google.golang.org/protobuf/runtime/protoimpl"
 )
 
@@ -73,7 +73,7 @@ func (p *svcPolicy) Ipc_UnixDomainSocket() string {
 	return p.sOpts.ipcUnixDomainSocket
 }
 
-func (p *svcPolicy) FindMethodByName(name string) (runtime.Method, bool) {
+func (p *svcPolicy) FindMethodByName(name string) (service.Method, bool) {
 	name = utils.Conv_FromLongToShortMethod(name)
 	m := method{}
 	m.policy = p
@@ -95,11 +95,11 @@ func (m method) FullName() string {
 	return  "/" + m.policy.svcFullName + "/" + m.name
 }
 
-func (m method) ServicePolicy() runtime.ServicePolicy {
+func (m method) ServicePolicy() service.ServicePolicy {
 	return m.policy
 }
 
-func (m method) CallPolicy() runtime.MethodCallPolicy {
+func (m method) CallPolicy() service.MethodCallPolicy {
 	return m.opts
 }
 

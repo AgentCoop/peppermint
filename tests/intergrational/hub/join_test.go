@@ -18,10 +18,10 @@ var (
 
 func TestJoinHello(t *testing.T) {
 	os.Args = []string{"testapp", "run", "--hub-port=9911"}
-	appJob := node.AppInitTest()
+	appJob := node.NewTestAppJob()
 	appJob.Run()
 
-	time.Sleep(100 * time.Millisecond)
+	time.Sleep(50 * time.Millisecond)
 
 	addr, _ := net.ResolveTCPAddr("tcp", "localhost:9911")
 	time.Sleep(time.Millisecond)

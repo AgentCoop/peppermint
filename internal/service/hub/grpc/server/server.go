@@ -4,18 +4,18 @@ import (
 	"github.com/AgentCoop/peppermint/internal/api/peppermint/service/backoffice/hub"
 	middleware "github.com/AgentCoop/peppermint/internal/grpc/middleware/server"
 	"github.com/AgentCoop/peppermint/internal/grpc/server"
-	"github.com/AgentCoop/peppermint/internal/runtime"
-	"net"
+	grpc2 "github.com/AgentCoop/peppermint/pkg/grpc"
 	"google.golang.org/grpc"
+	"net"
 )
 
 type HubServer interface {
-	runtime.BaseServer
+	grpc2.BaseServer
 	hub.HubServer
 }
 
 type hubServer struct {
-	runtime.BaseServer
+	grpc2.BaseServer
 	hub.UnimplementedHubServer
 }
 

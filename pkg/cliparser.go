@@ -1,4 +1,4 @@
-package runtime
+package pkg
 
 type CliParser interface {
 	Data() interface{}
@@ -7,3 +7,4 @@ type CliParser interface {
 	OptionValue(string) (interface{}, bool)
 	GetCmdOptions(cmdName string) (interface{}, error)
 }
+

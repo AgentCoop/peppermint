@@ -4,12 +4,13 @@ import (
 	"github.com/AgentCoop/peppermint/internal"
 	model "github.com/AgentCoop/peppermint/internal/model/node"
 	"github.com/AgentCoop/peppermint/internal/runtime"
+	"github.com/AgentCoop/peppermint/pkg"
 )
 
 func (n *node) Fetch() error {
 	db := runtime.GlobalRegistry().Db().Handle()
 	nodeModel := model.Node{}
-	err := db.First(&nodeModel).Error
+	err := db.FirstOrCreate(&nodeModel).Error
 	if err != nil { return err }
 	n.encKey = nodeModel.EncKey
 	n.externalId = nodeModel.ExternalId
@@ -27,7 +28,7 @@ func (n *node) Refresh() error {
 	return n.Fetch()
 }
 
-func (c *node) MergeCliOptions(parser runtime.CliParser) {
+func (c *node) MergeCliOptions(parser pkg.CliParser) {
 
 }
 

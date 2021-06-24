@@ -1,14 +1,14 @@
 package node
 
-import "github.com/AgentCoop/peppermint/internal/runtime"
+import (
+	runtime2 "github.com/AgentCoop/peppermint/pkg/runtime"
+)
 
 type manager struct {
-	encKeyStore runtime.InMemoryStore
+	encKeyStore runtime2.InMemoryStore
 }
 
-func (m *manager) EncKeyStore() runtime.InMemoryStore {
-	return m.encKeyStore
-}
-func (m *manager) InquiryHub() runtime.InMemoryStore {
+
+func (m *manager) InquiryHub() runtime2.InMemoryStore {
 	return m.encKeyStore
 }

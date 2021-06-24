@@ -2,10 +2,10 @@ package calldesc
 
 import (
 	"github.com/AgentCoop/peppermint/internal/grpc"
-	"github.com/AgentCoop/peppermint/internal/runtime"
+	"github.com/AgentCoop/peppermint/pkg/service"
 )
 
-func (s *ServerDescriptor) Method() runtime.Method {
+func (s *ServerDescriptor) Method() service.Method {
 	return s.method
 }
 
@@ -13,7 +13,7 @@ func (s *ServerDescriptor) Method() runtime.Method {
 // Common interface
 //
 
-func (s *ServerDescriptor) ServiceConfigurator() runtime.ServiceConfigurator {
+func (s *ServerDescriptor) ServiceConfigurator() service.ServiceConfigurator {
 	return s.svcCfg
 }
 

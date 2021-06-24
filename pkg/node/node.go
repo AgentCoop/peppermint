@@ -1,16 +1,18 @@
-package runtime
+package node
 
-import i "github.com/AgentCoop/peppermint/internal"
+import (
+	i "github.com/AgentCoop/peppermint/internal"
+)
 
 type Node interface {
 	Id() i.NodeId
 	EncKey() []byte
 	LoadBalancerWeight() int
- 	ServiceEndpointByName(string) ServiceEndpoint
+ 	//ServiceEndpointByName(string) runtime.ServiceEndpoint
 }
 
 type NodeManager interface {
-	EncKeyStore() InMemoryStore
+	//EncKeyStore() runtime.InMemoryStore
 	//FindByMethodName(fullName string) []Node
 //	FindEncKeyByNodeId(id i.NodeId) []byte
 }

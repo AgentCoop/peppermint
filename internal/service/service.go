@@ -2,11 +2,12 @@ package service
 
 import (
 	"github.com/AgentCoop/peppermint/internal/runtime"
+	"github.com/AgentCoop/peppermint/pkg/service"
 	"google.golang.org/grpc"
 )
 
 type HubService interface {
-	runtime.Service
+	service.Service
 }
 
 type WebProxyBalancer interface {

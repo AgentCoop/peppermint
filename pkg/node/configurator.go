@@ -1,14 +1,14 @@
-package runtime
+package node
 
 import (
 	"github.com/AgentCoop/peppermint/internal"
-	"net"
+	"github.com/AgentCoop/peppermint/pkg"
 )
 
 type Configurator interface {
 	Fetch() error // fetch configuration data from DB
 	Refresh() error
-	MergeCliOptions(CliParser)
+	MergeCliOptions(parser pkg.CliParser)
 }
 
 type NodeConfigurator interface {
@@ -16,9 +16,4 @@ type NodeConfigurator interface {
 	ExternalId() internal.NodeId // :)
 	E2E_EncryptionEnabled() bool
 	EncKey() []byte
-}
-
-type ServiceConfigurator interface {
-	Configurator
-	Address() net.Addr
 }

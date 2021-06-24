@@ -8,22 +8,32 @@ import (
 	"github.com/AgentCoop/peppermint/internal/utils"
 )
 
-func (app *app) ParserTask(j job.Job) (job.Init, job.Run, job.Finalize) {
+func (app *nodeApp) ParserTask(j job.Job) (job.Init, job.Run, job.Finalize) {
 	init := func(task job.Task) {
-		parser := app.CliParser()
+		//rt := runtime.GlobalRegistry().Runtime()
+		//parser := rt.CliParser()
+		//cmdName, _ := parser.CurrentCmd()
+		//switch cmdName {
+		//case cmd.CMD_NAME_DB_CREATE, cmd.CMD_NAME_BOOTSTRAP:
+		//default:
+		//	err := rt.NodeConfigurator().Fetch()
+		//	task.Assert(err)
+		//}
+		//// Services initialization
+		//runtime.GlobalRegistry().InvokeHooks(runtime.ServiceInitHook)
+	}
+	run := func(task job.Task) {
+		rt := runtime.GlobalRegistry().Runtime()
+		parser := rt.CliParser()
 		cmdName, _ := parser.CurrentCmd()
+		// Services initialization
+		runtime.GlobalRegistry().InvokeHooks(runtime.ServiceInitHook)
 		switch cmdName {
 		case cmd.CMD_NAME_DB_CREATE, cmd.CMD_NAME_BOOTSTRAP:
 		default:
-			err := app.NodeConfigurator().Fetch()
+			err := rt.NodeConfigurator().Fetch()
 			task.Assert(err)
 		}
-		// Services initialization
-		runtime.GlobalRegistry().InvokeHooks(runtime.ServiceInitHook)
-	}
-	run := func(task job.Task) {
-		parser := app.CliParser()
-		cmdName, _ := parser.CurrentCmd()
 		switch cmdName {
 		case cmd.CMD_NAME_BOOTSTRAP:
 			opts, err := parser.GetCmdOptions(cmdName)
@@ -72,5 +82,3 @@ func (app *app) ParserTask(j job.Job) (job.Init, job.Run, job.Finalize) {
 	}
 	return init, run, fin
 }
-
-
