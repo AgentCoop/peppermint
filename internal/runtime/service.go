@@ -8,7 +8,7 @@ type Service interface {
 	IpcServer() BaseServer
 	Policy() ServicePolicy
 	Configurator() ServiceConfigurator
-	RegisterEncKeyStoreFallback()
+	//RegisterEncKeyStoreFallback()
 }
 
 type ProtoReflect interface {

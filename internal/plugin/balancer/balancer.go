@@ -2,12 +2,10 @@ package balancer
 
 import (
 	job "github.com/AgentCoop/go-work"
-	i "github.com/AgentCoop/peppermint/internal"
 	api "github.com/AgentCoop/peppermint/internal/api/peppermint/service/backoffice/balancer"
 	g "github.com/AgentCoop/peppermint/internal/plugin/balancer/grpc/server"
 	"github.com/AgentCoop/peppermint/internal/plugin/balancer/logger"
-	"github.com/AgentCoop/peppermint/internal/plugin/hub/model"
-	//"github.com/AgentCoop/peppermint/internal/plugin/balancer/model"
+	"github.com/AgentCoop/peppermint/internal/plugin/balancer/model"
 	"github.com/AgentCoop/peppermint/internal/runtime"
 	"github.com/AgentCoop/peppermint/internal/runtime/service"
 )
@@ -33,10 +31,9 @@ func init() {
 
 func (lb *lbService) Init() (runtime.Service, error) {
 	rt := runtime.GlobalRegistry().Runtime()
-	var ipcSrv runtime.BaseServer
 	// Configurator
 	cfg := model.NewConfigurator()
-	//cfg.Fetch()
+	cfg.Fetch()
 	//cfg.MergeCliOptions(rt.CliParser())
 
 	// Create network server and service policy
@@ -44,29 +41,22 @@ func (lb *lbService) Init() (runtime.Service, error) {
 	srv.WithStdoutLogger(job.Logger(logger.Info))
 	policy := service.NewServicePolicy(srv.FullName(), srv.Methods())
 
-	// IPC server
-	//if len(policy.Ipc_UnixDomainSocket()) > 0 {
-	//	unixAddr, _ := net.ResolveUnixAddr("unix", policy.Ipc_UnixDomainSocket())
-		//ipcSrv = grpc.NewServer(Name, unixAddr)
-		//ipcSrv.WithStdoutLogger(job.Logger(logger.Info))
-	//}
-	lb.Service = service.NewBaseService(srv, ipcSrv, cfg, policy)
-	lb.RegisterEncKeyStoreFallback()
+	lb.Service = service.NewBaseService(srv, nil, cfg, policy)
 	rt.RegisterService(Name, lb)
 	return lb, nil
 }
 
-func (hub *lbService) encKeyStoreFallback(key interface{}) (interface{}, error) {
-	nodeId := key.(i.NodeId)
-	node, err := model.FetchById(nodeId);
-	if err != nil { return nil, err }
-	return node.EncKey, nil
-}
-
-func (hub *lbService) RegisterEncKeyStoreFallback() {
-	rt := runtime.GlobalRegistry().Runtime()
-	rt.NodeManager().EncKeyStore().RegisterFallback(hub.encKeyStoreFallback)
-}
+//func (hub *lbService) encKeyStoreFallback(key interface{}) (interface{}, error) {
+//	nodeId := key.(i.NodeId)
+//	node, err := model.FetchById(nodeId);
+//	if err != nil { return nil, err }
+//	return node.EncKey, nil
+//}
+//
+//func (hub *lbService) RegisterEncKeyStoreFallback() {
+//	rt := runtime.GlobalRegistry().Runtime()
+//	rt.NodeManager().EncKeyStore().RegisterFallback(hub.encKeyStoreFallback)
+//}
 
 func (hub *lbService) migrateDb(options interface{}) {
 

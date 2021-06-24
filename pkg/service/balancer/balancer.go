@@ -2,11 +2,13 @@ package balancer
 
 import (
 	"google.golang.org/grpc"
+	"net"
 )
 
 type Balancer interface {
 	ForwardCall(srv interface{}, stream grpc.ServerStream) error
-	//SimpleRandom(svcName string, pool runtime.NodePool) runtime.ServiceEndpoint
+	RandomChoice(svcName string) net.Addr
+	RoundRobinChoice(svcName string) net.Addr
 }
 
 type Algo int
