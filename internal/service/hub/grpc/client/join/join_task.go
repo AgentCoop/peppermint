@@ -10,7 +10,7 @@ import (
 
 	//"github.com/AgentCoop/peppermint/internal/grpc/calldesc"
 	"github.com/AgentCoop/peppermint/internal/model/node"
-	cc "github.com/AgentCoop/peppermint/internal/plugin/hub/grpc/client"
+	cc "github.com/AgentCoop/peppermint/internal/service/hub/grpc/client"
 	//hh "github.com/AgentCoop/peppermint/internal/plugin/hub"
 	//"github.com/AgentCoop/peppermint/internal/runtime"
 )

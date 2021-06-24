@@ -13,5 +13,5 @@ var (
 
 func init() {
 	pic := "🌎"
-	logger.RegisterStdoutLogger(Info, color.FgGreen, pic, true)
+	logger.RegisterStdoutLogger(Info, color.FgBlue, pic, true)
 }

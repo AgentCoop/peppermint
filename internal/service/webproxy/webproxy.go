@@ -2,9 +2,9 @@ package webproxy
 
 import (
 	"github.com/AgentCoop/peppermint/cmd"
-	"github.com/AgentCoop/peppermint/internal/plugin"
-	g "github.com/AgentCoop/peppermint/internal/plugin/webproxy/grpc/server"
-	model "github.com/AgentCoop/peppermint/internal/plugin/webproxy/model"
+	"github.com/AgentCoop/peppermint/internal/service"
+	g "github.com/AgentCoop/peppermint/internal/service/webproxy/grpc/server"
+	model "github.com/AgentCoop/peppermint/internal/service/webproxy/model"
 	"github.com/AgentCoop/peppermint/internal/runtime"
 )
 
@@ -13,7 +13,7 @@ const (
 )
 
 type webProxy struct {
-	plugin.WebProxyConfigurator
+	service.WebProxyConfigurator
 }
 
 func init() {

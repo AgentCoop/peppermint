@@ -4,7 +4,7 @@ import (
 	"github.com/AgentCoop/peppermint/internal/api/peppermint/service/backoffice/hub"
 	c "github.com/AgentCoop/peppermint/internal/grpc/client"
 	middleware "github.com/AgentCoop/peppermint/internal/grpc/middleware/client"
-	hh "github.com/AgentCoop/peppermint/internal/plugin/hub"
+	hh "github.com/AgentCoop/peppermint/internal/service/hub"
 	"github.com/AgentCoop/peppermint/internal/runtime"
 	"google.golang.org/grpc"
 	"net"

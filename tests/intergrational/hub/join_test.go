@@ -3,9 +3,9 @@ package hub_test
 import (
 	job "github.com/AgentCoop/go-work"
 	"github.com/AgentCoop/peppermint/internal/app/node"
-	_ "github.com/AgentCoop/peppermint/internal/plugin/hub"
-	"github.com/AgentCoop/peppermint/internal/plugin/hub/grpc/client"
-	"github.com/AgentCoop/peppermint/internal/plugin/hub/grpc/client/join"
+	_ "github.com/AgentCoop/peppermint/internal/service/hub"
+	"github.com/AgentCoop/peppermint/internal/service/hub/grpc/client"
+	"github.com/AgentCoop/peppermint/internal/service/hub/grpc/client/join"
 	"net"
 	"os"
 	"testing"

@@ -2,8 +2,8 @@ package cmd
 
 import (
 	job "github.com/AgentCoop/go-work"
-	"github.com/AgentCoop/peppermint/internal/plugin/hub/grpc/client"
-	"github.com/AgentCoop/peppermint/internal/plugin/hub/grpc/client/join"
+	"github.com/AgentCoop/peppermint/internal/service/hub/grpc/client"
+	"github.com/AgentCoop/peppermint/internal/service/hub/grpc/client/join"
 	"github.com/AgentCoop/peppermint/internal/utils"
 	"net"
 )

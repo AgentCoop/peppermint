@@ -5,7 +5,7 @@ import (
 	msg "github.com/AgentCoop/peppermint/internal/api/peppermint/service/backoffice/hub"
 	"github.com/AgentCoop/peppermint/internal/grpc"
 	"github.com/AgentCoop/peppermint/internal/grpc/session"
-	"github.com/AgentCoop/peppermint/internal/plugin/hub/grpc/server/join"
+	"github.com/AgentCoop/peppermint/internal/service/hub/grpc/server/join"
 	//"github.com/AgentCoop/peppermint/internal/service/hub"
 )
 

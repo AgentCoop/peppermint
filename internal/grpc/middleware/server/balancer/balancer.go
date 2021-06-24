@@ -2,7 +2,7 @@ package balancer
 
 import (
 	"context"
-	"github.com/AgentCoop/peppermint/internal/plugin"
+	"github.com/AgentCoop/peppermint/internal/service"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -11,7 +11,7 @@ import (
 func UnaryServerInterceptor() grpc.UnaryServerInterceptor {
 	return func(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (interface{}, error) {
 		srv := info.Server
-		balancerJob, err := srv.(plugin.WebProxyBalancer).Handle(ctx, req, info.FullMethod)
+		balancerJob, err := srv.(service.WebProxyBalancer).Handle(ctx, req, info.FullMethod)
 		switch {
 		case err != nil:
 			return nil, err

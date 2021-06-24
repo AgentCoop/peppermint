@@ -2,7 +2,7 @@ package server
 
 import (
 	"github.com/AgentCoop/peppermint/internal/grpc/server"
-	"github.com/AgentCoop/peppermint/internal/plugin"
+	"github.com/AgentCoop/peppermint/internal/service"
 	"google.golang.org/grpc"
 	"net"
 	"net/http"
@@ -10,7 +10,7 @@ import (
 
 type webproxy struct {
 	server.BaseServer
-	plugin.WebProxyBalancer
+	service.WebProxyBalancer
 	lis net.Listener
 	tlsHttpServer *http.Server
 	x509CertPEM []byte
@@ -30,7 +30,7 @@ func (b *webproxy) unknownStreamHandler(srv interface{}, stream grpc.ServerStrea
 	return err
 }
 
-func NewServer(name string, address net.Addr, cfg plugin.WebProxyConfigurator, balancer plugin.WebProxyBalancer) *webproxy {
+func NewServer(name string, address net.Addr, cfg service.WebProxyConfigurator, balancer service.WebProxyBalancer) *webproxy {
 	s := new(webproxy)
 	s.BaseServer = server.NewBaseServer(name, address, grpc.NewServer(
 		withUnaryServerMiddlewares(name),

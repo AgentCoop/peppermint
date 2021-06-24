@@ -4,8 +4,8 @@ import (
 	job "github.com/AgentCoop/go-work"
 	"github.com/AgentCoop/peppermint/internal/app/node"
 	"github.com/AgentCoop/peppermint/internal/logger"
-	_ "github.com/AgentCoop/peppermint/internal/plugin/hub"
-	_ "github.com/AgentCoop/peppermint/internal/plugin/balancer"
+	_ "github.com/AgentCoop/peppermint/internal/service/hub"
+	_ "github.com/AgentCoop/peppermint/internal/service/balancer"
 	"github.com/AgentCoop/peppermint/internal/utils"
 	"os"
 )

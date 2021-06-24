@@ -1,4 +1,4 @@
-package plugin
+package service
 
 //import (
 //	"github.com/AgentCoop/peppermint/internal/grpc"

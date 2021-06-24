@@ -4,7 +4,7 @@ import (
 	"context"
 	msg "github.com/AgentCoop/peppermint/internal/api/peppermint/service/backoffice/hub"
 	"github.com/AgentCoop/peppermint/internal/grpc"
-	"github.com/AgentCoop/peppermint/internal/plugin/hub/grpc/server/join"
+	"github.com/AgentCoop/peppermint/internal/service/hub/grpc/server/join"
 )
 
 func (s *hubServer) JoinHello(ctx context.Context, origReq *msg.JoinHello_Request) (*msg.JoinHello_Response, error) {

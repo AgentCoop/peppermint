@@ -3,9 +3,9 @@ package balancer
 import (
 	job "github.com/AgentCoop/go-work"
 	api "github.com/AgentCoop/peppermint/internal/api/peppermint/service/backoffice/balancer"
-	g "github.com/AgentCoop/peppermint/internal/plugin/balancer/grpc/server"
-	"github.com/AgentCoop/peppermint/internal/plugin/balancer/logger"
-	"github.com/AgentCoop/peppermint/internal/plugin/balancer/model"
+	g "github.com/AgentCoop/peppermint/internal/service/balancer/grpc/server"
+	"github.com/AgentCoop/peppermint/internal/service/balancer/logger"
+	"github.com/AgentCoop/peppermint/internal/service/balancer/model"
 	"github.com/AgentCoop/peppermint/internal/runtime"
 	"github.com/AgentCoop/peppermint/internal/runtime/service"
 )

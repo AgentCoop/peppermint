@@ -5,13 +5,13 @@ import (
 	job "github.com/AgentCoop/go-work"
 	i "github.com/AgentCoop/peppermint/internal"
 	api "github.com/AgentCoop/peppermint/internal/api/peppermint/service/backoffice/hub"
-	"github.com/AgentCoop/peppermint/internal/plugin/hub/logger"
+	"github.com/AgentCoop/peppermint/internal/service/hub/logger"
 	"github.com/AgentCoop/peppermint/internal/runtime/service"
 	"net"
 
 	//plugin "github.com/AgentCoop/peppermint/internal/plugin"
-	grpc "github.com/AgentCoop/peppermint/internal/plugin/hub/grpc/server"
-	"github.com/AgentCoop/peppermint/internal/plugin/hub/model"
+	grpc "github.com/AgentCoop/peppermint/internal/service/hub/grpc/server"
+	"github.com/AgentCoop/peppermint/internal/service/hub/model"
 	//"github.com/AgentCoop/peppermint/internal/plugin/webproxy/model"
 	"github.com/AgentCoop/peppermint/internal/runtime"
 )

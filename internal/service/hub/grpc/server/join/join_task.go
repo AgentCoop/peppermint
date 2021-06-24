@@ -3,8 +3,8 @@ package join
 import (
 	job "github.com/AgentCoop/go-work"
 	"github.com/AgentCoop/peppermint/internal/grpc/session"
-	"github.com/AgentCoop/peppermint/internal/plugin/hub/logger"
-	"github.com/AgentCoop/peppermint/internal/plugin/hub/model"
+	"github.com/AgentCoop/peppermint/internal/service/hub/logger"
+	"github.com/AgentCoop/peppermint/internal/service/hub/model"
 )
 
 
