@@ -10,7 +10,7 @@ var (
 	Info = loggerKey("info")
 )
 
-// 🖴 ⚙ 🛠 🛈 ℹ 💻 ⚠ ☠ 🕱
+// 🖴 ⚙ 🛠 🛈 ℹ 💻 ⚠ ☠ 🕱 🌎
 func init() {
 	RegisterStdoutLogger(Debug, color.FgHiBlack, "🛠", true)
 	RegisterStdoutLogger(Error, color.FgHiRed, "☠", true)

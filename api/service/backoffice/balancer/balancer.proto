@@ -1,0 +1,13 @@
+syntax = "proto3";
+
+import "service/rpc.proto";
+import "options.proto";
+
+package balancer.backoffice.peppermint;
+
+option go_package = "peppermint/service/backoffice/balancer";
+
+service Balancer {
+  option (.peppermint.enforce_enc) = true;
+  option (.peppermint.port) = 12002;
+}
