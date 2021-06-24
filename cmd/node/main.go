@@ -6,6 +6,7 @@ import (
 	"github.com/AgentCoop/peppermint/internal/logger"
 	_ "github.com/AgentCoop/peppermint/internal/service/hub"
 	_ "github.com/AgentCoop/peppermint/internal/service/balancer"
+	_ "github.com/AgentCoop/peppermint/internal/service/test"
 	"github.com/AgentCoop/peppermint/internal/utils"
 	"os"
 )

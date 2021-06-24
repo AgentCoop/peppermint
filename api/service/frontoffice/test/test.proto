@@ -1,11 +1,15 @@
 syntax = "proto3";
 
 import "service/frontoffice/test/ping.proto";
+import "options.proto";
 
 package test.frontoffice.peppermint;
 
 option go_package = "peppermint/service/frontoffice/test";
 
 service Test {
+  option (.peppermint.port) = 12099;
+  option (.peppermint.ipc_unix_socket) = "@test.frontoffice.peppermint";
+
   rpc Ping(Ping.Request) returns (Ping.Response) { }
 }
