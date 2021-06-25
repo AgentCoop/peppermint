@@ -38,7 +38,7 @@ type ServiceOptionValue interface {
 type ServicePolicy interface {
 	ProtoReflect
 	ServiceGlobalOptions
-	DefaultPort() int
+	DefaultPort() uint16
 	Ipc_UnixDomainSocket() string
 	FindMethodByName(string) (Method, bool)
 }

@@ -15,7 +15,7 @@ type SingleEncrypted struct{}
 type Streamable struct{}
 
 var (
-	Options = struct {
+	options = struct {
 		cli.CommonOptions
 		Timeout           uint   `long:"timeout" short:"t"`
 		RsDelay           uint32 `long:"rs-delay"`

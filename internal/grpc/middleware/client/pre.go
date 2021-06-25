@@ -19,17 +19,20 @@ func prepareCallDescriptor(ctx context.Context, cc g.BaseClient, methodName stri
 	default:
 		cfg := rt.NodeConfigurator()
 		method, _ := svcPolicy.FindMethodByName(methodName)
+		// Set call timeout in milliseconds if needed
 		timeout := method.CallPolicy().Timeout()
 		if timeout > 0 {
 			var cancel context.CancelFunc
-			ctx, cancel = context.WithTimeout(ctx, time.Duration(timeout) * time.Millisecond)
+			ctx, cancel = context.WithTimeout(ctx, time.Duration(timeout)*time.Millisecond)
 			_ = cancel
 		}
 		secPolicy := calldesc.NewSecurityPolicyFromMethod(method, cfg)
 		desc := calldesc.NewClient(ctx, secPolicy, method.CallPolicy())
 		if method.CallPolicy().SessionSticky() {
 			lastCall := cc.LastCall()
-			if lastCall == nil { panic("lastCall nil") }
+			if lastCall == nil {
+				panic("lastCall nil")
+			}
 			desc.WithSessionFrom(lastCall)
 		}
 		//desc.HandleMeta()

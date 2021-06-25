@@ -10,7 +10,7 @@ import (
 
 type svcOptions struct {
 	enforceEnc          bool
-	defaultPort         int32
+	defaultPort         uint32
 	ipcUnixDomainSocket string
 }
 
@@ -58,7 +58,8 @@ func (p *svcPolicy) populate(methods []string) {
 		p.mOptsMap.AddItem(methodName, peppermint.E_SessionSticky, &mOpt.sessSticky)
 		p.mOptsMap.AddItem(methodName, peppermint.E_Timeout, &mOpt.timeoutMs)
 	}
-	p.desc.FetchServiceCustomOptions(p.sOptsMap, p.mOptsMap)
+	p.desc.FetchServiceCustomOptions(p.sOptsMap)
+	p.desc.FetchMethodsCustomOptions(p.mOptsMap)
 }
 
 func (p *svcPolicy) WasSet(ext *protoimpl.ExtensionInfo) bool {
@@ -69,8 +70,12 @@ func (p *svcPolicy) EnforceEncryption() bool {
 	return p.sOpts.enforceEnc
 }
 
-func (p *svcPolicy) DefaultPort() int {
-	return int(p.sOpts.defaultPort)
+func (p *svcPolicy) DefaultPort() uint16 {
+	max := uint32(^uint16(0))
+	if p.sOpts.defaultPort > max {
+		panic("port number exceeds maximum allowed value of 65,535")
+	}
+	return uint16(p.sOpts.defaultPort)
 }
 
 func (p *svcPolicy) Ipc_UnixDomainSocket() string {

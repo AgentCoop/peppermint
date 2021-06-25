@@ -5,15 +5,14 @@ import (
 	"github.com/AgentCoop/peppermint/internal/service/hub/grpc/client"
 	"github.com/AgentCoop/peppermint/internal/service/hub/grpc/client/join"
 	"github.com/AgentCoop/peppermint/internal/utils"
-	"net"
 )
 
 func JoinCmd(secret string, tags []string, hubAddr string) error {
-	addr, err := net.ResolveTCPAddr("tcp", hubAddr)
-	if err != nil { return err }
+	//addr, err := net.ResolveTCPAddr("tcp", hubAddr)
+	//if err != nil { return err }
 
 	joinCtx := join.NewJoinContext(secret, tags)
-	hubClient := client.NewClient(addr)
+	hubClient := client.NewClient(hubAddr)
 
 	clientJob := job.NewJob(hubClient)
 	clientJob.AddOneshotTask(hubClient.ConnectTask)

@@ -5,6 +5,7 @@ import (
 	job "github.com/AgentCoop/go-work"
 	"github.com/AgentCoop/peppermint/internal/runtime"
 	"github.com/AgentCoop/peppermint/internal/service/test/grpc/client"
+	"net"
 )
 
 func (app *appTest) ParserTask(j job.Job) (job.Init, job.Run, job.Finalize) {
@@ -12,14 +13,10 @@ func (app *appTest) ParserTask(j job.Job) (job.Init, job.Run, job.Finalize) {
 
 	}
 	run := func(task job.Task) {
-		cc := j.GetValue().(client.TestClient)
 		rt := runtime.GlobalRegistry().Runtime()
 		parser := rt.CliParser()
 		cmdName, _ := parser.CurrentCmd()
-		o := &Options
-		if o.Timeout > 0 {
-			cc.WithTimeout(o.Timeout)
-		}
+		o := &options
 		callParams := &callParams{
 			token:          o.Token,
 			repeat:         o.CallRepeatCount,
@@ -38,6 +35,11 @@ func (app *appTest) ParserTask(j job.Job) (job.Init, job.Run, job.Finalize) {
 			callParams.workers = 1
 		}
 		app.callParams = callParams
+
+		addr, err := net.ResolveTCPAddr("tcp", options.Host)
+		task.Assert(err)
+		cc := client.NewClient(addr)
+
 		// Pass a command to execute to the executor task
 		switch cmdName {
 		case CMD_NAME_SINGLE:

@@ -52,7 +52,7 @@ func (m MethodLevelOptionsMap) AddItem(methodName string, ext *protoimpl.Extensi
 	m[methodName][ext] = &optValue{false, v}
 }
 
-func (d ServiceDescriptor) FetchServiceCustomOptions(svcOpts SvcLevelOptionsMap, methodOpts MethodLevelOptionsMap) {
+func (d ServiceDescriptor) FetchServiceCustomOptions(svcOpts SvcLevelOptionsMap) {
 	m := d.Options()
 	for ext, _ := range svcOpts {
 		opt := svcOpts[ext]
@@ -62,6 +62,9 @@ func (d ServiceDescriptor) FetchServiceCustomOptions(svcOpts SvcLevelOptionsMap,
 		v := proto.GetExtension(m.(proto.Message), ext)
 		opt.setValue(v)
 	}
+}
+
+func (d ServiceDescriptor) FetchMethodsCustomOptions(methodOpts MethodLevelOptionsMap) {
 	ml := d.Methods().Len()
 	for i := 0; i < ml; i++ {
 		m := d.Methods().Get(i)

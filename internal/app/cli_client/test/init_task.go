@@ -13,7 +13,7 @@ func (appTest *appTest) InitTask(j job.Job) (job.Init, job.Run, job.Finalize) {
 	}
 	run := func(task job.Task) {
 		app.AppInit(appTest, task)
-		addr, err := net.ResolveTCPAddr("tcp", Options.Service)
+		addr, err := net.ResolveTCPAddr("tcp", options.Service)
 		task.Assert(err)
 		cc := client.NewClient(addr)
 		j.SetValue(cc)

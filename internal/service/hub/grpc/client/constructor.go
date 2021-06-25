@@ -3,25 +3,19 @@ package client
 import (
 	"github.com/AgentCoop/peppermint/internal/api/peppermint/service/backoffice/hub"
 	c "github.com/AgentCoop/peppermint/internal/grpc/client"
-	middleware "github.com/AgentCoop/peppermint/internal/grpc/middleware/client"
+	"github.com/AgentCoop/peppermint/internal/runtime/service"
 	hh "github.com/AgentCoop/peppermint/internal/service/hub"
-	"github.com/AgentCoop/peppermint/internal/runtime"
+	"github.com/AgentCoop/peppermint/internal/utils"
 	"google.golang.org/grpc"
-	"net"
 )
 
-func NewClient(addr net.Addr, opts ...grpc.DialOption) *hubClient {
+func NewClient(target string) *hubClient {
 	hubClient := new(hubClient)
-	hubClient.BaseClient = c.NewBaseClient(addr, opts...)
-	hubClient.WithConnProvider(func(cc grpc.ClientConnInterface) {
+	hubClient.BaseClient = c.NewBaseClient(target)
+	connProvider := func(cc grpc.ClientConnInterface) {
 		hubClient.HubClient = hub.NewHubClient(cc)
-	})
-	rt := runtime.GlobalRegistry().Runtime()
-	svcPolicy := rt.ServicePolicyByName(hh.Name)
-	hubClient.WithUnaryInterceptors(
-		middleware.PreUnaryInterceptor(hubClient, svcPolicy),
-		middleware.SecureChannelUnaryInterceptor(),
-		middleware.PostUnaryInterceptor(hubClient, svcPolicy),
-	)
+	}
+	svcPolicy := service.NewServicePolicy(hh.Name, utils.Grpc_MethodsFromServiceDesc(hub.Hub_ServiceDesc))
+	c.NewDefaultClient(hubClient, svcPolicy, connProvider)
 	return hubClient
 }

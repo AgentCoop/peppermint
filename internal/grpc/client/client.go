@@ -5,16 +5,16 @@ import (
 	i "github.com/AgentCoop/peppermint/internal"
 	g "github.com/AgentCoop/peppermint/internal/grpc"
 	"google.golang.org/grpc"
-	"net"
 )
 
 type baseClient struct {
 	ctx               context.Context
-	addr              net.Addr
+	target            string
 	opts              []grpc.DialOption
 	conn              grpc.ClientConnInterface
 	connProvider      g.ConnProvider
 	timeoutMs         uint
+	port              uint16
 	unaryInterceptors []grpc.UnaryClientInterceptor
 	encKey            []byte
 	sId               i.SessionId
@@ -56,6 +56,10 @@ func (c *baseClient) SessionId() i.SessionId {
 
 func (c *baseClient) WithTimeout(ms uint) {
 	c.timeoutMs = ms
+}
+
+func (c *baseClient) WithTargetPort(port uint16) {
+	c.port = port
 }
 
 func (c *baseClient) WithEncKey(key []byte) {

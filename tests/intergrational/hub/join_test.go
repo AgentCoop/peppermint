@@ -6,7 +6,6 @@ import (
 	_ "github.com/AgentCoop/peppermint/internal/service/hub"
 	"github.com/AgentCoop/peppermint/internal/service/hub/grpc/client"
 	"github.com/AgentCoop/peppermint/internal/service/hub/grpc/client/join"
-	"net"
 	"os"
 	"testing"
 	"time"
@@ -17,15 +16,15 @@ var (
 )
 
 func TestJoinHello(t *testing.T) {
-	os.Args = []string{"testapp", "run", "--hub-port=9911"}
+	os.Args = []string{"testapp", "run", "--hub-port=12001"}
 	appJob := node.NewTestAppJob()
 	appJob.Run()
 
 	time.Sleep(50 * time.Millisecond)
 
-	addr, _ := net.ResolveTCPAddr("tcp", "localhost:9911")
-	time.Sleep(time.Millisecond)
-	hubClient := client.NewClient(addr)
+	//addr, _ := net.ResolveTCPAddr("tcp", "localhost:9911")
+	//time.Sleep(time.Millisecond)
+	hubClient := client.NewClient("localhost")
 
 	clientJob := job.NewJob(hubClient)
 	joinCtx := join.NewJoinContext("secret", []string{"my-test-machine", "linux"})

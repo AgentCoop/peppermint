@@ -23,6 +23,7 @@ type BaseClient interface {
 	SessionId() i.SessionId
 	SetSessionId(id i.SessionId)
 
+	WithTargetPort(uint16)
 	WithTimeout(uint)
 
 	LastCall() ClientDescriptor
