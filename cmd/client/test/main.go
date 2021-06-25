@@ -1,34 +1,16 @@
 package main
 
 import (
-	"github.com/AgentCoop/peppermint/internal/service/test/grpc/client"
-	"github.com/jessevdk/go-flags"
-	"net"
+	"github.com/AgentCoop/peppermint/internal/app/cli_client/test"
 )
 
 func main() {
-	parser := flags.NewParser(&options, flags.IgnoreUnknown)
-	_, err := parser.Parse()
-	if err != nil {
-		panic(err)
-	}
-	addr, err := net.ResolveTCPAddr("tcp", options.Service)
-	if err != nil {
-		panic(err)
-	}
-	cc := client.NewClient(addr)
-	cmdName := parser.Active.Name
-	var cmdOptions interface{}
-	switch cmdName {
-	case client.CMD_NAME_PING:
-		cmdOptions = options.CmdPingOptions
-	}
-	ctx := client.NewCmdContext(cmdOptions, options.Count)
-	cmdJob := client.NewJob(cmdName, ctx, cc)
+	appTest := test.NewTestApp()
+	j := appTest.Job()
 	// Execute command
-	<-cmdJob.Run()
+	<-j.Run()
 	// Handle error
-	_, jobErr := cmdJob.GetInterruptedBy()
+	_, jobErr := j.GetInterruptedBy()
 	if jobErr != nil {
 		panic(jobErr)
 	}

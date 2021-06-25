@@ -23,6 +23,8 @@ type BaseClient interface {
 	SessionId() i.SessionId
 	SetSessionId(id i.SessionId)
 
+	WithTimeout(uint)
+
 	LastCall() ClientDescriptor
 	SetLastCall(ClientDescriptor)
 }

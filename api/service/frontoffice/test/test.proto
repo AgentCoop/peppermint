@@ -1,15 +1,51 @@
 syntax = "proto3";
 
-import "service/frontoffice/test/ping.proto";
 import "options.proto";
 
 package test.frontoffice.peppermint;
 
 option go_package = "peppermint/service/frontoffice/test";
 
+message BulkDataRange {
+  uint32 min_size = 2;
+  uint32 max_size = 3;
+}
+
+message Request {
+  uint32 rs_delay = 1; // Server response delay in milliseconds
+  uint32 rs_delay_jitter = 2;
+  BulkDataRange rs_bulk_data = 3;
+  bytes bulk_data = 4;
+  uint32 call_failure_probability = 5; // Percentage
+  string token = 6; // A word for a client-server ping-pong
+}
+
+message Response {
+  bytes bulk_data = 1;
+  string token = 2;
+}
+
 service Test {
   option (.peppermint.port) = 12099;
   option (.peppermint.ipc_unix_socket) = "@test.frontoffice.peppermint";
 
-  rpc Ping(Ping.Request) returns (Ping.Response) { }
+  rpc Single(Request) returns (Response) { }
+
+  rpc SingleEncrypted(Request) returns (Response) {
+    option (.peppermint.m_enforce_enc) = true;
+  }
+
+  // Client pseudo-streaming calls
+  rpc StreamablePreword(Request) returns (Response) {
+    option (.peppermint.new_session) = 60;
+  }
+
+  rpc Streamable(Request) returns (Response) {
+    option (.peppermint.session_sticky) = true;
+    option (.peppermint.streamable) = true;
+  }
+
+  rpc StreamableAfterword(Request) returns (Response) {
+    option (.peppermint.close_session) = true;
+  }
 }

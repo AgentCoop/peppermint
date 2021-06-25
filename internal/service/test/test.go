@@ -4,10 +4,10 @@ import (
 	job "github.com/AgentCoop/go-work"
 	api "github.com/AgentCoop/peppermint/internal/api/peppermint/service/frontoffice/test"
 	"github.com/AgentCoop/peppermint/internal/runtime"
-	"github.com/AgentCoop/peppermint/internal/runtime/service"
+	ss "github.com/AgentCoop/peppermint/internal/runtime/service"
 	g "github.com/AgentCoop/peppermint/internal/service/test/grpc/server"
 	"github.com/AgentCoop/peppermint/internal/service/test/logger"
-	service2 "github.com/AgentCoop/peppermint/pkg/service"
+	"github.com/AgentCoop/peppermint/pkg/service"
 	"net"
 	"strconv"
 )
@@ -17,7 +17,7 @@ var (
 )
 
 type testService struct {
-	service2.Service
+	service.Service
 }
 
 func init() {
@@ -31,14 +31,14 @@ func init() {
 	})
 }
 
-func (test *testService) Init() (service2.Service, error) {
+func (test *testService) Init() (service.Service, error) {
 	rt := runtime.GlobalRegistry().Runtime()
 	addr, _ := net.ResolveTCPAddr("tcp", "localhost:"+strconv.Itoa(12099))
 	// Create network server and service policy
 	srv := g.NewServer(Name, addr)
 	srv.WithStdoutLogger(job.Logger(logger.Info))
-	policy := service.NewServicePolicy(srv.FullName(), srv.Methods())
-	test.Service = service.NewBaseService(srv, nil, nil, policy)
+	policy := ss.NewServicePolicy(srv.FullName(), srv.Methods())
+	test.Service = ss.NewBaseService(srv, nil, nil, policy)
 	rt.RegisterService(Name, test)
 	return test, nil
 }

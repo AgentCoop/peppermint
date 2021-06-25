@@ -1,9 +1,11 @@
 package client
 
 import (
+	"context"
 	job "github.com/AgentCoop/go-work"
 	"github.com/AgentCoop/peppermint/internal/grpc/codec"
 	"google.golang.org/grpc"
+	"time"
 )
 
 func (c *baseClient) ConnectTask(j job.Job) (job.Init, job.Run, job.Finalize) {
@@ -13,14 +15,12 @@ func (c *baseClient) ConnectTask(j job.Job) (job.Init, job.Run, job.Finalize) {
 			grpc.WithChainUnaryInterceptor(c.unaryInterceptors...),
 			grpc.WithDefaultCallOptions(grpc.CallContentSubtype(codec.Name)),
 		}
-		var conn *grpc.ClientConn
-		var err error
-		switch {
-		case c.ctx != nil:
-			conn, err = grpc.DialContext(c.ctx, c.addr.String(), opts...)
-		default:
-			conn, err = grpc.Dial(c.addr.String(), opts...)
+		ctx := context.Background()
+		if c.timeoutMs > 0 {
+			deadline := time.Now().Add(time.Duration(c.timeoutMs) * time.Millisecond)
+			ctx, _ = context.WithDeadline(ctx, deadline)
 		}
+		conn, err := grpc.DialContext(ctx, c.addr.String(), opts...)
 		task.Assert(err)
 		c.conn = conn
 		c.connProvider(conn)
@@ -28,4 +28,3 @@ func (c *baseClient) ConnectTask(j job.Job) (job.Init, job.Run, job.Finalize) {
 	}
 	return nil, run, nil
 }
-

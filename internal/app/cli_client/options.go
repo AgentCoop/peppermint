@@ -1,5 +1,6 @@
 package cli_client
 
-type Options struct {
-	Service string `long:"service" short:"s"`
+type CommonOptions struct {
+	Host string `long:"host" short:"h"`
+	Port string `long:"port" short:"p"`
 }

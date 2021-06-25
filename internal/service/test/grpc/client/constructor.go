@@ -1,7 +1,6 @@
 package client
 
 import (
-	job "github.com/AgentCoop/go-work"
 	"github.com/AgentCoop/peppermint/internal/api/peppermint/service/frontoffice/test"
 	c "github.com/AgentCoop/peppermint/internal/grpc/client"
 	middleware "github.com/AgentCoop/peppermint/internal/grpc/middleware/client"
@@ -10,25 +9,6 @@ import (
 	"google.golang.org/grpc"
 	"net"
 )
-
-func NewCmdContext(opts interface{}, count int) *cmdContext {
-	ctx := new(cmdContext)
-	ctx.opts = opts
-	if count == 0 {
-		ctx.count = 1
-	}
-	return ctx
-}
-
-func NewJob(cmdName string, ctx *cmdContext, client *testClient) job.Job {
-	j := job.NewJob(nil)
-	j.AddOneshotTask(client.ConnectTask)
-	switch cmdName {
-	case CMD_NAME_PING:
-		j.AddTask(ctx.PingTask)
-	}
-	return j
-}
 
 func NewClient(addr net.Addr, opts ...grpc.DialOption) *testClient {
 	testClient := new(testClient)

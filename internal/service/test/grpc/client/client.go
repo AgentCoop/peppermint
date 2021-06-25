@@ -15,7 +15,3 @@ type testClient struct {
 	test.TestClient
 }
 
-type cmdContext struct {
-	opts  interface{}
-	count int
-}

@@ -39,3 +39,7 @@ func (app *app) WithDb() {
 func (app *app) Job() job.Job {
 	return app.appJob
 }
+
+func (app *app) RootDir() string {
+	return app.appDir
+}

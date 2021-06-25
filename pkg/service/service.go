@@ -24,7 +24,7 @@ type ProtoReflect interface {
 	WasSet(*protoimpl.ExtensionInfo) bool
 }
 
-// Options that can be specified both in service or method scope.
+// CommonOptions that can be specified both in service or method scope.
 // Option value specified in a method scope will shadow the value specified in service scope.
 type ServiceGlobalOptions interface {
 	EnforceEncryption() bool

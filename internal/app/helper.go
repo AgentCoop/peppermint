@@ -2,6 +2,10 @@ package app
 
 import (
 	"fmt"
+	job "github.com/AgentCoop/go-work"
+	"github.com/AgentCoop/peppermint/internal/runtime"
+	"github.com/AgentCoop/peppermint/internal/utils"
+	"github.com/AgentCoop/peppermint/pkg"
 	"os"
 )
 
@@ -19,4 +23,14 @@ func ProfileFromEnv() AppProfile {
 		profile = p
 	}
 	return profile
+}
+
+func AppInit(app pkg.App, t job.Task) {
+	rt := runtime.GlobalRegistry().Runtime()
+	err := rt.CliParser().Run()
+	t.Assert(err)
+
+	err = utils.FS_FileOrDirExists(app.RootDir())
+	t.Assert(err)
+	t.Done()
 }

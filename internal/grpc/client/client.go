@@ -14,6 +14,7 @@ type baseClient struct {
 	opts              []grpc.DialOption
 	conn              grpc.ClientConnInterface
 	connProvider      g.ConnProvider
+	timeoutMs         uint
 	unaryInterceptors []grpc.UnaryClientInterceptor
 	encKey            []byte
 	sId               i.SessionId
@@ -51,6 +52,10 @@ func (c *baseClient) WithConnProvider(provider g.ConnProvider) {
 
 func (c *baseClient) SessionId() i.SessionId {
 	return c.sId
+}
+
+func (c *baseClient) WithTimeout(ms uint) {
+	c.timeoutMs = ms
 }
 
 func (c *baseClient) WithEncKey(key []byte) {
