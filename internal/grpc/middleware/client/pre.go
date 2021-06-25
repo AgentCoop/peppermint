@@ -8,9 +8,10 @@ import (
 	"github.com/AgentCoop/peppermint/internal/runtime"
 	"github.com/AgentCoop/peppermint/pkg/service"
 	"google.golang.org/grpc"
+	"time"
 )
 
-func prepareCallDescriptor(ctx context.Context, c g.BaseClient, methodName string, svcPolicy service.ServicePolicy) g.ClientDescriptor {
+func prepareCallDescriptor(ctx context.Context, cc g.BaseClient, methodName string, svcPolicy service.ServicePolicy) g.ClientDescriptor {
 	rt := runtime.GlobalRegistry().Runtime()
 	switch v := ctx.(type) {
 	case g.ClientDescriptor:
@@ -18,10 +19,16 @@ func prepareCallDescriptor(ctx context.Context, c g.BaseClient, methodName strin
 	default:
 		cfg := rt.NodeConfigurator()
 		method, _ := svcPolicy.FindMethodByName(methodName)
+		timeout := method.CallPolicy().Timeout()
+		if timeout > 0 {
+			var cancel context.CancelFunc
+			ctx, cancel = context.WithTimeout(ctx, time.Duration(timeout) * time.Millisecond)
+			_ = cancel
+		}
 		secPolicy := calldesc.NewSecurityPolicyFromMethod(method, cfg)
 		desc := calldesc.NewClient(ctx, secPolicy, method.CallPolicy())
 		if method.CallPolicy().SessionSticky() {
-			lastCall := c.LastCall()
+			lastCall := cc.LastCall()
 			if lastCall == nil { panic("lastCall nil") }
 			desc.WithSessionFrom(lastCall)
 		}

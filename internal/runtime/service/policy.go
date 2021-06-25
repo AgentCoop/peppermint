@@ -19,7 +19,9 @@ type methodOptions struct {
 	enforceEnc    bool
 	streamable    bool
 	sessSticky    bool
-	newSession    int32
+	newSession    uint32
+	closeSession  bool
+	timeoutMs     uint32
 	requiredRoles []string
 }
 
@@ -52,7 +54,9 @@ func (p *svcPolicy) populate(methods []string) {
 		p.mOptsMap.AddItem(methodName, peppermint.E_MEnforceEnc, &mOpt.enforceEnc)
 		p.mOptsMap.AddItem(methodName, peppermint.E_Streamable, &mOpt.streamable)
 		p.mOptsMap.AddItem(methodName, peppermint.E_NewSession, &mOpt.newSession)
+		p.mOptsMap.AddItem(methodName, peppermint.E_CloseSession, &mOpt.closeSession)
 		p.mOptsMap.AddItem(methodName, peppermint.E_SessionSticky, &mOpt.sessSticky)
+		p.mOptsMap.AddItem(methodName, peppermint.E_Timeout, &mOpt.timeoutMs)
 	}
 	p.desc.FetchServiceCustomOptions(p.sOptsMap, p.mOptsMap)
 }
@@ -92,7 +96,7 @@ func (m method) Name() string {
 }
 
 func (m method) FullName() string {
-	return  "/" + m.policy.svcFullName + "/" + m.name
+	return "/" + m.policy.svcFullName + "/" + m.name
 }
 
 func (m method) ServicePolicy() service.ServicePolicy {
@@ -125,6 +129,14 @@ func (m *methodOptions) SessionSticky() bool {
 
 func (m *methodOptions) OpenNewSession() int {
 	return int(m.newSession)
+}
+
+func (m *methodOptions) CloseSession() bool {
+	return m.closeSession
+}
+
+func (m *methodOptions) Timeout() uint32 {
+	return m.timeoutMs
 }
 
 func (m *methodOptions) RequiredRoles() []string {

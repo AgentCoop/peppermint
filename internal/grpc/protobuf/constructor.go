@@ -10,7 +10,9 @@ import (
 func NewServiceDescriptor(svcFullName string) ServiceDescriptor {
 	fullName := protoreflect.FullName(svcFullName)
 	desc, err := protoregistry.GlobalFiles.FindDescriptorByName(fullName)
-	if err != nil { panic(err) }
+	if err != nil {
+		panic(err)
+	}
 	sd, ok := desc.(protoreflect.ServiceDescriptor)
 	if !ok {
 		got, wanted := reflect.TypeOf(sd).String(), "protoreflect.ServiceDescriptor"
