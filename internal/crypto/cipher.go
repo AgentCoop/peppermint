@@ -10,7 +10,7 @@ import (
 
 type symCipher struct {
 	block cipher.Block
-	gcm cipher.AEAD
+	gcm   cipher.AEAD
 	nonce []byte
 }
 
@@ -28,17 +28,23 @@ func NewSymCipher(key []byte, nonce []byte) (*symCipher, error) {
 	}
 
 	block, err := aes.NewCipher(key)
-	if err != nil { return nil, err }
+	if err != nil {
+		return nil, err
+	}
 
 	// gcm or Galois/Counter Mode, is a mode of operation for symmetric key cryptographic block ciphers
 	// - https://en.wikipedia.org/wiki/Galois/Counter_Mode
 	gcm, err := cipher.NewGCM(block)
-	if err != nil { return nil, err }
+	if err != nil {
+		return nil, err
+	}
 
 	if nonce == nil {
 		nonce = make([]byte, gcm.NonceSize())
 		_, err = io.ReadFull(rand.Reader, nonce)
-		if err != nil { return nil, err }
+		if err != nil {
+			return nil, err
+		}
 	}
 
 	return &symCipher{block, gcm, nonce}, nil
@@ -54,6 +60,8 @@ func (c symCipher) Encrypt(data []byte) []byte {
 
 func (c symCipher) Decrypt(data []byte) []byte {
 	plain, err := c.gcm.Open(data[:0], c.nonce, data, nil)
-	if err != nil { panic(err) }
+	if err != nil {
+		panic(err)
+	}
 	return plain
 }

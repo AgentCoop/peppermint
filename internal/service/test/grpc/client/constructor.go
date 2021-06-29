@@ -3,25 +3,19 @@ package client
 import (
 	"github.com/AgentCoop/peppermint/internal/api/peppermint/service/frontoffice/test"
 	c "github.com/AgentCoop/peppermint/internal/grpc/client"
-	middleware "github.com/AgentCoop/peppermint/internal/grpc/middleware/client"
-	"github.com/AgentCoop/peppermint/internal/runtime"
+	"github.com/AgentCoop/peppermint/internal/runtime/service"
 	tt "github.com/AgentCoop/peppermint/internal/service/test"
+	"github.com/AgentCoop/peppermint/internal/utils"
 	"google.golang.org/grpc"
-	"net"
 )
 
-func NewClient(addr net.Addr, opts ...grpc.DialOption) *testClient {
+func NewClient(target string) *testClient {
 	testClient := new(testClient)
-	testClient.BaseClient = c.NewBaseClient(addr, opts...)
-	testClient.WithConnProvider(func(cc grpc.ClientConnInterface) {
+	testClient.BaseClient = c.NewBaseClient(target)
+	connProvider := func(cc grpc.ClientConnInterface) {
 		testClient.TestClient = test.NewTestClient(cc)
-	})
-	rt := runtime.GlobalRegistry().Runtime()
-	svcPolicy := rt.ServicePolicyByName(tt.Name)
-	testClient.WithUnaryInterceptors(
-		middleware.PreUnaryInterceptor(testClient, svcPolicy),
-		middleware.SecureChannelUnaryInterceptor(),
-		middleware.PostUnaryInterceptor(testClient, svcPolicy),
-	)
+	}
+	svcPolicy := service.NewServicePolicy(tt.Name, utils.Grpc_MethodsFromServiceDesc(test.Test_ServiceDesc))
+	c.NewDefaultClient(testClient, svcPolicy, connProvider)
 	return testClient
 }

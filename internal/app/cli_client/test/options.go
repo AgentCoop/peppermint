@@ -19,7 +19,7 @@ var (
 		cli.CommonOptions
 		Timeout           uint   `long:"timeout" short:"t"`
 		RsDelay           uint32 `long:"rs-delay"`
-		RsDelayJitter     uint32  `long:"rs-delay-jitter"`
+		RsDelayJitter     uint32 `long:"rs-delay-jitter"`
 		Token             string `long:"token"` // A random word
 		RsBulkDataMin     uint32 `long:"rs-bulk-min"`
 		RsBulkDataMax     uint32 `long:"rs-bulk-max"`
