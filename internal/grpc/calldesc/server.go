@@ -5,15 +5,15 @@ import (
 	"github.com/AgentCoop/peppermint/pkg/service"
 )
 
-func (s *ServerDescriptor) Method() service.Method {
+func (s *srvDescriptor) Method() service.Method {
 	return s.method
 }
 
-func (s *ServerDescriptor) WithSession(sess grpc.Session) {
+func (s *srvDescriptor) WithSession(sess grpc.Session) {
 	s.sess = sess
 }
 
-func (s *ServerDescriptor) Session() grpc.Session {
+func (s *srvDescriptor) Session() grpc.Session {
 	return s.sess
 }
 
@@ -21,41 +21,41 @@ func (s *ServerDescriptor) Session() grpc.Session {
 // Common interface
 //
 
-func (s *ServerDescriptor) ServiceConfigurator() service.ServiceConfigurator {
+func (s *srvDescriptor) ServiceConfigurator() service.ServiceConfigurator {
 	return s.svcCfg
 }
 
-func (s *ServerDescriptor) HandleMeta() {
+func (s *srvDescriptor) HandleMeta() {
 	s.meta.extractCommonFieldsVals()
 }
 
-func (s *ServerDescriptor) Meta() grpc.ServerMeta {
+func (s *srvDescriptor) Meta() grpc.ServerMeta {
 	return &s.meta
 }
 
-func (s *ServerDescriptor) WithSecPolicy(sec grpc.SecurityPolicy) {
+func (s *srvDescriptor) WithSecPolicy(sec grpc.SecurityPolicy) {
 	s.secPolicy = sec.(*secPolicy)
 }
 
-func (s *ServerDescriptor) SecPolicy() grpc.SecurityPolicy {
+func (s *srvDescriptor) SecPolicy() grpc.SecurityPolicy {
 	return s.secPolicy
 }
 
 //
 // Call data interface
 //
-func (s *ServerDescriptor) ResponseData() grpc.ResponseData {
+func (s *srvDescriptor) ResponseData() grpc.ResponseData {
 	return s.resData
 }
 
-func (s *ServerDescriptor) SetResponseData(data grpc.ResponseData) {
+func (s *srvDescriptor) SetResponseData(data grpc.ResponseData) {
 	s.resData = data
 }
 
-func (s *ServerDescriptor) RequestData() grpc.RequestData {
+func (s *srvDescriptor) RequestData() grpc.RequestData {
 	return s.reqData
 }
 
-func (s *ServerDescriptor) SetRequestData(data grpc.RequestData) {
+func (s *srvDescriptor) SetRequestData(data grpc.RequestData) {
 	s.reqData = data
 }

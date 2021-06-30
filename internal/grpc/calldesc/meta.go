@@ -7,9 +7,9 @@ import (
 	"google.golang.org/grpc/metadata"
 )
 
-func (m *meta) copySessionId(preceding *ClientDescriptor) {
-	m.sId = preceding.meta.SessionId()
-	m.SetSessionId(preceding.meta.SessionId())
+func (m *meta) copySessionId(src *clDescriptor) {
+	m.sId = src.meta.SessionId()
+	m.SetSessionId(src.meta.SessionId())
 }
 
 func (m *meta) extractCommonFieldsVals() {
@@ -56,5 +56,5 @@ func (m *meta) Trailer() *metadata.MD {
 }
 
 func (m *meta) SetTrailer(md metadata.MD) {
-	panic("implement me")
+	panic("SetTrailer implement me")
 }

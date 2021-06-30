@@ -8,9 +8,6 @@ import (
 )
 
 func JoinCmd(secret string, tags []string, hubAddr string) error {
-	//addr, err := net.ResolveTCPAddr("tcp", hubAddr)
-	//if err != nil { return err }
-
 	joinCtx := join.NewJoinContext(secret, tags)
 	hubClient := client.NewClient(hubAddr)
 

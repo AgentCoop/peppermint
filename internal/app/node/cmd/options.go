@@ -10,9 +10,14 @@ const (
 	CMD_NAME_WEB_PROXY  = "proxy-cfg"
 )
 
+type netOptions struct {
+	Port   uint16 `long:"port" short:"p"`
+	Target string `long:"target" required:"true"`
+}
+
 type Bootstrap struct {
-	Tags     []string `long:"tag"`
-	IdFromInterface string  `long:"id-from-nic"`
+	Tags            []string `long:"tag"`
+	IdFromInterface string   `long:"id-from-nic"`
 }
 
 type Version struct {
@@ -39,7 +44,7 @@ type Run struct {
 
 var (
 	Options = struct {
-		AppDir string `long:"appdir" short:"d"`
+		AppDir    string `long:"appdir" short:"d"`
 		Bootstrap `command:"bootstrap"`
 		DbMigrate `command:"db_migrate"`
 		DbCreate  `command:"db_create"`

@@ -9,10 +9,9 @@ import (
 
 type CallDescriptor interface {
 	context.Context
-	//Policy() service.MethodCallPolicy
 	Method() service.Method
 	SecPolicy() SecurityPolicy
-	WithSecPolicy(policy SecurityPolicy)
+	//WithSecPolicy(policy SecurityPolicy)
 	HandleMeta()
 }
 

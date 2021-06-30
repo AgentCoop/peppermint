@@ -36,8 +36,8 @@ func NewSecurityPolicyFromMethod(method service.Method, cfg node.NodeConfigurato
 	return secPolicy
 }
 
-func NewServer(ctx context.Context, cfg service.ServiceConfigurator, method service.Method, secPolicy *secPolicy) *ServerDescriptor {
-	desc := &ServerDescriptor{}
+func NewServer(ctx context.Context, cfg service.ServiceConfigurator, method service.Method, secPolicy *secPolicy) *srvDescriptor {
+	desc := &srvDescriptor{}
 	desc.Context = ctx
 	desc.common.typ = ServerType
 	desc.meta.parent = &desc.common
@@ -49,8 +49,8 @@ func NewServer(ctx context.Context, cfg service.ServiceConfigurator, method serv
 	return desc
 }
 
-func NewClient(ctx context.Context, secPolicy *secPolicy, method service.Method) *ClientDescriptor {
-	desc := &ClientDescriptor{}
+func NewClient(ctx context.Context, secPolicy *secPolicy, method service.Method) *clDescriptor {
+	desc := &clDescriptor{}
 	desc.common.Context = ctx
 	desc.common.typ = ClientType
 	desc.common.method = method

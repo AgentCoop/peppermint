@@ -36,7 +36,7 @@ type meta struct {
 	nodeId  internal.NodeId
 }
 
-type ServerDescriptor struct {
+type srvDescriptor struct {
 	common
 	svcCfg  service.ServiceConfigurator
 	method  service.Method
@@ -45,10 +45,6 @@ type ServerDescriptor struct {
 	sess    grpc.Session
 }
 
-type ClientDescriptor struct {
+type clDescriptor struct {
 	common
-}
-
-func (s *ClientDescriptor) Policy() service.MethodCallPolicy {
-	panic("implement me")
 }

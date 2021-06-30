@@ -5,34 +5,34 @@ import (
 	"github.com/AgentCoop/peppermint/pkg/service"
 )
 
-func (s *ClientDescriptor) Method() service.Method {
+func (s *clDescriptor) Method() service.Method {
 	return s.common.method
 }
 
-func (s *ClientDescriptor) WithSessionFrom(preceding grpc.ClientDescriptor) {
-	s.meta.copySessionId(preceding.(*ClientDescriptor))
+func (s *clDescriptor) WithSessionFrom(preceding grpc.ClientDescriptor) {
+	s.meta.copySessionId(preceding.(*clDescriptor))
 }
 
-func (c *ClientDescriptor) IsSecure() bool {
+func (c *clDescriptor) IsSecure() bool {
 	return c.secPolicy.e2e_Enc
 }
 
-func (c *ClientDescriptor) EncKey() []byte {
+func (c *clDescriptor) EncKey() []byte {
 	return c.secPolicy.encKey
 }
 
-func (c *ClientDescriptor) HandleMeta() {
+func (c *clDescriptor) HandleMeta() {
 	c.meta.extractCommonFieldsVals()
 }
 
-func (c *ClientDescriptor) Meta() grpc.Meta {
+func (c *clDescriptor) Meta() grpc.Meta {
 	return &c.meta
 }
 
-func (s *ClientDescriptor) WithSecPolicy(sec grpc.SecurityPolicy) {
+func (s *clDescriptor) WithSecPolicy(sec grpc.SecurityPolicy) {
 	s.secPolicy = sec.(*secPolicy)
 }
 
-func (s *ClientDescriptor) SecPolicy() grpc.SecurityPolicy {
+func (s *clDescriptor) SecPolicy() grpc.SecurityPolicy {
 	return s.secPolicy
 }

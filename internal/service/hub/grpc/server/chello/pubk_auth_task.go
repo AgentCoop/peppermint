@@ -7,7 +7,7 @@ func (ctx *clientHelloCtx) PubKeyAuthTask(j job.Job) (job.Init, job.Run, job.Fin
 
 	}
 	run := func(task job.Task) {
-
+		task.Done()
 	}
 	fin := func(task job.Task) {
 

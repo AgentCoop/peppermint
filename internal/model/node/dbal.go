@@ -7,20 +7,6 @@ import (
 	"github.com/AgentCoop/peppermint/internal/runtime"
 )
 
-func CreateTables() {
-	db := runtime.GlobalRegistry().Db().Handle()
-	mig := db.Migrator()
-	job.Logger(logger.Debug)("creating node tables...")
-	mig.CreateTable(tables...)
-}
-
-func DropTables() {
-	db := runtime.GlobalRegistry().Db().Handle()
-	mig := db.Migrator()
-	job.Logger(logger.Debug)("dropping node tables...")
-	mig.DropTable(tables...)
-}
-
 func Migrate() {
 	db := runtime.GlobalRegistry().Db().Handle()
 	mig := db.Migrator()
