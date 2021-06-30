@@ -74,7 +74,7 @@ func (hub *hubService) RegisterEncKeyStoreFallback() {
 func (hub *hubService) migrateDb(options interface{}) {
 	//db := runtime.GlobalRegistry().Db()
 	//h := db.Handle()
-	//h.AutoMigrate(&model.HubConfig{}, &model.HubJoinedNode{}, &model.HubNodeTag{})
+	//h.AutoMigrate(&model.HubConfig{}, &model.HubNode{}, &model.HubNodeTag{})
 }
 
 func (hub *hubService) createDd(args...interface{}) {

@@ -4,7 +4,7 @@ import (
 	"context"
 	job "github.com/AgentCoop/go-work"
 	"github.com/AgentCoop/peppermint/internal/api/peppermint/service/backoffice/hub"
-	"github.com/AgentCoop/peppermint/internal/crypto"
+	"github.com/AgentCoop/peppermint/internal/security"
 	"github.com/AgentCoop/peppermint/internal/logger"
 	"github.com/AgentCoop/peppermint/internal/runtime"
 
@@ -24,12 +24,12 @@ func (c *joinContext) JoinTask(j job.Job) (job.Init, job.Run, job.Finalize) {
 
 		// Generate a DH public key and exchange it with the hub server
 		info("exchanging public keys with hub server...")
-		keyExch, err := crypto.NewKeyExchange()
+		keyExch, err := security.NewKeyExchange()
 		task.Assert(err)
 
 		pubKey := keyExch.GetPublicKey()
-		reqHello := &hub.JoinHello_Request{DhPubKey: pubKey}
-		resHello, err := hubClient.JoinHello(ctx, reqHello)
+		reqHello := &hub.ClientHello_Request{DhPubKey: pubKey}
+		resHello, err := hubClient.ClientHello(ctx, reqHello)
 		task.Assert(err)
 
 		// Set computed encryption key for the client
@@ -39,7 +39,7 @@ func (c *joinContext) JoinTask(j job.Job) (job.Init, job.Run, job.Finalize) {
 		err = node.UpdateNodeEncKey(c.encKey)
 		task.Assert(err)
 
-		info("computed encryption key %x...%x", c.encKey[0:1], c.encKey[len(c.encKey)-1:])
+		info("computed encryption key is %x...%x", c.encKey[0:1], c.encKey[len(c.encKey)-1:])
 		rt.NodeConfigurator().Refresh()
 
 		// Finish the join procedure

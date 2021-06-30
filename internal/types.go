@@ -1,6 +1,7 @@
 package internal
 
 import (
+	"bytes"
 	"encoding/binary"
 	"math/rand"
 	"reflect"
@@ -10,6 +11,7 @@ type UniqueIdValue interface {
 	FromByteArray([]byte)
 	Rand()
 	Size() int
+	NetRead([]byte) error
 }
 
 type UniqueId int64
@@ -29,8 +31,13 @@ func (n *NodeId) Rand() {
 	*n = NodeId(i64)
 }
 
-func (n *NodeId) Size() int {
+func (n NodeId) Size() int {
 	return int(reflect.TypeOf(n).Size())
+}
+
+func (n *NodeId) NetRead(data []byte) error {
+	reader := bytes.NewReader(data)
+	return binary.Read(reader, binary.BigEndian, n)
 }
 
 func (s *SessionId) FromByteArray(arr []byte) {
@@ -43,8 +50,13 @@ func (s *SessionId) Rand() {
 	*s = SessionId(i64)
 }
 
-func (s *SessionId) Size() int {
+func (s SessionId) Size() int {
 	return int(reflect.TypeOf(s).Size())
+}
+
+func (s *SessionId) NetRead(data []byte) error {
+	reader := bytes.NewReader(data)
+	return binary.Read(reader, binary.BigEndian, s)
 }
 
 type SignalChan chan struct{}

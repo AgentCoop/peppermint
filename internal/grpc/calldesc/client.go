@@ -2,7 +2,12 @@ package calldesc
 
 import (
 	"github.com/AgentCoop/peppermint/internal/grpc"
+	"github.com/AgentCoop/peppermint/pkg/service"
 )
+
+func (s *ClientDescriptor) Method() service.Method {
+	return s.common.method
+}
 
 func (s *ClientDescriptor) WithSessionFrom(preceding grpc.ClientDescriptor) {
 	s.meta.copySessionId(preceding.(*ClientDescriptor))

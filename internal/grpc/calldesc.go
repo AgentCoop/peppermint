@@ -9,7 +9,8 @@ import (
 
 type CallDescriptor interface {
 	context.Context
-	Policy() service.MethodCallPolicy
+	//Policy() service.MethodCallPolicy
+	Method() service.Method
 	SecPolicy() SecurityPolicy
 	WithSecPolicy(policy SecurityPolicy)
 	HandleMeta()
@@ -25,8 +26,9 @@ type ServerDescriptor interface {
 	CallDescriptor
 	Data
 	Meta() ServerMeta
-	Method() service.Method
 	ServiceConfigurator() service.ServiceConfigurator
+	WithSession(Session)
+	Session() Session
 }
 
 type SecurityPolicy interface {

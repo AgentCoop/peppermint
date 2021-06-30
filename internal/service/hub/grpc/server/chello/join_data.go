@@ -1,4 +1,4 @@
-package join
+package chello
 
 import msg "github.com/AgentCoop/peppermint/internal/api/peppermint/service/backoffice/hub"
 

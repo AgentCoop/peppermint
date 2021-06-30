@@ -49,14 +49,14 @@ func NewServer(ctx context.Context, cfg service.ServiceConfigurator, method serv
 	return desc
 }
 
-func NewClient(ctx context.Context, secPolicy *secPolicy, policy service.MethodCallPolicy) *ClientDescriptor {
+func NewClient(ctx context.Context, secPolicy *secPolicy, method service.Method) *ClientDescriptor {
 	desc := &ClientDescriptor{}
 	desc.common.Context = ctx
 	desc.common.typ = ClientType
+	desc.common.method = method
 	desc.meta.parent = &desc.common
 	desc.meta.header = metadata.New(nil)
 	desc.secPolicy = secPolicy
-	desc.policy = policy
 	// Assign value to the node ID header
 	rt := runtime.GlobalRegistry().Runtime()
 	cfg := rt.NodeConfigurator()

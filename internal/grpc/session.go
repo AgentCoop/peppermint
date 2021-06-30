@@ -12,6 +12,8 @@ type Session interface {
 	Id() i.SessionId
 	Ipc() GrpcServiceLayersIpc
 	Job() job.Job
+	TaskContext() interface{}
+	WithTaskContext(interface{})
 }
 
 // ********************************************** Server-side **********************************************************

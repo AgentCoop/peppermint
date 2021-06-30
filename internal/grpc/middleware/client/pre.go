@@ -27,7 +27,7 @@ func prepareCallDescriptor(ctx context.Context, cc g.BaseClient, methodName stri
 			_ = cancel
 		}
 		secPolicy := calldesc.NewSecurityPolicyFromMethod(method, cfg)
-		desc := calldesc.NewClient(ctx, secPolicy, method.CallPolicy())
+		desc := calldesc.NewClient(ctx, secPolicy, method)
 		if method.CallPolicy().SessionSticky() {
 			lastCall := cc.LastCall()
 			if lastCall == nil {

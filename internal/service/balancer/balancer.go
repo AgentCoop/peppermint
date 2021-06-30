@@ -51,7 +51,7 @@ func (lb *lbService) Init() (service2.Service, error) {
 //	nodeId := key.(i.NodeId)
 //	node, err := model.FetchById(nodeId);
 //	if err != nil { return nil, err }
-//	return node.EncKey, nil
+//	return node.encKey, nil
 //}
 //
 //func (hub *lbService) RegisterEncKeyStoreFallback() {

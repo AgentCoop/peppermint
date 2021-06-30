@@ -9,6 +9,14 @@ func (s *ServerDescriptor) Method() service.Method {
 	return s.method
 }
 
+func (s *ServerDescriptor) WithSession(sess grpc.Session) {
+	s.sess = sess
+}
+
+func (s *ServerDescriptor) Session() grpc.Session {
+	return s.sess
+}
+
 //
 // Common interface
 //

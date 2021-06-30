@@ -55,7 +55,7 @@ type MethodCallPolicy interface {
 	ServiceGlobalOptions
 	IsStreamable() bool
 	SessionSticky() bool
-	OpenNewSession() int
+	NewSession() int
 	CloseSession() bool
 	RequiredRoles() []string
 	Timeout() uint32

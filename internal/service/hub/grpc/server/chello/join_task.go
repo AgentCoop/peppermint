@@ -1,4 +1,4 @@
-package join
+package chello
 
 import (
 	job "github.com/AgentCoop/go-work"
@@ -7,12 +7,12 @@ import (
 	"github.com/AgentCoop/peppermint/internal/service/hub/model"
 )
 
-func (ctx *joinContext) JoinTask(j job.Job) (job.Init, job.Run, job.Finalize) {
+func (ctx *clientHelloCtx) JoinTask(j job.Job) (job.Init, job.Run, job.Finalize) {
 	init := func(task job.Task) {
 
 	}
 	run := func(task job.Task) {
-		desc, ipc := session.Ipc_CallDesc(j, 1)
+		desc, ipc := session.Ipc_CallDesc(j, task.Index()-1)
 		req := desc.RequestData().(*joinRequest)
 		nodeId := desc.Meta().NodeId()
 
@@ -20,13 +20,14 @@ func (ctx *joinContext) JoinTask(j job.Job) (job.Init, job.Run, job.Finalize) {
 		invalidCreds := cfg.Secret() != req.secret
 		task.AssertTrue(invalidCreds, errInvalidCreds)
 
-		err := model.AcceptJoin(nodeId)
+		err := model.SaveJoinRequest(nodeId, ctx.encKey)
 		task.Assert(err)
-		job.Logger(logger.Info)("node #%x join accepted", nodeId)
 
+		job.Logger(logger.Info)("node #%x join accepted", nodeId)
 		resp := NewJoinResponse()
 		desc.SetResponseData(resp)
-		ipc.Svc_Send(1, nil)
+
+		ipc.Svc_Send(task.Index()-1, nil)
 		task.Done()
 	}
 	fin := func(task job.Task) {

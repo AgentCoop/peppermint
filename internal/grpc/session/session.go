@@ -19,6 +19,7 @@ type sessionDesc struct {
 	createdAt time.Time
 	expireAt  time.Time
 	ipc       *ipc
+	taskCtx   interface{}
 }
 
 func (s *sessionDesc) Id() i.SessionId {
@@ -31,6 +32,14 @@ func (s *sessionDesc) Ipc() grpc.GrpcServiceLayersIpc {
 
 func (s *sessionDesc) Job() job.Job {
 	return s.ipc.serviceJob
+}
+
+func (s *sessionDesc) WithTaskContext(ctx interface{}) {
+	s.taskCtx = ctx
+}
+
+func (s *sessionDesc) TaskContext() interface{} {
+	return s.taskCtx
 }
 
 func (m sessionMap) Remove(id i.SessionId) {

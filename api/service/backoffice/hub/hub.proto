@@ -1,5 +1,6 @@
 syntax = "proto3";
 
+import "service/backoffice/hub/security.proto";
 import "service/backoffice/hub/join.proto";
 import "service/backoffice/hub/inquiry.proto";
 import "service/rpc.proto";
@@ -14,10 +15,14 @@ service Hub {
   option (.peppermint.port) = 12001;
   option (.peppermint.ipc_unix_socket) = "@peppermint.backoffice.hub";
 
-  // Exchanges encryption key between hub service and a joining node, using the Diffie-Hellman key exchange algorithm
-  rpc JoinHello(JoinHello.Request) returns (JoinHello.Response) {
+  // Exchanges encryption key between the hub service and a client, using the Diffie-Hellman key exchange algorithm
+  rpc ClientHello(ClientHello.Request) returns (ClientHello.Response) {
     option (.peppermint.m_enforce_enc) = false;
     option (.peppermint.new_session) = 60;
+  }
+
+  rpc PubKeyAuth(PubKeyAuth.Request) returns (PubKeyAuth.Response) {
+    option (.peppermint.session_sticky) = true;
   }
 
   rpc Join(Join.Request) returns (Join.Response) {
@@ -27,7 +32,4 @@ service Hub {
   rpc NodeInquiry(NodeInquiry.Request) returns(NodeInquiry.Response) {
 
   }
-
-  rpc ServerStream(Join.Request) returns (stream Join.Response) {  }
-  rpc ClientStream(stream Join.Request) returns (Join.Response) {  }
 }

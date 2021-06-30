@@ -20,6 +20,7 @@ type common struct {
 	typ       DescriptorType
 	meta      meta
 	secPolicy *secPolicy
+	method    service.Method
 }
 
 type secPolicy struct {
@@ -41,18 +42,13 @@ type ServerDescriptor struct {
 	method  service.Method
 	reqData grpc.RequestData
 	resData grpc.ResponseData
-}
-
-func (s *ServerDescriptor) Policy() service.MethodCallPolicy {
-	panic("implement me")
+	sess    grpc.Session
 }
 
 type ClientDescriptor struct {
 	common
-	policy service.MethodCallPolicy
 }
 
 func (s *ClientDescriptor) Policy() service.MethodCallPolicy {
 	panic("implement me")
 }
-

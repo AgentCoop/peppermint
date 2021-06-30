@@ -1,7 +1,7 @@
-package crypto_test
+package security_test
 
 import (
-	"github.com/AgentCoop/peppermint/internal/crypto"
+	"github.com/AgentCoop/peppermint/internal/security"
 	"github.com/AgentCoop/go-work"
 
 	"encoding/hex"
@@ -17,11 +17,11 @@ func cipherTask(j job.Job) (job.Init, job.Run, job.Finalize) {
 		original := make([]byte, len(data))
 		copy(original, data)
 
-		encryptor, err := crypto.NewSymCipher(key, nil)
+		encryptor, err := security.NewSymCipher(key, nil)
 		task.Assert(err)
 		ciphertext := encryptor.Encrypt(data)
 
-		decryptor, err := crypto.NewSymCipher(key, encryptor.GetNonce())
+		decryptor, err := security.NewSymCipher(key, encryptor.GetNonce())
 		task.Assert(err)
 		plaintext := decryptor.Decrypt(ciphertext)
 

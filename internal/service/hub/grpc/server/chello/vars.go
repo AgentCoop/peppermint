@@ -1,4 +1,4 @@
-package join
+package chello
 
 import (
 	"google.golang.org/grpc/codes"

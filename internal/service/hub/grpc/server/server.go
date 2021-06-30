@@ -22,6 +22,7 @@ type hubServer struct {
 func withUnaryServerMiddlewares(svcName string) grpc.ServerOption {
 	return grpc.ChainUnaryInterceptor(
 		middleware.PreUnaryInterceptor(svcName),
+		middleware.SessionUnaryInterceptor(svcName),
 		middleware.PostUnaryInterceptor(svcName),
 	)
 }

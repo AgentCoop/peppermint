@@ -132,7 +132,7 @@ func (m *methodOptions) SessionSticky() bool {
 	return m.sessSticky
 }
 
-func (m *methodOptions) OpenNewSession() int {
+func (m *methodOptions) NewSession() int {
 	return int(m.newSession)
 }
 

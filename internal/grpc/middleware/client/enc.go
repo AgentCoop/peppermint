@@ -11,7 +11,8 @@ func encryptMessage(desc g.ClientDescriptor, req interface{}) interface{} {
 	if ! desc.SecPolicy().IsSecure() {
 		return req
 	}
-	packer := codec.NewPacket(desc.Meta().NodeId(), req, desc.SecPolicy().EncKey())
+	m := desc.Meta()
+	packer := codec.NewPacket(m.NodeId(), m.SessionId(), req, desc.SecPolicy().EncKey())
 	return packer
 }
 

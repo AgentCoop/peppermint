@@ -1,0 +1,29 @@
+syntax = "proto3";
+
+import "service/types.proto";
+import "google/protobuf/descriptor.proto";
+import "options.proto";
+
+package hub.backoffice.peppermint;
+
+option go_package = "peppermint/service/backoffice/hub";
+
+message ClientHello {
+  message Request {
+    bytes dh_pub_key = 1; // Diffie-Hellman public key of a client
+  }
+  message Response {
+    bytes dh_pub_key = 1; // Hub's DH public key
+    bytes rand_msg = 2; // A random message for the public key authentication
+  }
+}
+
+message PubKeyAuth {
+  message Request {
+    string keyId = 1;
+    bytes enc_rand_msg = 2;
+  }
+  message Response {
+    string access_token = 1;
+  }
+}

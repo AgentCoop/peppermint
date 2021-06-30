@@ -1,8 +1,8 @@
-package crypto_test
+package security_test
 
 import (
 	"github.com/AgentCoop/go-work"
-	"github.com/AgentCoop/peppermint/internal/crypto"
+	"github.com/AgentCoop/peppermint/internal/security"
 
 	"bytes"
 	"testing"
@@ -11,12 +11,12 @@ import (
 func keyExchangeTask(j job.Job) (job.Init, job.Run, job.Finalize) {
 	run := func(task job.Task) {
 		// Alice's side
-		dhKeyAlice, err := crypto.NewKeyExchange()
+		dhKeyAlice, err := security.NewKeyExchange()
 		task.Assert(err)
 
 		alicePubKey := dhKeyAlice.GetPublicKey()
 		// Bob's side
-		dhKeyBob, err := crypto.NewKeyExchange()
+		dhKeyBob, err := security.NewKeyExchange()
 		task.Assert(err)
 
 		bobPubKey := dhKeyBob.GetPublicKey()
