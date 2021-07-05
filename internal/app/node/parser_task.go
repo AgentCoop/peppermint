@@ -8,38 +8,22 @@ import (
 	"github.com/AgentCoop/peppermint/internal/utils"
 )
 
-func (app *nodeApp) ParserTask(j job.Job) (job.Init, job.Run, job.Finalize) {
+func (app *appNode) ParserTask(j job.Job) (job.Init, job.Run, job.Finalize) {
 	init := func(task job.Task) {
-		//rt := runtime.GlobalRegistry().Runtime()
-		//parser := rt.CliParser()
-		//cmdName, _ := parser.CurrentCmd()
-		//switch cmdName {
-		//case cmd.CMD_NAME_DB_CREATE, cmd.CMD_NAME_BOOTSTRAP:
-		//default:
-		//	err := rt.NodeConfigurator().Fetch()
-		//	task.Assert(err)
-		//}
-		//// Services initialization
-		//runtime.GlobalRegistry().InvokeHooks(runtime.ServiceInitHook)
+		if cmd.Options.NodeId == 0 {
+			cmd.Options.NodeId = 1
+		}
 	}
 	run := func(task job.Task) {
 		rt := runtime.GlobalRegistry().Runtime()
 		parser := rt.CliParser()
 		cmdName, _ := parser.CurrentCmd()
-		// Services initialization
-		runtime.GlobalRegistry().InvokeHooks(runtime.ServiceInitHook)
-		switch cmdName {
-		case cmd.CMD_NAME_DB_CREATE, cmd.CMD_NAME_BOOTSTRAP:
-		default:
-			err := rt.NodeConfigurator().Fetch()
-			task.Assert(err)
-		}
 		switch cmdName {
 		case cmd.CMD_NAME_BOOTSTRAP:
 			opts, err := parser.GetCmdOptions(cmdName)
 			task.Assert(err)
 			v := opts.(cmd.Bootstrap)
-			cmd.BootstrapCmd(v.IdFromInterface, v.Tags)
+			cmd.BootstrapCmd(v.CreateDb, v.Force, v.IdFromInterface, v.Tags)
 
 		case cmd.CMD_NAME_VERSION:
 			opts, err := parser.GetCmdOptions(cmdName)

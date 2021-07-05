@@ -16,7 +16,7 @@ var (
 )
 
 func TestJoinHello(t *testing.T) {
-	os.Args = []string{"testapp", "run", "--hub-port=12001"}
+	os.Args = []string{"testapp", "run", "--hub-port=12001", "-n=1"}
 	appJob := node.NewTestAppJob()
 	appJob.Run()
 

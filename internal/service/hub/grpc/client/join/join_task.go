@@ -4,12 +4,12 @@ import (
 	"context"
 	job "github.com/AgentCoop/go-work"
 	"github.com/AgentCoop/peppermint/internal/api/peppermint/service/backoffice/hub"
-	"github.com/AgentCoop/peppermint/internal/security"
 	"github.com/AgentCoop/peppermint/internal/logger"
 	"github.com/AgentCoop/peppermint/internal/runtime"
+	"github.com/AgentCoop/peppermint/internal/runtime/node/model"
+	"github.com/AgentCoop/peppermint/internal/security"
+	"github.com/AgentCoop/peppermint/pkg"
 
-	//"github.com/AgentCoop/peppermint/internal/grpc/calldesc"
-	"github.com/AgentCoop/peppermint/internal/model/node"
 	cc "github.com/AgentCoop/peppermint/internal/service/hub/grpc/client"
 	//hh "github.com/AgentCoop/peppermint/internal/plugin/hub"
 	//"github.com/AgentCoop/peppermint/internal/runtime"
@@ -18,7 +18,7 @@ import (
 func (c *joinContext) JoinTask(j job.Job) (job.Init, job.Run, job.Finalize) {
 	run := func(task job.Task) {
 		info := job.Logger(logger.Info)
-		rt := runtime.GlobalRegistry().Runtime()
+		appNode := runtime.GlobalRegistry().App().(pkg.AppNode)
 		ctx := context.Background()
 		hubClient := j.GetValue().(cc.HubClient)
 
@@ -36,11 +36,12 @@ func (c *joinContext) JoinTask(j job.Job) (job.Init, job.Run, job.Finalize) {
 		c.encKey, err = keyExch.ComputeKey(resHello.GetDhPubKey())
 		task.Assert(err)
 
-		err = node.UpdateNodeEncKey(c.encKey)
+		nodeDb := model.NewDb(appNode.Db())
+		err = nodeDb.UpdateNode(appNode.Node().Id(), c.encKey)
 		task.Assert(err)
 
 		info("computed encryption key is %x...%x", c.encKey[0:1], c.encKey[len(c.encKey)-1:])
-		rt.NodeConfigurator().Refresh()
+		//rt.NodeConfigurator().Refresh()
 
 		// Finish the join procedure
 		reqJoin := &hub.Join_Request{

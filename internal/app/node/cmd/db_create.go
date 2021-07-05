@@ -1,14 +1,16 @@
 package cmd
 
 import (
-	"github.com/AgentCoop/peppermint/internal/model/node"
 	"github.com/AgentCoop/peppermint/internal/runtime"
+	"github.com/AgentCoop/peppermint/internal/runtime/node/model"
 )
 
 func DbCreateCmd(force bool) {
+	app := runtime.GlobalRegistry().App()
+	appDb := model.NewDb(app.Db())
 	if force {
-		node.DropTables()
+		appDb.DropTables()
 	}
-	node.CreateTables()
+	appDb.CreateTables()
 	runtime.GlobalRegistry().InvokeHooks(runtime.CmdCreateDbHook, force)
 }

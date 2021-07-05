@@ -1,11 +1,11 @@
 package cmd
 
 import (
-	"github.com/AgentCoop/peppermint/internal/model/node"
 	"github.com/AgentCoop/peppermint/internal/runtime"
+	"github.com/AgentCoop/peppermint/internal/runtime/node/model"
 )
 
 func DbMigrateCmd() {
-	node.Migrate()
+	model.Migrate()
 	runtime.GlobalRegistry().InvokeHooks(runtime.CmdMigrateDbHook)
 }

@@ -16,9 +16,9 @@ const (
 )
 
 type NodePool interface {
-	Add(node.Node)
+	Add(pkg.Node)
 	Remove(i.NodeId)
-	FindById(i.NodeId) node.Node
+	FindById(i.NodeId) pkg.Node
 	FilterByStatus(NodeStatus) NodePool
 	Len() int
 }
@@ -34,11 +34,16 @@ type ServiceEndpoint interface {
 }
 
 type runtime struct {
-	nodeMngr    node.NodeManager
+	app         pkg.App
+	nodeMngr    pkg.NodeManager
 	nodeCfg     node.NodeConfigurator
 	parser      pkg.CliParser
 	svcRegistry map[string]service.Service
 	encKeyStore rt.InMemoryStore
+}
+
+func (r *runtime) App() pkg.App {
+	return r.app
 }
 
 func (r *runtime) RegisterService(svcName string, svc service.Service) {
@@ -68,7 +73,7 @@ func (r *runtime) Services() []service.Service {
 	return out
 }
 
-func (r *runtime) NodeManager() node.NodeManager {
+func (r *runtime) NodeManager() pkg.NodeManager {
 	return r.nodeMngr
 }
 

@@ -16,11 +16,13 @@ func (ctx *clientHelloCtx) JoinTask(j job.Job) (job.Init, job.Run, job.Finalize)
 		req := desc.RequestData().(*joinRequest)
 		nodeId := desc.Meta().NodeId()
 
-		cfg := desc.ServiceConfigurator().(model.HubConfigurator)
+		svc := desc.Service()
+		cfg := svc.Configurator().(model.HubConfigurator)
 		invalidCreds := cfg.Secret() != req.secret
 		task.AssertTrue(invalidCreds, errInvalidCreds)
 
-		err := model.SaveJoinRequest(nodeId, ctx.encKey)
+		db := model.NewDb(svc.Db())
+		err := db.SaveJoinRequest(nodeId, ctx.encKey)
 		task.Assert(err)
 
 		job.Logger(logger.Info)("node #%x join accepted", nodeId)

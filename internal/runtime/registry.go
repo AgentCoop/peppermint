@@ -1,7 +1,7 @@
 package runtime
 
 import (
-	"github.com/AgentCoop/peppermint/internal/db"
+	"github.com/AgentCoop/peppermint/pkg"
 	rt "github.com/AgentCoop/peppermint/pkg/runtime"
 )
 
@@ -27,7 +27,7 @@ var (
 	runtimeKey       = regKey("runtime")
 	serviceKey       = regKey("service")
 	parserCmdHookKey = regKey("cli-parser-hook")
-	dbKey            = regKey("db")
+	appKey            = regKey("app")
 	grpcSessionKey   = regKey("grpc-session")
 	hooksKey         = regKey("hooks")
 )
@@ -37,9 +37,9 @@ func init() {
 	regMap[runtimeKey] = make([]interface{}, 1)
 	regMap[serviceKey] = make([]interface{}, 0)
 	regMap[parserCmdHookKey] = make([]interface{}, 0)
-	regMap[dbKey] = make([]interface{}, 1)
 	regMap[grpcSessionKey] = make([]interface{}, 1)
 	regMap[hooksKey] = make([]interface{}, 0)
+	regMap[appKey] = make([]interface{}, 1)
 }
 
 func GlobalRegistry() GlobalRegistryInterface {
@@ -50,16 +50,23 @@ type GlobalRegistryInterface interface {
 	Runtime() rt.Runtime
 	SetRuntime(rt.Runtime)
 
-	Db() db.Db
-	SetDb(db.Db)
+	App() pkg.App
+	SetApp(pkg.App)
 
 	RegisterHook(Hook, HookHandler)
 	InvokeHooks(Hook, ...interface{})
-
 	ServiceLocator(string) ServiceLocator
-
 	RegisterParserCmdHook(string, parserCmdHook)
 	LookupParserCmdHook(string) []parserCmdHook
+}
+
+
+func (m registryMap) App() pkg.App {
+	return m[appKey][0].(pkg.App)
+}
+
+func (m registryMap) SetApp(app pkg.App) {
+	m[appKey][0] = app
 }
 
 func (m registryMap) Runtime() rt.Runtime {
@@ -68,14 +75,6 @@ func (m registryMap) Runtime() rt.Runtime {
 
 func (m registryMap) SetRuntime(r rt.Runtime) {
 	m[runtimeKey][0] = r
-}
-
-func (m registryMap) Db() db.Db {
-	return m[dbKey][0].(db.Db)
-}
-
-func (m registryMap) SetDb(db db.Db) {
-	m[dbKey][0] = db
 }
 
 func (m registryMap) RegisterHook(typ Hook, handler HookHandler) {

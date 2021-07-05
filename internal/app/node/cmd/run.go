@@ -9,6 +9,7 @@ func RunCmd() error {
 	svcJob := job.NewJob(nil)
 	rt := runtime.GlobalRegistry().Runtime()
 	for _, svc := range rt.Services() {
+		svcJob.AddTask(svc.InitTask)
 		uds, tcp := svc.IpcServer(), svc.Server()
 		if uds != nil {
 			svcJob.AddTask(uds.StartTask)

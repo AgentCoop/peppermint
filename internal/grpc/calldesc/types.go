@@ -38,7 +38,7 @@ type meta struct {
 
 type srvDescriptor struct {
 	common
-	svcCfg  service.ServiceConfigurator
+	svc     service.Service
 	method  service.Method
 	reqData grpc.RequestData
 	resData grpc.ResponseData

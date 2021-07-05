@@ -1,9 +1,17 @@
 package pkg
 
-import job "github.com/AgentCoop/go-work"
+import (
+	job "github.com/AgentCoop/go-work"
+)
 
 type App interface {
-	WithDb()
-	Job() job.Job
 	RootDir() string
+	Db() Db
+	WithDb(Db)
+	Job() job.Job
+}
+
+type AppNode interface {
+	App
+	Node() Node
 }

@@ -1,5 +1,0 @@
-package node
-
-func init() {
-
-}

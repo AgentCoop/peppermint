@@ -25,7 +25,7 @@ type ServerDescriptor interface {
 	CallDescriptor
 	Data
 	Meta() ServerMeta
-	ServiceConfigurator() service.ServiceConfigurator
+	Service() service.Service
 	WithSession(Session)
 	Session() Session
 }

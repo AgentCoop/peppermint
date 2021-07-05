@@ -7,7 +7,8 @@ import (
 )
 
 type Runtime interface {
-	NodeManager() node.NodeManager
+	App() pkg.App
+	NodeManager() pkg.NodeManager
 	CliParser() pkg.CliParser
 	NodeConfigurator() node.NodeConfigurator
 	RegisterService(string, service.Service)

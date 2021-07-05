@@ -1,6 +1,8 @@
 package service
 
 import (
+	job "github.com/AgentCoop/go-work"
+	"github.com/AgentCoop/peppermint/pkg"
 	"github.com/AgentCoop/peppermint/pkg/grpc"
 	"github.com/AgentCoop/peppermint/pkg/node"
 	"google.golang.org/protobuf/runtime/protoimpl"
@@ -9,10 +11,18 @@ import (
 
 type Service interface {
 	Name() string
-	Server() grpc.BaseServer
-	IpcServer() grpc.BaseServer
-	Policy() ServicePolicy
+	//App() pkg.AppNode
+	Db() pkg.Db
+	OpenDb() error
 	Configurator() ServiceConfigurator
+	WithConfigurator(ServiceConfigurator)
+	Server() grpc.BaseServer
+	WithServer(grpc.BaseServer)
+	IpcServer() grpc.BaseServer
+	WithIpcServer(server grpc.BaseServer)
+	Policy() ServicePolicy
+	WithPolicy(ServicePolicy)
+	InitTask(j job.Job) (job.Init, job.Run, job.Finalize)
 }
 
 type ServiceConfigurator interface {

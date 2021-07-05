@@ -1,6 +1,6 @@
 package model
 
-import "github.com/AgentCoop/peppermint/internal/model"
+import "github.com/AgentCoop/peppermint/internal/runtime/node/model"
 
 type WebProxyConfig struct {
 	model.Model

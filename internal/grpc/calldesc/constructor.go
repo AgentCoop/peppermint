@@ -5,7 +5,7 @@ import (
 	proto "github.com/AgentCoop/peppermint/internal/api/peppermint"
 	g "github.com/AgentCoop/peppermint/internal/grpc"
 	"github.com/AgentCoop/peppermint/internal/runtime"
-	"github.com/AgentCoop/peppermint/pkg/node"
+	"github.com/AgentCoop/peppermint/pkg"
 	"github.com/AgentCoop/peppermint/pkg/service"
 	"google.golang.org/grpc/metadata"
 )
@@ -18,25 +18,25 @@ func NewSecurityPolicy(useEnc bool, encKey []byte) *secPolicy {
 	return p
 }
 
-func NewSecurityPolicyFromMethod(method service.Method, cfg node.NodeConfigurator) *secPolicy {
+func NewSecurityPolicyFromMethod(method service.Method, node pkg.Node) *secPolicy {
 	var useEnc bool
 	var encKey []byte
 	switch {
 	case method.WasSet(proto.E_MEnforceEnc):
 		useEnc = method.CallPolicy().EnforceEncryption()
-		encKey = cfg.EncKey()
+		encKey = node.EncKey()
 	case method.ServicePolicy().WasSet(proto.E_EnforceEnc):
 		useEnc = method.ServicePolicy().EnforceEncryption()
-		encKey = cfg.EncKey()
+		encKey = node.EncKey()
 	default:
-		useEnc = cfg.E2E_EncryptionEnabled()
-		encKey = cfg.EncKey()
+		useEnc = node.EncEnabled()
+		encKey = node.EncKey()
 	}
 	secPolicy := NewSecurityPolicy(useEnc, encKey)
 	return secPolicy
 }
 
-func NewServer(ctx context.Context, cfg service.ServiceConfigurator, method service.Method, secPolicy *secPolicy) *srvDescriptor {
+func NewServer(ctx context.Context, svc service.Service, method service.Method, secPolicy *secPolicy) *srvDescriptor {
 	desc := &srvDescriptor{}
 	desc.Context = ctx
 	desc.common.typ = ServerType
@@ -45,7 +45,7 @@ func NewServer(ctx context.Context, cfg service.ServiceConfigurator, method serv
 	header, _ := metadata.FromIncomingContext(ctx)
 	desc.meta.header = header
 	desc.method = method
-	desc.svcCfg = cfg
+	desc.svc = svc
 	return desc
 }
 
@@ -58,9 +58,9 @@ func NewClient(ctx context.Context, secPolicy *secPolicy, method service.Method)
 	desc.meta.header = metadata.New(nil)
 	desc.secPolicy = secPolicy
 	// Assign value to the node ID header
-	rt := runtime.GlobalRegistry().Runtime()
-	cfg := rt.NodeConfigurator()
-	g.SetNodeId(&desc.meta.header, cfg.ExternalId())
-	desc.meta.nodeId = cfg.ExternalId()
+	app := runtime.GlobalRegistry().App().(pkg.AppNode)
+	node := app.Node()
+	g.SetNodeId(&desc.meta.header, node.ExternalId())
+	desc.meta.nodeId = node.ExternalId()
 	return desc
 }

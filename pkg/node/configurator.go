@@ -6,8 +6,8 @@ import (
 )
 
 type Configurator interface {
-	Fetch() error // fetch configuration data from DB
-	Refresh() error
+	Fetch(uint) error // fetch configuration data from DB
+	Refresh(uint) error
 	MergeCliOptions(parser pkg.CliParser)
 }
 

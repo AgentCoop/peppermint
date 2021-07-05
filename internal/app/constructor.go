@@ -16,7 +16,7 @@ func NewApp(profile AppProfile, opts interface{}) *app {
 		profile:    profile,
 	}
 	app.appJob = job.NewJob(nil)
-	app.appJob.AddOneshotTask(app.InitTask)
+	//app.appJob.AddOneshotTask(app.InitTask)
 	cwd = os.Getenv(ENV_ROOT)
 	if len(cwd) == 0 {
 		cwd, cwdErr = os.Getwd()
@@ -28,7 +28,6 @@ func NewApp(profile AppProfile, opts interface{}) *app {
 	app.appDir = cwd
 	rt := runtime.NewRuntime(
 		node.NewNodeManager(),
-		node.NewConfigurator(),
 		cliparser.NewParser(opts),
 	)
 	runtime.GlobalRegistry().SetRuntime(rt)

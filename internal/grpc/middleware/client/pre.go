@@ -6,18 +6,18 @@ import (
 	"github.com/AgentCoop/peppermint/internal/grpc/calldesc"
 	"github.com/AgentCoop/peppermint/internal/grpc/stream"
 	"github.com/AgentCoop/peppermint/internal/runtime"
+	"github.com/AgentCoop/peppermint/pkg"
 	"github.com/AgentCoop/peppermint/pkg/service"
 	"google.golang.org/grpc"
 	"time"
 )
 
 func prepareCallDescriptor(ctx context.Context, cc g.BaseClient, methodName string, svcPolicy service.ServicePolicy) g.ClientDescriptor {
-	rt := runtime.GlobalRegistry().Runtime()
+	app := runtime.GlobalRegistry().App().(pkg.AppNode)
 	switch v := ctx.(type) {
 	case g.ClientDescriptor:
 		return v
 	default:
-		cfg := rt.NodeConfigurator()
 		method, _ := svcPolicy.FindMethodByName(methodName)
 		// Set call timeout in milliseconds if needed
 		timeout := method.CallPolicy().Timeout()
@@ -26,7 +26,7 @@ func prepareCallDescriptor(ctx context.Context, cc g.BaseClient, methodName stri
 			ctx, cancel = context.WithTimeout(ctx, time.Duration(timeout)*time.Millisecond)
 			_ = cancel
 		}
-		secPolicy := calldesc.NewSecurityPolicyFromMethod(method, cfg)
+		secPolicy := calldesc.NewSecurityPolicyFromMethod(method, app.Node())
 		desc := calldesc.NewClient(ctx, secPolicy, method)
 		if method.CallPolicy().SessionSticky() {
 			lastCall := cc.LastCall()

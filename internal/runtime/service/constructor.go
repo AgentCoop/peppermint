@@ -2,8 +2,7 @@ package service
 
 import (
 	"github.com/AgentCoop/peppermint/internal/grpc/protobuf"
-	"github.com/AgentCoop/peppermint/pkg/grpc"
-	"github.com/AgentCoop/peppermint/pkg/service"
+	"github.com/AgentCoop/peppermint/pkg"
 )
 
 func NewServicePolicy(svcFullName string, svcMethods []string) *svcPolicy {
@@ -15,11 +14,9 @@ func NewServicePolicy(svcFullName string, svcMethods []string) *svcPolicy {
 	return policy
 }
 
-func NewBaseService(srv grpc.BaseServer, ipcSrv grpc.BaseServer, cfg service.ServiceConfigurator, policy service.ServicePolicy) *baseService {
+func NewBaseService(svcName string, node pkg.Node) *baseService {
 	svc := new(baseService)
-	svc.srv = srv
-	svc.cfg = cfg
-	svc.ipcSrv = ipcSrv
-	svc.policy = policy
+	svc.name = svcName
+	svc.node = node
 	return svc
 }

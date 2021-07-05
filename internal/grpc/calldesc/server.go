@@ -5,6 +5,10 @@ import (
 	"github.com/AgentCoop/peppermint/pkg/service"
 )
 
+func (s *srvDescriptor) Service() service.Service {
+	return s.svc
+}
+
 func (s *srvDescriptor) Method() service.Method {
 	return s.method
 }
@@ -20,10 +24,6 @@ func (s *srvDescriptor) Session() grpc.Session {
 //
 // Common interface
 //
-
-func (s *srvDescriptor) ServiceConfigurator() service.ServiceConfigurator {
-	return s.svcCfg
-}
 
 func (s *srvDescriptor) HandleMeta() {
 	s.meta.extractCommonFieldsVals()

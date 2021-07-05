@@ -3,7 +3,7 @@ package model
 import (
 	job "github.com/AgentCoop/go-work"
 	"github.com/AgentCoop/peppermint/internal/logger"
-	"github.com/AgentCoop/peppermint/internal/model"
+	"github.com/AgentCoop/peppermint/internal/runtime/node/model"
 	"github.com/AgentCoop/peppermint/internal/runtime"
 )
 

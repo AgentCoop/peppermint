@@ -18,6 +18,8 @@ type netOptions struct {
 type Bootstrap struct {
 	Tags            []string `long:"tag"`
 	IdFromInterface string   `long:"id-from-nic"`
+	CreateDb        bool     `long:"create-db"`
+	Force           bool     `long:"force"`
 }
 
 type Version struct {
@@ -45,6 +47,7 @@ type Run struct {
 var (
 	Options = struct {
 		AppDir    string `long:"appdir" short:"d"`
+		NodeId    uint   `long:"node-id" short:"n"`
 		Bootstrap `command:"bootstrap"`
 		DbMigrate `command:"db_migrate"`
 		DbCreate  `command:"db_create"`

@@ -13,11 +13,10 @@ import (
 func handleMeta(ctx context.Context, svcName string, methodName string) g.ServerDescriptor {
 	rt := runtime.GlobalRegistry().Runtime()
 	svc := rt.ServiceByName(svcName)
-	cfg := svc.Configurator()
 	svcPolicy := svc.Policy()
 	method, _ := svcPolicy.FindMethodByName(methodName)
 	//secPolicy := calldesc.NewSecurityPolicyFromMethod(method, nil)
-	desc := calldesc.NewServer(ctx, cfg, method, nil)
+	desc := calldesc.NewServer(ctx, svc, method, nil)
 	desc.HandleMeta()
 	return desc
 }
