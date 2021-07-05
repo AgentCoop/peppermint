@@ -1,4 +1,3 @@
-
 package hub
 
 import (
@@ -27,15 +26,15 @@ type HubService struct {
 func init() {
 	hub := new(HubService)
 	reg := runtime.GlobalRegistry()
-	reg.RegisterHook(runtime.ServiceInitHook, func(args...interface{}) {
-		hub.Init()
+	reg.RegisterHook(runtime.ServiceInitHook, func(args ...interface{}) error {
+		return hub.Init()
 	})
-	reg.RegisterHook(runtime.CmdCreateDbHook, func(args...interface{}) {
-		hub.createDd(args...)
+	reg.RegisterHook(runtime.CmdCreateDbHook, func(args ...interface{}) error {
+		return hub.createDd(args...)
 	})
 }
 
-func (hub *HubService) Init() (svcPkg.Service, error) {
+func (hub *HubService) Init() error {
 	rt := runtime.GlobalRegistry().Runtime()
 	app := runtime.GlobalRegistry().App().(pkg.AppNode)
 	var ipcSrv grpc2.BaseServer
@@ -66,14 +65,16 @@ func (hub *HubService) Init() (svcPkg.Service, error) {
 	}
 	hub.RegisterEncKeyStoreFallback()
 	rt.RegisterService(Name, hub)
-	return hub, nil
+	return nil
 }
 
 func (hub *HubService) encKeyStoreFallback(key interface{}) (interface{}, error) {
 	nodeId := key.(i.NodeId)
 	db := model.NewDb(hub.Db())
-	node, err := db.FetchById(nodeId);
-	if err != nil { return nil, err }
+	node, err := db.FetchById(nodeId)
+	if err != nil {
+		return nil, err
+	}
 	return node.EncKey, nil
 }
 
@@ -88,18 +89,20 @@ func (hub *HubService) migrateDb(options interface{}) {
 	//h.AutoMigrate(&model.HubConfig{}, &model.HubNode{}, &model.HubNodeTag{})
 }
 
-func (hub *HubService) createDd(args...interface{}) {
+func (hub *HubService) createDd(args ...interface{}) error {
 	force := args[0].(bool)
 	node := args[1].(pkg.Node)
 	hub.Service = service.NewBaseService(Name, node)
 	err := hub.Service.OpenDb()
 	if err != nil {
-		// @todo rewrite
-		panic("failed to open db")
+		return err
 	}
 	hubDb := model.NewDb(hub.Db())
 	if force {
-		hubDb.DropTables()
+		err := hubDb.DropTables()
+		if err != nil {
+			return err
+		}
 	}
-	hubDb.CreateTables()
+	return hubDb.CreateTables()
 }

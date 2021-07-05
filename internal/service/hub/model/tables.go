@@ -35,16 +35,18 @@ var (
 	}
 )
 
-func (h hubDb) CreateTables() {
+func (h hubDb) CreateTables() error {
 	db := h.Handle()
 	mig := db.Migrator()
 	job.Logger(logger.Debug)("creating Hub tables...")
-	mig.CreateTable(tables...)
+	err := mig.CreateTable(tables...)
+	return err
 }
 
-func (h hubDb) DropTables() {
+func (h hubDb) DropTables() error {
 	db := h.Handle()
 	mig := db.Migrator()
 	job.Logger(logger.Debug)("dropping Hub tables...")
-	mig.DropTable(tables...)
+	err := mig.DropTable(tables...)
+	return err
 }
