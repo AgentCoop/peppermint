@@ -4,15 +4,15 @@ import (
 	job "github.com/AgentCoop/go-work"
 	i "github.com/AgentCoop/peppermint/internal"
 	api "github.com/AgentCoop/peppermint/internal/api/peppermint/service/backoffice/hub"
+	"github.com/AgentCoop/peppermint/internal/runtime"
 	"github.com/AgentCoop/peppermint/internal/runtime/service"
+	grpc "github.com/AgentCoop/peppermint/internal/service/hub/grpc/server"
 	"github.com/AgentCoop/peppermint/internal/service/hub/logger"
+	"github.com/AgentCoop/peppermint/internal/service/hub/model"
 	"github.com/AgentCoop/peppermint/pkg"
 	grpc2 "github.com/AgentCoop/peppermint/pkg/grpc"
 	svcPkg "github.com/AgentCoop/peppermint/pkg/service"
 	"net"
-	grpc "github.com/AgentCoop/peppermint/internal/service/hub/grpc/server"
-	"github.com/AgentCoop/peppermint/internal/service/hub/model"
-	"github.com/AgentCoop/peppermint/internal/runtime"
 )
 
 var (
@@ -34,6 +34,28 @@ func init() {
 	})
 }
 
+func (hub *HubService) ReloadConfig(nodeId uint) error {
+	cfg, err := hub.FetchConfig(nodeId)
+	if err != nil {
+		return err
+	}
+	hub.WithConfigurator(cfg)
+	job.Logger(logger.Info)("%s configuration has been reloaded", hub.ShortName())
+	return nil
+}
+
+func (hub *HubService) FetchConfig(nodeId uint) (svcPkg.ServiceConfigurator, error) {
+	rt := runtime.GlobalRegistry().Runtime()
+	hubDb := model.NewDb(hub.Service.Db())
+	cfg := model.NewConfigurator(hubDb)
+	err := cfg.Fetch(nodeId)
+	if err != nil {
+		return nil, err
+	}
+	cfg.MergeCliOptions(rt.CliParser())
+	return cfg, nil
+}
+
 func (hub *HubService) Init() error {
 	rt := runtime.GlobalRegistry().Runtime()
 	app := runtime.GlobalRegistry().App().(pkg.AppNode)
@@ -42,10 +64,10 @@ func (hub *HubService) Init() error {
 	hub.Service.OpenDb()
 
 	// Service configurator
-	hubDb := model.NewDb(hub.Service.Db())
-	cfg := model.NewConfigurator(hubDb)
-	cfg.Fetch(app.Node().Id())
-	cfg.MergeCliOptions(rt.CliParser())
+	cfg, err := hub.FetchConfig(app.Node().Id())
+	if err != nil {
+		return err
+	}
 	hub.Service.WithConfigurator(cfg)
 
 	// Create network server
@@ -93,14 +115,12 @@ func (hub *HubService) createDd(args ...interface{}) error {
 	force := args[0].(bool)
 	node := args[1].(pkg.Node)
 	hub.Service = service.NewBaseService(Name, node)
-	err := hub.Service.OpenDb()
-	if err != nil {
+	if err := hub.Service.OpenDb(); err != nil {
 		return err
 	}
 	hubDb := model.NewDb(hub.Db())
 	if force {
-		err := hubDb.DropTables()
-		if err != nil {
+		if err := hubDb.DropTables(); err != nil {
 			return err
 		}
 	}

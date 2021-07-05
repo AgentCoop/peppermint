@@ -4,7 +4,6 @@ const (
 	CMD_NAME_BOOTSTRAP  = "bootstrap"
 	CMD_NAME_VERSION    = "version"
 	CMD_NAME_DB_MIGRATE = "db_migrate"
-	CMD_NAME_DB_CREATE  = "db_create"
 	CMD_NAME_RUN        = "run"
 	CMD_NAME_JOIN       = "join"
 	CMD_NAME_WEB_PROXY  = "proxy-cfg"
@@ -31,10 +30,6 @@ type Join struct {
 	Hub  string   `long:"hub" required:"true"`
 }
 
-type DbCreate struct {
-	Force bool `long:"force" description:"Force to drop existing database before creation"`
-}
-
 type DbMigrate struct {
 	Drop bool `long:"drop" description:"Drop database before migration"`
 }
@@ -50,7 +45,6 @@ var (
 		NodeId    uint   `long:"node-id" short:"n"`
 		Bootstrap `command:"bootstrap"`
 		DbMigrate `command:"db_migrate"`
-		DbCreate  `command:"db_create"`
 		Run       `command:"run"`
 		Join      `command:"join"`
 		Version   `command:"version"`

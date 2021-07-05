@@ -37,12 +37,6 @@ func (app *appNode) ParserTask(j job.Job) (job.Init, job.Run, job.Finalize) {
 			// v := opts.(cmd.DbMigrate)
 			cmd.DbMigrateCmd()
 
-		case cmd.CMD_NAME_DB_CREATE:
-			opts, err := parser.GetCmdOptions(cmdName)
-			task.Assert(err)
-			v := opts.(cmd.DbCreate)
-			cmd.DbCreateCmd(v.Force)
-
 		case cmd.CMD_NAME_RUN:
 			err := cmd.RunCmd()
 			task.Assert(err)

@@ -28,7 +28,8 @@ func (appNode *appNode) InitTask(j job.Job) (job.Init, job.Run, job.Finalize) {
 			task.Assert(err)
 			appNode.node = node
 			// Initialize services
-			runtime.GlobalRegistry().InvokeHooks(runtime.ServiceInitHook)
+			err = runtime.GlobalRegistry().InvokeHooks(runtime.ServiceInitHook)
+			task.Assert(err)
 		}
 		task.Done()
 	}

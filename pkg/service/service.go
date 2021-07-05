@@ -11,11 +11,13 @@ import (
 
 type Service interface {
 	Name() string
-	//App() pkg.AppNode
+	ShortName() string
 	Db() pkg.Db
 	OpenDb() error
 	Configurator() ServiceConfigurator
 	WithConfigurator(ServiceConfigurator)
+	ReloadConfig(uint) error
+	FetchConfig(uint) (ServiceConfigurator, error)
 	Server() grpc.BaseServer
 	WithServer(grpc.BaseServer)
 	IpcServer() grpc.BaseServer

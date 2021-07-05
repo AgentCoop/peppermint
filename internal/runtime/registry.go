@@ -22,12 +22,12 @@ const (
 )
 
 var (
-	regMap           registryMap
-	runtimeKey       = regKey("runtime")
-	serviceKey       = regKey("service")
-	appKey            = regKey("app")
-	grpcSessionKey   = regKey("grpc-session")
-	hooksKey         = regKey("hooks")
+	regMap         registryMap
+	runtimeKey     = regKey("runtime")
+	serviceKey     = regKey("service")
+	appKey         = regKey("app")
+	grpcSessionKey = regKey("grpc-session")
+	hooksKey       = regKey("hooks")
 )
 
 func init() {
@@ -76,7 +76,9 @@ func (m registryMap) RegisterHook(typ Hook, handler HookHandler) {
 func (m registryMap) InvokeHooks(typ Hook, args ...interface{}) error {
 	for _, entry := range m[hooksKey] {
 		entry := entry.(*hookEntry)
-		if entry.typ != typ { continue }
+		if entry.typ != typ {
+			continue
+		}
 		err := entry.handler(args...)
 		if err != nil {
 			return err
@@ -88,4 +90,3 @@ func (m registryMap) InvokeHooks(typ Hook, args ...interface{}) error {
 func (m registryMap) ServiceLocator(svcName string) ServiceLocator {
 	return nil
 }
-

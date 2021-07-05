@@ -6,10 +6,22 @@ import (
 	"github.com/AgentCoop/peppermint/internal/app/node/cmd"
 	"github.com/AgentCoop/peppermint/internal/runtime"
 	"os"
+	"os/signal"
+	"syscall"
 )
 
 func NewApp(profile app.AppProfile) *appNode {
 	appNode := new(appNode)
+	// Listen to some system signals
+	appNode.sigChan = make(chan os.Signal, 1)
+	signal.Notify(appNode.sigChan, syscall.SIGHUP)
+	//go func() {
+	//	for {
+	//		sig := <-sigChan
+	//		fmt.Printf("got %v", sig)
+	//	}
+	//}()
+	// Base app
 	appNode.App = app.NewApp(profile, &cmd.Options)
 	appNode.Job().AddOneshotTask(appNode.InitTask)
 	runtime.GlobalRegistry().SetApp(appNode)
@@ -33,8 +45,9 @@ func NewTestAppJob() job.Job {
 
 func NewAppJob() job.Job {
 	prof := app.ProfileFromEnv()
-	nodeApp := NewApp(prof)
-	appJob := nodeApp.Job()
-	appJob.AddTask(nodeApp.ParserTask)
-	return appJob
+	appNode := NewApp(prof)
+	j := appNode.Job()
+	j.AddTask(appNode.ParserTask)
+	j.AddTask(appNode.SigTask)
+	return j
 }

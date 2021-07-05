@@ -41,12 +41,25 @@ func (b *baseService) Db() pkg.Db {
 	return b.db
 }
 
+func (b *baseService) ReloadConfig(uint) error {
+	panic("Service.ReloadConfig must be implemented")
+}
+
+func (b *baseService) FetchConfig(uint) (service.ServiceConfigurator, error) {
+	panic("Service.FetchConfig must be implemented")
+}
+
 func (b *baseService) RegisterEncKeyStoreFallback() {
 	panic("implement me")
 }
 
 func (b *baseService) Name() string {
-	return utils.Grpc_ExtractServerShortName(b.srv.FullName())
+	return b.name
+}
+
+func (b *baseService) ShortName() string {
+	parts := strings.Split(b.name, ".")
+	return parts[len(parts)-1]
 }
 
 func (b *baseService) Server() grpc.BaseServer {

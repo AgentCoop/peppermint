@@ -3,7 +3,6 @@ package runtime
 import (
 	i "github.com/AgentCoop/peppermint/internal"
 	"github.com/AgentCoop/peppermint/pkg"
-	"github.com/AgentCoop/peppermint/pkg/node"
 	rt "github.com/AgentCoop/peppermint/pkg/runtime"
 	"github.com/AgentCoop/peppermint/pkg/service"
 	"net"
@@ -36,7 +35,6 @@ type ServiceEndpoint interface {
 type runtime struct {
 	app         pkg.App
 	nodeMngr    pkg.NodeManager
-	nodeCfg     node.NodeConfigurator
 	parser      pkg.CliParser
 	svcRegistry map[string]service.Service
 	encKeyStore rt.InMemoryStore
@@ -75,10 +73,6 @@ func (r *runtime) Services() []service.Service {
 
 func (r *runtime) NodeManager() pkg.NodeManager {
 	return r.nodeMngr
-}
-
-func (r *runtime) NodeConfigurator() node.NodeConfigurator {
-	return r.nodeCfg
 }
 
 func (r *runtime) CliParser() pkg.CliParser {
