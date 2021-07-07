@@ -9,14 +9,11 @@ import (
 	"os"
 )
 
-func NewApp(profile AppProfile, opts interface{}) *app {
+func NewApp(opts interface{}) *app {
 	var cwd string
 	var cwdErr error
-	app := &app{
-		profile:    profile,
-	}
+	app := &app{}
 	app.appJob = job.NewJob(nil)
-	//app.appJob.AddOneshotTask(app.InitTask)
 	cwd = os.Getenv(ENV_ROOT)
 	if len(cwd) == 0 {
 		cwd, cwdErr = os.Getwd()

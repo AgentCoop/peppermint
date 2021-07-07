@@ -2,7 +2,6 @@ package service
 
 import (
 	"github.com/AgentCoop/peppermint/internal/grpc/protobuf"
-	"github.com/AgentCoop/peppermint/pkg"
 )
 
 func NewServicePolicy(svcFullName string, svcMethods []string) *svcPolicy {
@@ -14,9 +13,8 @@ func NewServicePolicy(svcFullName string, svcMethods []string) *svcPolicy {
 	return policy
 }
 
-func NewBaseService(svcName string, node pkg.Node) *baseService {
+func NewBaseService(svcName string) *baseService {
 	svc := new(baseService)
 	svc.name = svcName
-	svc.node = node
 	return svc
 }

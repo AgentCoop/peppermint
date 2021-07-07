@@ -41,6 +41,9 @@ func BootstrapCmd(createDb bool, force bool, IdFromNic string, tags []string) er
 	if err != nil {
 		return err
 	}
-	runtime.GlobalRegistry().InvokeHooks(runtime.CmdCreateDbHook, true, node)
+	if err := app.InitServiceDb(node); err != nil {
+		return err
+	}
+	err = runtime.GlobalRegistry().InvokeHooks(runtime.CmdCreateDbHook, true, app.ServiceDb())
 	return err
 }

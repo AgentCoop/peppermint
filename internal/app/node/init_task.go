@@ -27,6 +27,8 @@ func (appNode *appNode) InitTask(j job.Job) (job.Init, job.Run, job.Finalize) {
 			node, err := nodeDb.NewNode(cmd.Options.NodeId)
 			task.Assert(err)
 			appNode.node = node
+			// Service db
+			appNode.InitServiceDb(node)
 			// Initialize services
 			err = runtime.GlobalRegistry().InvokeHooks(runtime.ServiceInitHook)
 			task.Assert(err)

@@ -14,4 +14,6 @@ type App interface {
 type AppNode interface {
 	App
 	Node() Node
+	ServiceDb() Db
+	InitServiceDb(node Node) error
 }

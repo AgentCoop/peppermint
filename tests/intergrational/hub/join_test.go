@@ -16,9 +16,13 @@ var (
 )
 
 func TestJoinHello(t *testing.T) {
+	os.Args = []string{"testapp", "bootstrap", "--create-db", "--force"}
+	app := node.NewApp()
+	<-app.Job().Run()
+
 	os.Args = []string{"testapp", "run", "--hub-port=12001", "-n=1"}
-	appJob := node.NewTestAppJob()
-	appJob.Run()
+	appJob := node.NewApp()
+	appJob.Job().Run()
 
 	time.Sleep(50 * time.Millisecond)
 

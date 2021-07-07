@@ -1,7 +1,6 @@
 package node
 
 import (
-	job "github.com/AgentCoop/go-work"
 	app "github.com/AgentCoop/peppermint/internal/app"
 	"github.com/AgentCoop/peppermint/internal/app/node/cmd"
 	"github.com/AgentCoop/peppermint/internal/runtime"
@@ -10,44 +9,17 @@ import (
 	"syscall"
 )
 
-func NewApp(profile app.AppProfile) *appNode {
+func NewApp() *appNode {
 	appNode := new(appNode)
 	// Listen to some system signals
 	appNode.sigChan = make(chan os.Signal, 1)
 	signal.Notify(appNode.sigChan, syscall.SIGHUP)
-	//go func() {
-	//	for {
-	//		sig := <-sigChan
-	//		fmt.Printf("got %v", sig)
-	//	}
-	//}()
-	// Base app
-	appNode.App = app.NewApp(profile, &cmd.Options)
+	appNode.App = app.NewApp(&cmd.Options)
+	// Main job
 	appNode.Job().AddOneshotTask(appNode.InitTask)
+	appNode.Job().AddTask(appNode.ParserTask)
+	appNode.Job().AddTask(appNode.SigTask)
+	// Add created application to the global registry
 	runtime.GlobalRegistry().SetApp(appNode)
 	return appNode
-}
-
-func NewTestAppJob() job.Job {
-	profile, _ := app.AppProfiles[app.TEST]
-	os.Remove(profile.DbFilename)
-
-	nodeApp := NewApp(profile)
-	appJob := nodeApp.Job()
-	appJob.AddTask(nodeApp.SetupTestDbTask)
-	<-appJob.Run()
-
-	nodeApp = NewApp(profile)
-	appJob = nodeApp.Job()
-	appJob.AddTask(nodeApp.ParserTask)
-	return appJob
-}
-
-func NewAppJob() job.Job {
-	prof := app.ProfileFromEnv()
-	appNode := NewApp(prof)
-	j := appNode.Job()
-	j.AddTask(appNode.ParserTask)
-	j.AddTask(appNode.SigTask)
-	return j
 }

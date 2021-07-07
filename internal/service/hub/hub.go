@@ -46,7 +46,9 @@ func (hub *HubService) ReloadConfig(nodeId uint) error {
 
 func (hub *HubService) FetchConfig(nodeId uint) (svcPkg.ServiceConfigurator, error) {
 	rt := runtime.GlobalRegistry().Runtime()
-	hubDb := model.NewDb(hub.Service.Db())
+	app := runtime.GlobalRegistry().App().(pkg.AppNode)
+	svcDb := app.ServiceDb()
+	hubDb := model.NewDb(svcDb)
 	cfg := model.NewConfigurator(hubDb)
 	err := cfg.Fetch(nodeId)
 	if err != nil {
@@ -60,8 +62,8 @@ func (hub *HubService) Init() error {
 	rt := runtime.GlobalRegistry().Runtime()
 	app := runtime.GlobalRegistry().App().(pkg.AppNode)
 	var ipcSrv grpc2.BaseServer
-	hub.Service = service.NewBaseService(Name, app.Node())
-	hub.Service.OpenDb()
+	hub.Service = service.NewBaseService(Name)
+//	hub.Service.OpenDb()
 
 	// Service configurator
 	cfg, err := hub.FetchConfig(app.Node().Id())
@@ -113,12 +115,9 @@ func (hub *HubService) migrateDb(options interface{}) {
 
 func (hub *HubService) createDd(args ...interface{}) error {
 	force := args[0].(bool)
-	node := args[1].(pkg.Node)
-	hub.Service = service.NewBaseService(Name, node)
-	if err := hub.Service.OpenDb(); err != nil {
-		return err
-	}
-	hubDb := model.NewDb(hub.Db())
+	svcDb := args[1].(pkg.Db)
+	hub.Service = service.NewBaseService(Name)
+	hubDb := model.NewDb(svcDb)
 	if force {
 		if err := hubDb.DropTables(); err != nil {
 			return err

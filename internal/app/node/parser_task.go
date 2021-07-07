@@ -23,7 +23,9 @@ func (app *appNode) ParserTask(j job.Job) (job.Init, job.Run, job.Finalize) {
 			opts, err := parser.GetCmdOptions(cmdName)
 			task.Assert(err)
 			v := opts.(cmd.Bootstrap)
-			cmd.BootstrapCmd(v.CreateDb, v.Force, v.IdFromInterface, v.Tags)
+			err = cmd.BootstrapCmd(v.CreateDb, v.Force, v.IdFromInterface, v.Tags)
+			task.Assert(err)
+			task.FinishJob()
 
 		case cmd.CMD_NAME_VERSION:
 			opts, err := parser.GetCmdOptions(cmdName)
