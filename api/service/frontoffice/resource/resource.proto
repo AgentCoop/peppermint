@@ -4,7 +4,7 @@ import "service/frontoffice/resource/messages.proto";
 import "service/frontoffice/resource/create.proto";
 import "service/rpc.proto";
 
-package resmngr.frontoffice.peppermint;
+package frontoffice.peppermint;
 
 option go_package = "peppermint/service/backoffice/resource";
 
@@ -13,9 +13,19 @@ option go_package = "peppermint/service/backoffice/resource";
 // A resource may be a single file or a collection of files.
 // Each resource has to be available over Web by an URL.
 //
-service ResourceManager {
-  rpc Create(Create.Request) returns (Create.Response) { }
-  rpc DestroySession(DestroySession.Request) returns (DestroySession.Response) {}
-  rpc CreateRemoteFile(stream CreateRemoteFile.Request) returns (CreateRemoteFile.Response) {}
-  rpc TransferFileChunks(stream TransferFileChunks.Request) returns (TransferFileChunks.Response) {}
+service ContentManager {
+  rpc Create(Create.Request) returns (Create.Response) {}
+  rpc Delete() returns () {}
+
+  // Creating virtual directories allows logically group content items
+  rpc CreateDir() returns() {}
+  rpc DeleteDir() returns() {}
+
+  rpc CreateFile() returns () {}
+  rpc FileInfo() returns () {}
+  rpc TransferFileChunk() returns () {}
+
+  // File Process Graph API
+  rpc FPG_CreateNode() returns () { }
 }
+
